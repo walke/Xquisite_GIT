@@ -1,6 +1,8 @@
 # xquisite
 
-Android app for the project called scienceFuture
+Android app for the project called scienceFuture</br>
+
+working platform: Android studio</br>
 
 main function af xquisite:</br>
   * to let users see last 2 minutes of a story</br>
