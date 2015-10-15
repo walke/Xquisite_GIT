@@ -9,7 +9,8 @@
     android:background="@color/black"
     tools:context=".MainActivity">
 
-    <TextView android:textColor="@color/green"
+    <TextView android:textSize="30px"
+        android:textColor="@color/green"
         android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
