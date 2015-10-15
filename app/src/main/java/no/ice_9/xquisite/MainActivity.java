@@ -4,12 +4,18 @@ import android.app.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+import android.util.TypedValue;
 
 
 public class MainActivity extends Activity {
+
+    private ASCIIscreen mAscii;
+    private TextView mText;
 
     //Start new activity for creating new part of a story.
     public void CreateNewStory(View view)
@@ -21,6 +27,14 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mText=(TextView)findViewById(R.id.text_main);
+        mAscii=new ASCIIscreen(this,mText);
+
+
+
+
+
     }
 
     @Override

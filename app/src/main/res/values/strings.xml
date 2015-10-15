@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Xquisite</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">scienceFuture \n xquisite</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_player">PlayerActivity</string>
 </resources>
