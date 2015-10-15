@@ -22,6 +22,9 @@ public class MainActivity extends Activity {
     private int mTime;
     private boolean mInitDone;
 
+    private int mServerConnection;
+    private Server mServer;
+
     //Start new activity for creating new part of a story.
     public void CreateNewStory(View view)
     {
@@ -42,6 +45,9 @@ public class MainActivity extends Activity {
         mAscii=new ASCIIscreen(this,mText);
         mInitDone=false;
 
+        mServer=new Server(this);
+        mServerConnection=0;
+
         mAscii.pushLine("########################");
         mAscii.pushLine("#scienceFuture xquisite#");
         mAscii.pushLine("########################");
@@ -51,9 +57,34 @@ public class MainActivity extends Activity {
             public void run() {
 
                 if(mTime==0){mAscii.pushLine("Initializing sequence...");}
-                if(mTime==3){mAscii.pushLine("Testing connection to the server...");}
-                if(mTime==5){mAscii.pushLine("Connection succesed");}
-                if(mTime==6){mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");mInitDone=true;}
+                if(mTime==3)
+                {
+                    mAscii.pushLine("Testing connection to the server...");
+                    if(mServer.checkConnection())
+                    {
+                        mServerConnection=1;
+                    }
+                    else{mServerConnection=-1;}
+
+                }
+
+                if(mServerConnection==1)
+                {
+                    mAscii.pushLine("Connection succesed");
+                    mAscii.pushLine("");
+                    mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");mInitDone=true;
+
+                    this.cancel();
+                }
+                if(mServerConnection==-1)
+                {
+                    mAscii.pushLine("Connection failed");
+                    mAscii.pushLine("");
+                    mAscii.pushLine("THERE WAS A PROBLEM WITH A CONNECTION TO SERVER");
+                    mAscii.pushLine("try to check your internet connection");
+                    mAscii.pushLine("if your internet works fine, the problem is on server side");
+                    this.cancel();
+                }
                 mTime++;
             }
         },0,500);

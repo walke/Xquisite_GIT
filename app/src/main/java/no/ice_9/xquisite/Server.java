@@ -20,4 +20,20 @@ public class Server {
         adress = adr;
         Log.d("SERVER", "got server address:" + adress);
     }
+
+    public boolean checkConnection()
+    {
+        String response=postToServer(CODE_CHECK_CONNECTION,null);
+
+        boolean result=false;
+
+        if(response=="1"){result=true;};
+
+        return result;
+    }
+
+    private String postToServer(String code,String data)
+    {
+        return "1";
+    }
 }
