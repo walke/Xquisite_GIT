@@ -7,11 +7,13 @@
     tools:context=".MainActivity">
 
     <TextView android:id="@+id/text_main"
-        android:textSize="184px"
+        android:textSize="10px"
         android:typeface="monospace"
         android:textColor="@color/green"
         android:text="@string/hello_world"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:onClick="CreateNewStory"/>
 
 </LinearLayout>

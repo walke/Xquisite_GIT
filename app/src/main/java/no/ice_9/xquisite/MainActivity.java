@@ -11,28 +11,52 @@ import android.view.View;
 import android.widget.TextView;
 import android.util.TypedValue;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class MainActivity extends Activity {
 
     private ASCIIscreen mAscii;
     private TextView mText;
+    private int mTime;
+    private boolean mInitDone;
 
     //Start new activity for creating new part of a story.
     public void CreateNewStory(View view)
     {
-        Intent intent = new Intent(this, PlayerActivity.class);
+        if(mInitDone)
+        {
+            Intent intent = new Intent(this, PlayerActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mTime=0;
         mText=(TextView)findViewById(R.id.text_main);
         mAscii=new ASCIIscreen(this,mText);
+        mInitDone=false;
 
+        mAscii.pushLine("########################");
+        mAscii.pushLine("#scienceFuture xquisite#");
+        mAscii.pushLine("########################");
 
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
 
+                if(mTime==0){mAscii.pushLine("Initializing sequence...");}
+                if(mTime==3){mAscii.pushLine("Testing connection to the server...");}
+                if(mTime==5){mAscii.pushLine("Connection succesed");}
+                if(mTime==6){mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");mInitDone=true;}
+                mTime++;
+            }
+        },0,500);
 
 
     }
