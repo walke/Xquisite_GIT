@@ -46,7 +46,7 @@ public class ASCIIscreen {
 
     TextView mText;
 
-    static private int lineCount=50;
+    static private int lineCount=100;
     private float lineHeight;
 
 
@@ -357,6 +357,7 @@ class AsciiCharSet extends Charset {
     @Override
     public CharsetDecoder newDecoder()
     {
+        final String chseq=" .`-_':,;^=+/\\\"|)\\\\<>)iv%xclrs*}I?![1tao7zjLunT#Cwfy325Fp6mqShd4EgXPGZbYkOA&8U$@HDBNR0Q";
         return new CharsetDecoder(this,0.25f,0.25f) {
             @Override
             protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out) {
@@ -381,9 +382,10 @@ class AsciiCharSet extends Charset {
                     a+=in.get();
                     a+=in.get();
 
-                    a/=4;
-                    if(a<0){out.put("0");}
-                    else{out.put("1");}
+                    a/=3;
+                    a-=128;
+                    a/=3;
+                    out.put(chseq.charAt(-a));
                     a=in.get();
                 }
                 while(out.remaining()>0)
