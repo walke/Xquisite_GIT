@@ -2,6 +2,14 @@ package no.ice_9.xquisite;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Matrix;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.graphics.BitmapCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -9,6 +17,17 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.Array;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.CharBuffer;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -32,6 +51,7 @@ public class ASCIIscreen {
     private String mAllLines;
     private int mSymbolsPerLine;
 
+
     public boolean mReady;
     private boolean mRage;
     String mWordList[];
@@ -40,8 +60,12 @@ public class ASCIIscreen {
 
     Activity tAct;
 
+
+
     public ASCIIscreen(Context context,TextView text)
     {
+
+
         mLine=new String[lineCount];
         mLinePointer=0;
         tAct=(Activity)context;
@@ -210,6 +234,45 @@ public class ASCIIscreen {
 
 
     }
+
+    public void putImage()
+    {
+        Uri uri=Uri.parse("/mnt/sdcard/tmp/tmp.jpg");
+        Bitmap btm=BitmapFactory.decodeFile("/mnt/sdcard/tmp/tmp.jpg");
+        Log.d("ASCII", "bm" + btm.getByteCount());
+
+        //OutputStream os=new ByteArrayOutputStream(256);
+        //btm.compress(Bitmap.CompressFormat.JPEG, 0, os);
+
+
+        float scaleX=mSymbolsPerLine/btm.getWidth();
+        float scaleY=lineCount/btm.getHeight();
+
+        Matrix m=new Matrix();
+        m.setValues(new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f});
+
+
+        Bitmap btm2;
+        Log.d("ASCII","W,H"+btm.getWidth()+", "+btm.getHeight());
+        btm2=Bitmap.createBitmap(10,10,btm.getConfig());
+        //btm2=Bitmap.createBitmap(btm,1,1,100,100,m,false);
+        Log.d("ASCII","W,H"+btm.getWidth()+", "+btm.getHeight());
+        ByteBuffer mChBuff = ByteBuffer.allocate(btm.getByteCount());
+        btm2.copyPixelsToBuffer(mChBuff);
+
+        String s;
+        for(int i=0;i<lineCount;i++)
+        {
+            s=new String(mChBuff.array(),i*mSymbolsPerLine,(i+1)*mSymbolsPerLine);
+
+            //String s=String.copyValueOf(str);
+
+            modLine(s,0,-1);
+        }
+    }
+
+
+
 
     public void fillTrash()
     {
