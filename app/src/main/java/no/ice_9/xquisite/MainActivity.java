@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.util.TypedValue;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,49 +46,66 @@ public class MainActivity extends Activity {
         mAscii=new ASCIIscreen(this,mText);
         mInitDone=false;
 
+
+
         mServer=new Server(this);
         mServerConnection=0;
 
-        mAscii.pushLine("########################");
-        mAscii.pushLine("#scienceFuture xquisite#");
-        mAscii.pushLine("########################");
+        final Random rnd = new Random();
 
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                //mAscii.fillTrash();
 
-                if(mTime==0){mAscii.pushLine("Initializing sequence...");}
-                if(mTime==3)
+                //mAscii.fillTrash();
+
+                if(mAscii.mReady)
                 {
-                    mAscii.pushLine("Testing connection to the server...");
-                    if(mServer.checkConnection())
+
+                    if(mTime==0){mAscii.fillTrash();/*mAscii.setRage(true);*/}
+                    if(mTime<2000){mAscii.modLine("scienceFuture xquisite",rnd.nextInt(50),rnd.nextInt(100));}
+                    if(mTime>2000){mAscii.setRage(false);mAscii.clear();}
+                    if(mTime>2100 && !mAscii.isRage())
                     {
-                        mServerConnection=1;
+                        mAscii.pushLine("########################");
+                        mAscii.pushLine("#scienceFuture xquisite#");
+                        mAscii.pushLine("########################");
+                        mAscii.pushLine("Initializing sequence...");
                     }
-                    else{mServerConnection=-1;}
+                    if(mTime>2600 && !mAscii.isRage())
+                    {
+                        mAscii.pushLine("Testing connection to the server...");
+                        if(mServer.checkConnection())
+                        {
+                            mServerConnection=1;
+                        }
+                        else{mServerConnection=-1;}
 
+                    }
+
+                    if(mServerConnection==1  && !mAscii.isRage())
+                    {
+                        mAscii.pushLine("Connection succesed");
+                        mAscii.pushLine("");
+                        mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");mInitDone=true;
+
+                        this.cancel();
+                    }
+                    if(mServerConnection==-1  && !mAscii.isRage())
+                    {
+                        mAscii.pushLine("Connection failed");
+                        mAscii.pushLine("");
+                        mAscii.pushLine("THERE WAS A PROBLEM WITH A CONNECTION TO SERVER");
+                        mAscii.pushLine("try to check your internet connection");
+                        mAscii.pushLine("if your internet works fine, the problem is on server side");
+                        this.cancel();
+                    }
+                    mTime++;
                 }
 
-                if(mServerConnection==1)
-                {
-                    mAscii.pushLine("Connection succesed");
-                    mAscii.pushLine("");
-                    mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");mInitDone=true;
-
-                    this.cancel();
-                }
-                if(mServerConnection==-1)
-                {
-                    mAscii.pushLine("Connection failed");
-                    mAscii.pushLine("");
-                    mAscii.pushLine("THERE WAS A PROBLEM WITH A CONNECTION TO SERVER");
-                    mAscii.pushLine("try to check your internet connection");
-                    mAscii.pushLine("if your internet works fine, the problem is on server side");
-                    this.cancel();
-                }
-                mTime++;
             }
-        },0,500);
+        },0,60);
 
 
     }
