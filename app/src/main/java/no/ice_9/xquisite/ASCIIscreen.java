@@ -28,6 +28,10 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -60,11 +64,13 @@ public class ASCIIscreen {
 
     Activity tAct;
 
+    AsciiCharSet mAsciiCharSet;
+
 
 
     public ASCIIscreen(Context context,TextView text)
     {
-
+        mAsciiCharSet=new AsciiCharSet("ASCII",null);
 
         mLine=new String[lineCount];
         mLinePointer=0;
@@ -245,29 +251,34 @@ public class ASCIIscreen {
         //btm.compress(Bitmap.CompressFormat.JPEG, 0, os);
 
 
-        float scaleX=mSymbolsPerLine/btm.getWidth();
-        float scaleY=lineCount/btm.getHeight();
 
-        Matrix m=new Matrix();
-        m.setValues(new float[]{1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f});
 
 
         Bitmap btm2;
         Log.d("ASCII","W,H"+btm.getWidth()+", "+btm.getHeight());
-        btm2=Bitmap.createBitmap(10,10,btm.getConfig());
-        //btm2=Bitmap.createBitmap(btm,1,1,100,100,m,false);
-        Log.d("ASCII","W,H"+btm.getWidth()+", "+btm.getHeight());
-        ByteBuffer mChBuff = ByteBuffer.allocate(btm.getByteCount());
+
+        btm2=Bitmap.createScaledBitmap(btm, mSymbolsPerLine,lineCount, false);
+
+        ByteBuffer mChBuff = ByteBuffer.allocate(btm2.getByteCount());
         btm2.copyPixelsToBuffer(mChBuff);
 
+
+
+        /*String sttm="";
+        for(int i=0;i<32;i++)
+        {
+            sttm+=(char)i;
+        }
+        CharSequence chseq=new String(sttm);*/
         String s;
         for(int i=0;i<lineCount;i++)
         {
-            s=new String(mChBuff.array(),i*mSymbolsPerLine,(i+1)*mSymbolsPerLine);
 
+            s=new String(mChBuff.array(),i*mSymbolsPerLine*4,mSymbolsPerLine*4, mAsciiCharSet);
+            s=s.replace("\n", "#");
             //String s=String.copyValueOf(str);
 
-            modLine(s,0,-1);
+            modLine(s, i, -1);
         }
     }
 
@@ -318,5 +329,80 @@ public class ASCIIscreen {
     public boolean isRage()
     {
         return mRage;
+    }
+
+
+}
+
+class AsciiCharSet extends Charset {
+    /**
+     * Constructs a <code>Charset</code> object. Duplicated aliases are
+     * ignored.
+     *
+     * @param canonicalName the canonical name of the charset.
+     * @param aliases       an array containing all aliases of the charset. May be null.
+     * @throws IllegalCharsetNameException on an illegal value being supplied for either
+     *                                     <code>canonicalName</code> or for any element of
+     *                                     <code>aliases</code>.
+     */
+    protected AsciiCharSet(String canonicalName, String[] aliases) {
+        super(canonicalName, aliases);
+    }
+
+    @Override
+    public boolean contains(Charset charset) {
+        return false;
+    }
+
+    @Override
+    public CharsetDecoder newDecoder()
+    {
+        return new CharsetDecoder(this,0.25f,0.25f) {
+            @Override
+            protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out) {
+                int a;
+                /*while(in.remaining()>0)
+                {
+                    if(out.remaining()>0)
+                    {
+                        in.get();
+                        out.put("#");
+                    }
+                    else
+                    {
+                       in.getChar();
+                    }
+
+                }*/
+                while(in.remaining()>0)
+                {
+                    a=0;
+                    a+=in.get();
+                    a+=in.get();
+                    a+=in.get();
+
+                    a/=4;
+                    if(a<0){out.put("0");}
+                    else{out.put("1");}
+                    a=in.get();
+                }
+                while(out.remaining()>0)
+                {
+                    out.put(" ");
+                }
+                return CoderResult.UNDERFLOW;
+            }
+        };
+    }
+
+    @Override
+    public CharsetEncoder newEncoder()
+    {
+        return new CharsetEncoder(this,4,4) {
+            @Override
+            protected CoderResult encodeLoop(CharBuffer in, ByteBuffer out) {
+                return null;
+            }
+        };
     }
 }
