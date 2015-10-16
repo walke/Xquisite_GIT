@@ -1,6 +1,8 @@
 # xquisite
 
-Android app for the project called scienceFuture
+Android app for the project called scienceFuture</br>
+
+working platform: Android studio</br>
 
 main function af xquisite:</br>
   * to let users see last 2 minutes of a story</br>
@@ -13,4 +15,3 @@ semi-linear story:</br>
   * ideally the story should be linear but in practice many users will be able to record new videos simultaniously</br>
   * so the story will have branches</br>
   * the idea is to let administrators tag the most intresting branch to be the endpoint</br>
-  
