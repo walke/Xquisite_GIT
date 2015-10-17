@@ -128,9 +128,9 @@ public class PlayerActivity extends Activity {
 
     public void finishVideo()
     {
-        /*Intent intent = new Intent(this, RecorderActivity.class);
-        intent.putExtra(EXTRA_MESSAGE2, String.valueOf(ParentNdx));
-        startActivity(intent);*/
+        Intent intent = new Intent(this, RecorderActivity.class);
+        //intent.putExtra(EXTRA_MESSAGE2, String.valueOf(ParentNdx));
+        startActivity(intent);
 
         //GO DIRECTLY TO RECORDING
         /*mNextButton.setAlpha(1.0f);

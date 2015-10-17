@@ -39,7 +39,8 @@
         </activity>
         <activity
             android:name=".RecorderActivity"
-            android:label="@string/title_activity_recorder" >
+            android:label="@string/title_activity_recorder"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
     </application>
 
