@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
 
                     if(mTime==0){mAscii.fillTrash();/*mAscii.setRage(true);*/}
                    // if(mTime<2000){mAscii.modLine("scienceFuture xquisite",rnd.nextInt(50),rnd.nextInt(100));}
-                    if(mTime<2000){mAscii.putImage();}
+                    if(mTime==10){mAscii.putImage();}
                     if(mTime>2000){mAscii.setRage(false);mAscii.clear();}
                     if(mTime>2100 && !mAscii.isRage())
                     {
