@@ -6,6 +6,17 @@
     android:background="@color/black"
     tools:context="no.ice_9.xquisite.PlayerActivity">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <VideoView android:id="@+id/playerSurface"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"></VideoView>
+
+    </FrameLayout>
+
     <TextView android:id="@+id/text_main"
         android:textSize="20px"
         android:typeface="monospace"
@@ -14,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
+        android:onClick="startVideo"
         />
 
 </RelativeLayout>

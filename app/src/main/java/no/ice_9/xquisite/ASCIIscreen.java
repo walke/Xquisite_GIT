@@ -66,6 +66,10 @@ public class ASCIIscreen {
 
     AsciiCharSet mAsciiCharSet;
 
+    TimerTask mUpdater;
+
+    boolean mRequestStop;
+
 
 
     public ASCIIscreen(Context context,TextView text)
@@ -82,7 +86,7 @@ public class ASCIIscreen {
         mRage=false;
 
         mWordList=new String[]{"science","life","corruption","future","source","utopia","time","order","chaos"};
-
+        mRequestStop=false;
 
         lineHeight=displayMetrics.heightPixels/lineCount;
         Log.d("ASCII", "dispH,lineH:" + displayMetrics.heightPixels + " " + lineHeight);
@@ -160,30 +164,47 @@ public class ASCIIscreen {
         //Log.d("ASCII","runAQ"+3);
         //Log.d("ASCII", "real size" + mText.getExtendedPaddingTop());
         final Random Rnd=new Random();
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        mUpdater=new TimerTask() {
             @Override
             public void run() {
-
+                mUpdater = this;
                 //if(mSymbolsPerLine!=-1 && !mReady){mReady=true;}
-                if(mRage){pushLine("&/¤(&/"+mWordList[Rnd.nextInt()%4+4]+"2/(&%¤76KLJ))=/(¤");}
-                mAllLines="";
-                for(int i=0;i<lineCount;i++)
-                {
+                if (mRage) {
+                    pushLine("&/¤(&/" + mWordList[Rnd.nextInt() % 4 + 4] + "2/(&%¤76KLJ))=/(¤");
+                }
+                mAllLines = "";
+                for (int i = 0; i < lineCount; i++) {
 
-                    mAllLines+=mLine[i]+"\n";
+                    mAllLines += mLine[i] + "\n";
                 }
 
                 tAct.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
-                        mText.setText(mAllLines+"a");
+                        mText.setText(mAllLines + "a");
                     }
                 });
 
+                if(mRequestStop){ mUpdater.cancel();}
+
 
             }
-        },0,50);
+        };
+
+        mAsciiStartUpdater(50);
+    }
+
+    public void mAsciiStartUpdater(int rate)
+    {
+        mRequestStop=false;
+        new Timer().scheduleAtFixedRate(mUpdater,0,rate);
+    }
+
+    public void mAsciiStopUpdater()
+    {
+        mRequestStop=true;
+
     }
 
     public float getTextSize()
@@ -241,11 +262,11 @@ public class ASCIIscreen {
 
     }
 
-    public void putImage()
+    public void putImage(Bitmap btm)
     {
-        Uri uri=Uri.parse("/mnt/sdcard/tmp/tmp.jpg");
+        /*Uri uri=Uri.parse("/mnt/sdcard/tmp/tmp.jpg");
         Bitmap btm=BitmapFactory.decodeFile("/mnt/sdcard/tmp/tmp.jpg");
-        Log.d("ASCII", "bm" + btm.getByteCount());
+        Log.d("ASCII", "bm" + btm.getByteCount());*/
 
         //OutputStream os=new ByteArrayOutputStream(256);
         //btm.compress(Bitmap.CompressFormat.JPEG, 0, os);
