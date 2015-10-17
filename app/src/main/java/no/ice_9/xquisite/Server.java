@@ -16,6 +16,7 @@ import java.net.URL;
 public class Server {
 
     static String CODE_CHECK_CONNECTION="23354700000";//check connection
+    static String CODE_GET_LST_STRY_NDX="23354700003";//check connection
 
     String adress;
     int serverResponseCode = 0;
@@ -31,7 +32,7 @@ public class Server {
 
     public boolean checkConnection()
     {
-        String response=postToServer(CODE_CHECK_CONNECTION,null);
+        String response=postToServer(CODE_CHECK_CONNECTION, null);
 
         boolean result=false;
         Log.d("SERVER","response"+response+";");
@@ -39,6 +40,20 @@ public class Server {
         {
             Log.d("SERVER","got connection");
             result=true;
+        }
+
+        return result;
+    }
+
+    public String getLastStoryNdx()
+    {
+        String response=postToServer(CODE_GET_LST_STRY_NDX,null);
+
+        String result="-1";
+        Log.d("SERVER","response"+response+";");
+        if(!response.matches("-1"))
+        {
+            result=response;
         }
 
         return result;

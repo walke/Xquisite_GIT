@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
         mTime=0;
         mText=(TextView)findViewById(R.id.text_main);
         mAscii=new ASCIIscreen(this,mText);
+        mAscii.mAsciiStartUpdater(50);
         mInitDone=false;
 
 

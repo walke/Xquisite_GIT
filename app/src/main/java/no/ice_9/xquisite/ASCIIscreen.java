@@ -67,6 +67,7 @@ public class ASCIIscreen {
     AsciiCharSet mAsciiCharSet;
 
     TimerTask mUpdater;
+    boolean mUpdating;
 
     boolean mRequestStop;
 
@@ -75,7 +76,7 @@ public class ASCIIscreen {
     public ASCIIscreen(Context context,TextView text)
     {
         mAsciiCharSet=new AsciiCharSet("ASCII",null);
-
+        mUpdating=false;
         mLine=new String[lineCount];
         mLinePointer=0;
         tAct=(Activity)context;
@@ -192,19 +193,24 @@ public class ASCIIscreen {
             }
         };
 
-        mAsciiStartUpdater(50);
+        //mAsciiStartUpdater(50);
     }
 
     public void mAsciiStartUpdater(int rate)
     {
-        mRequestStop=false;
-        new Timer().scheduleAtFixedRate(mUpdater,0,rate);
+        if(!mUpdating)
+        {
+            mUpdating=true;
+            mRequestStop=false;
+            new Timer().scheduleAtFixedRate(mUpdater,0,rate);
+        }
+
     }
 
     public void mAsciiStopUpdater()
     {
         mRequestStop=true;
-
+        mUpdating=false;
     }
 
     public float getTextSize()

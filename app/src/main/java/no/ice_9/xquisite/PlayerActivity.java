@@ -11,11 +11,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.VideoView;
 
 import java.io.File;
 
 public class PlayerActivity extends Activity {
+
+    private ASCIIscreen mAscii;
+    TextView mText;
 
     public PlayerActivity tAct;
     private Thread mTask;
@@ -23,16 +27,29 @@ public class PlayerActivity extends Activity {
     private Uri mVideoUri;
     private VideoView mVideoView;
 
+    //ASCII ACTION
+    public void asciiAction(View view)
+    {
+        finishVideo();
+    }
+
+    Server mServer;
+
     //LOAD VIDEO
     public boolean loadVideo()
     {
-        //int storyindx = Integer.parseInt(mServer.getRandStoryNdx());
-        int storyindx=0;
+        int storyindx = Integer.parseInt(mServer.getLastStoryNdx());
+        //int storyindx=0;
 
         //ParentNdx=storyindx;
         if(storyindx==-1)
         {
-            Log.d("PLAYER","no video ");
+            Log.d("PLAYER", "no video ");
+            mAscii.pushLine("no video found");
+            mAscii.pushLine("****************************************");
+            mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
+            mAscii.mAsciiStopUpdater();
+            return false;
         }
         else
         {
@@ -144,6 +161,10 @@ public class PlayerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        mText=(TextView)findViewById(R.id.text_player);
+        mAscii=new ASCIIscreen(this,mText);
+        mAscii.mAsciiStartUpdater(100);
+        mServer = new Server(this);
         mVideoView=(VideoView)findViewById(R.id.playerSurface);
         mVideoView.setAlpha(0.0f);
         tAct=this;
@@ -153,23 +174,27 @@ public class PlayerActivity extends Activity {
                 Log.d("PLAYER", "getting list ");
                 Looper.prepare();
 
-                loadVideo();
+                boolean result=loadVideo();
 
+                if(result)
+                {
+                    tAct.runOnUiThread(new Runnable() {
+                        public void run() {
+                            Log.d("PLAYER", "got list");
+                            preparePlayer();
 
-                tAct.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Log.d("PLAYER", "got list");
-                        preparePlayer();
+                            //playVideo();
 
-                        //playVideo();
+                        }
+                    });
+                }
 
-                    }
-                });
 
             }
         });
 
         mTask.start();
+
     }
 
     @Override
