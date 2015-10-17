@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class RecorderActivity extends Activity {
+    /*TODO: crashed on forceStopCapture after closing activity, probably needs to be forced to stop "onActivityPause"*/
+    //TODO: doesn't crash if recording already started before closing activity.. then yes.. fix it later
 
     //ENUMS
     public static final int MEDIA_TYPE_IMAGE = 1;
@@ -33,6 +36,9 @@ public class RecorderActivity extends Activity {
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
     MediaRecorder mRecorder;
+
+    ASCIIscreen mAscii;
+    TextView mText;
 
     int mTimeLeft;
     boolean isRecording;
@@ -74,7 +80,7 @@ public class RecorderActivity extends Activity {
                         @Override
                         public void run() {
                             //mRecorderTimeText.setText(""+mTimeLeft);
-
+                            mAscii.modLine(""+mTimeLeft,0,-1);
                             if(mTimeLeft<=0){forceStartCapture();}
                         }
                     });
@@ -228,7 +234,7 @@ public class RecorderActivity extends Activity {
                         @Override
                         public void run() {
                            // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-
+                            mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)),0,-1);
                             if (mTimeLeft <= 0) {
 
                                 forceStopCapture();
@@ -326,6 +332,11 @@ public class RecorderActivity extends Activity {
 
         //get pointer to this activity
         tAct=this;
+        Log.d("RECORDER","check");
+        //ASCII INIT
+        mText=(TextView)findViewById(R.id.text_recorder);
+        mAscii=new ASCIIscreen(this,mText);
+        mAscii.mAsciiStartUpdater(100);
 
         //INIT CAMERA AND ALL IT DEPENDS ON
         initCamera(1);//for now camId = 1; asuming front facing camera.

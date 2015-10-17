@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center"
+        android:layout_gravity="right"
         android:layout_centerInParent="true">
 
         <FrameLayout
@@ -19,6 +19,21 @@
             android:layout_gravity="center">
 
         </FrameLayout>
+    </FrameLayout>
+
+    <FrameLayout android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView android:id="@+id/text_recorder"
+            android:textSize="20px"
+            android:typeface="monospace"
+            android:textColor="@color/green"
+            android:text="@string/hello_world"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            />
+
     </FrameLayout>
 
 </RelativeLayout>
