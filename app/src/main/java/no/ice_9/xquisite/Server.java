@@ -34,8 +34,12 @@ public class Server {
         String response=postToServer(CODE_CHECK_CONNECTION,null);
 
         boolean result=false;
-
-        if(response=="sucess"){result=true;};
+        Log.d("SERVER","response"+response+";");
+        if(response.matches("1"))
+        {
+            Log.d("SERVER","got connection");
+            result=true;
+        }
 
         return result;
     }

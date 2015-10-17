@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
                             mServerConnection=1;
                         }
                         else{mServerConnection=-1;}
-
+                        Log.d("MAIN","servResp"+mServerConnection);
                     }
 
                     if(mServerConnection==1  && !mAscii.isRage())
