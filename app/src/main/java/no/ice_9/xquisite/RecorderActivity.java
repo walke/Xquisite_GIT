@@ -43,8 +43,26 @@ public class RecorderActivity extends Activity {
 
     int mTimeLeft;
     boolean isRecording;
+    int mCurrentPart;
 
     static String fileToUpload;
+
+    static String[] mQuestion;
+    static int mQuestionTime;
+
+    private void initQuestions()
+    {
+        mQuestionTime=20;
+        mQuestion=new String[]
+                {
+                        "How old is X now?",
+                        "Where is X now?",
+                        "What is she doing now?",
+                        "What is she feeling?",
+                        "What is she thinking?",
+                        "What is her biggest challenge?"
+                };
+    }
 
     //INIT CAMERA
     private boolean initCamera(int camId)
@@ -210,16 +228,65 @@ public class RecorderActivity extends Activity {
         return c; // returns null if camera is unavailable
     }
 
+    private void startRecordingSequence()
+    {
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(tAct!=null)
+                {
+                    //IF NOT RECORDING START RECORDING CURRENT PART
+                    if(!isRecording)
+                    {
+                        mCurrentPart++;
+                        if(initMediaRecorder())
+                        {
+
+                            mRecorder.start();
+
+                            isRecording = true;//Probably can get that from mRecorder..
+                        }
+                        mTimeLeft=120;
+                    }
+                    else
+                    {
+                        tAct.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
+                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)),0,-1);
+                                mAscii.modLine("current part:"+mCurrentPart,1,-1);
+                                if (mTimeLeft <= 0) {
+
+                                    forceStopCapture();
+                                }
+                            }
+                        });
+                        mTimeLeft--;
+                    }
+                }
+                else
+                {
+                    this.cancel();//TODO: or make destroying sequence if user panics
+                }
+
+
+
+            }
+        },0,1000);
+    }
+
     //FORCE TO START CAPTURING
     public void forceStartCapture()
     {
-        if (!isRecording && tAct!=null)
+        startRecordingSequence();
+        /*if (!isRecording && tAct!=null)
         {
             if(initMediaRecorder())
             {
                 mRecorder.start();
 
-                isRecording = true;
+                isRecording = true;//Probably can get that from mRecorder..
             }
             mTimeLeft=120;
             //mRecorderMessageText.setText("REC");
@@ -261,7 +328,7 @@ public class RecorderActivity extends Activity {
 
 
 
-        }
+        }*/
 
 
     }
@@ -275,8 +342,12 @@ public class RecorderActivity extends Activity {
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
 
-            releaseCamera();
-            releasePreview();
+            if(mCurrentPart==1)
+            {
+                releaseCamera();
+                releasePreview();
+            }
+
 
             //mNextButton.setAlpha(1.0f);
             //mNextButton.setVisibility(View.VISIBLE);
@@ -341,6 +412,7 @@ public class RecorderActivity extends Activity {
         mAscii=new ASCIIscreen(this,mText);
         mAscii.mAsciiStartUpdater(100);
 
+        mCurrentPart=-1;
         //INIT CAMERA AND ALL IT DEPENDS ON
         initCamera(1);//for now camId = 1; asuming front facing camera.
         // Will later be fixed to search for frontfacing camera
@@ -364,6 +436,7 @@ public class RecorderActivity extends Activity {
         Log.d("VIDEO_LOG", "DESTROYING main ");
         releaseCamera();
         releasePreview();
+        tAct=null;
     }
 
     //TODO:SORT THIS OUT
