@@ -25,6 +25,7 @@ import java.util.TimerTask;
 public class RecorderActivity extends Activity {
     /*TODO: crashed on forceStopCapture after closing activity, probably needs to be forced to stop "onActivityPause"*/
     //TODO: doesn't crash if recording already started before closing activity.. then yes.. fix it later
+    //TODO: nope still crashes when expected time for recording runs out.. fix it anyway
 
     //ENUMS
     public static final int MEDIA_TYPE_IMAGE = 1;
@@ -49,13 +50,15 @@ public class RecorderActivity extends Activity {
     private boolean initCamera(int camId)
     {
         boolean result;
+
+        //CHECK IF CAMERA IS INITIALIZED ALREADY
         if(mCamera==null)
         {
 
 
 
             //try to get camera instance
-            mCamera=getCameraInstance(camId);
+            mCamera=getCameraInstance(camId);//TODO: get real fronfacing camera here or in <-this function
             if(mCamera==null){return false;}
             else
             {
@@ -70,7 +73,7 @@ public class RecorderActivity extends Activity {
             mTimeLeft=10;
 
 
-
+            //COUNT DOWN TIMER BEFORE RECORDING
             new Timer().scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -80,8 +83,8 @@ public class RecorderActivity extends Activity {
                         @Override
                         public void run() {
                             //mRecorderTimeText.setText(""+mTimeLeft);
-                            mAscii.modLine(""+mTimeLeft,0,-1);
-                            if(mTimeLeft<=0){forceStartCapture();}
+                            mAscii.modLine("recording will start in "+mTimeLeft+"seconds",0,-1);
+                            if(mTimeLeft<=0){forceStartCapture();}//TODO: yes that is target entry point of the crash
                         }
                     });
 
@@ -210,7 +213,7 @@ public class RecorderActivity extends Activity {
     //FORCE TO START CAPTURING
     public void forceStartCapture()
     {
-        if (!isRecording)
+        if (!isRecording && tAct!=null)
         {
             if(initMediaRecorder())
             {
