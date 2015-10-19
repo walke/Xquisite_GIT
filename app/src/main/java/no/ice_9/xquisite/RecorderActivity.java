@@ -34,6 +34,8 @@ public class RecorderActivity extends Activity {
     //CLASS VARIABLES
     RecorderActivity tAct;
 
+    Server mServer;
+
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
     MediaRecorder mRecorder;
@@ -49,6 +51,11 @@ public class RecorderActivity extends Activity {
 
     static String[] mQuestion;
     static int mQuestionTime;
+
+    //VARS USED TO UPLOAD FILE TO SERVER
+    int mCurrentNdx;
+    int mCurrentParent;
+    int mCurrentUser;
 
     private void initQuestions()
     {
@@ -246,7 +253,8 @@ public class RecorderActivity extends Activity {
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        mTimeLeft=120;
+                        if(mCurrentPart==0){mTimeLeft=180;}
+                        if(mCurrentPart>0){mTimeLeft=mQuestionTime;}
                     }
                     else
                     {
@@ -256,6 +264,7 @@ public class RecorderActivity extends Activity {
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)),0,-1);
                                 mAscii.modLine("current part:"+mCurrentPart,1,-1);
+                                if(mCurrentPart>0){mAscii.modLine(""+mQuestion[mCurrentPart-1],3,-1);}
                                 if (mTimeLeft <= 0) {
 
                                     forceStopCapture();
@@ -342,11 +351,13 @@ public class RecorderActivity extends Activity {
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
 
-            if(mCurrentPart==1)
+            if(mCurrentPart==mQuestion.length)
             {
                 releaseCamera();
                 releasePreview();
             }
+
+            mServer.uploadPart(fileToUpload,mCurrentPart,mCurrentNdx,mCurrentParent,mCurrentUser);
 
 
             //mNextButton.setAlpha(1.0f);
@@ -406,7 +417,13 @@ public class RecorderActivity extends Activity {
 
         //get pointer to this activity
         tAct=this;
-        Log.d("RECORDER","check");
+
+        //SERVER INIT
+        mServer=new Server(this);
+        mCurrentUser=-1;
+        mCurrentNdx=-1;
+        mCurrentParent=-1;
+
         //ASCII INIT
         mText=(TextView)findViewById(R.id.text_recorder);
         mAscii=new ASCIIscreen(this,mText);

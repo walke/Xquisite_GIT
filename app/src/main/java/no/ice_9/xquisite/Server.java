@@ -17,6 +17,7 @@ public class Server {
 
     static String CODE_CHECK_CONNECTION="23354700000";//check connection
     static String CODE_GET_LST_STRY_NDX="23354700003";//check connection
+    static String CODE_UPLOAD_STORY_PRT="23354700005";//check connection
 
     String adress;
     int serverResponseCode = 0;
@@ -30,9 +31,26 @@ public class Server {
         Log.d("SERVER", "got server address:" + adress);
     }
 
+    //'PING' TO SERVER
     public boolean checkConnection()
     {
         String response=postToServer(CODE_CHECK_CONNECTION, null);
+
+        boolean result=false;
+        Log.d("SERVER","response"+response+";");
+        if(response.matches("1"))
+        {
+            Log.d("SERVER","got connection");
+            result=true;
+        }
+
+        return result;
+    }
+
+    public boolean uploadPart(String fileUri,int storyPart, int ndx, int parent, int user)
+    {
+        //TODO:COMBINE ALL INPUTS and POST IT TO SERVER
+        String response=postToServer(CODE_UPLOAD_STORY_PRT, null);
 
         boolean result=false;
         Log.d("SERVER","response"+response+";");
