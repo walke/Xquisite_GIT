@@ -16,8 +16,9 @@ import java.net.URL;
 public class Server {
 
     static String CODE_CHECK_CONNECTION="23354700000";//check connection
-    static String CODE_GET_LST_STRY_NDX="23354700003";//check connection
-    static String CODE_UPLOAD_STORY_PRT="23354700005";//check connection
+    static String CODE_GET_LST_STRY_NDX="23354700003";//get last story ndx
+    static String CODE_UPLOAD_STORY_PRT="23354700005";//upload part of the story
+    static String CODE_RESRV_NDX_ON_SRV="23354700006";//reserve ndx for recording story
 
     String adress;
     int serverResponseCode = 0;
@@ -42,6 +43,23 @@ public class Server {
         {
             Log.d("SERVER","got connection");
             result=true;
+        }
+
+        return result;
+    }
+
+    //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
+    public int reserveNdx()
+    {
+        int result=-1;
+        String response=postToServer(CODE_CHECK_CONNECTION, null);
+
+
+        Log.d("SERVER","response"+response+";");
+        if(response.matches("1"))
+        {
+            Log.d("SERVER","got connection");
+
         }
 
         return result;

@@ -48,6 +48,7 @@ public class RecorderActivity extends Activity {
     int mCurrentPart;
 
     static String fileToUpload;
+    static String mFilePath;
 
     static String[] mQuestion;
     static int mQuestionTime;
@@ -240,31 +241,37 @@ public class RecorderActivity extends Activity {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if(tAct!=null)
-                {
+                if (tAct != null) {
                     //IF NOT RECORDING START RECORDING CURRENT PART
-                    if(!isRecording)
-                    {
-                        mCurrentPart++;
-                        if(initMediaRecorder())
-                        {
+                    if (!isRecording) {
+
+                        if (initMediaRecorder()) {
 
                             mRecorder.start();
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        if(mCurrentPart==0){mTimeLeft=180;}
-                        if(mCurrentPart>0){mTimeLeft=mQuestionTime;}
-                    }
-                    else
-                    {
+                        if (mCurrentPart == 0) {
+                            mTimeLeft = 180;
+                        }
+                        if (mCurrentPart > 0) {
+                            mTimeLeft = mQuestionTime;
+                        }
+                        if(mCurrentPart==mQuestion.length)
+                        {
+                            finishRecording();
+                            this.cancel();
+                        }
+                    } else {
                         tAct.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)),0,-1);
-                                mAscii.modLine("current part:"+mCurrentPart,1,-1);
-                                if(mCurrentPart>0){mAscii.modLine(""+mQuestion[mCurrentPart-1],3,-1);}
+                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 0, -1);
+                                mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                                if (mCurrentPart > 0) {
+                                    mAscii.modLine("" + mQuestion[mCurrentPart - 1], 3, -1);
+                                }
                                 if (mTimeLeft <= 0) {
 
                                     forceStopCapture();
@@ -273,21 +280,19 @@ public class RecorderActivity extends Activity {
                         });
                         mTimeLeft--;
                     }
-                }
-                else
-                {
+                } else {
                     this.cancel();//TODO: or make destroying sequence if user panics
                 }
 
 
-
             }
-        },0,1000);
+        }, 0, 1000);
     }
 
     //FORCE TO START CAPTURING
     public void forceStartCapture()
     {
+        mCurrentPart++;
         startRecordingSequence();
         /*if (!isRecording && tAct!=null)
         {
@@ -351,11 +356,18 @@ public class RecorderActivity extends Activity {
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
 
+            if(mCurrentPart==0)
+            {
+                mCurrentNdx=mServer.reserveNdx();
+            }
+
             if(mCurrentPart==mQuestion.length)
             {
                 releaseCamera();
                 releasePreview();
             }
+
+
 
             mServer.uploadPart(fileToUpload,mCurrentPart,mCurrentNdx,mCurrentParent,mCurrentUser);
 
@@ -369,12 +381,20 @@ public class RecorderActivity extends Activity {
         }
     }
 
+    private boolean finishRecording()
+    {
+        //TODO: do cleanup on device, print some messages to user.
+        return true;
+    }
+
     /*getOutputFile*/
     private static File getOutputMediaFile(int type){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
 
-        File mediaStorageDir = new File("/mnt/sdcard/", "tmp");
+
+        //File mediaStorageDir = new File("/mnt/sdcard/", "tmp");
+        File mediaStorageDir = new File(mFilePath, "tmp");
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
 
@@ -424,10 +444,16 @@ public class RecorderActivity extends Activity {
         mCurrentNdx=-1;
         mCurrentParent=-1;
 
+        initQuestions();
+
         //ASCII INIT
         mText=(TextView)findViewById(R.id.text_recorder);
         mAscii=new ASCIIscreen(this,mText);
         mAscii.mAsciiStartUpdater(100);
+
+        mFilePath = getDir("VID", 0).getPath();
+        //mFilePath=getApplicationInfo().dataDir;
+        Log.d("RECORDER","filePath:"+mFilePath);
 
         mCurrentPart=-1;
         //INIT CAMERA AND ALL IT DEPENDS ON
