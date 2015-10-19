@@ -52,15 +52,27 @@ public class RecorderActivity extends Activity {
 
     static String[] mQuestion;
     static int mQuestionTime;
+    boolean mUserReady;
 
     //VARS USED TO UPLOAD FILE TO SERVER
     int mCurrentNdx;
     int mCurrentParent;
     int mCurrentUser;
 
+    //ASCII ACTION
+    public void asciiAction(View view)
+    {
+        if(!isRecording)
+        {
+            mAscii.fillTrash();
+            mUserReady=true;
+        }
+
+    }
+
     private void initQuestions()
     {
-        mQuestionTime=20;
+        mQuestionTime=2;
         mQuestion=new String[]
                 {
                         "How old is X now?",
@@ -242,29 +254,35 @@ public class RecorderActivity extends Activity {
             @Override
             public void run() {
                 if (tAct != null) {
+                    Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
-                    if (!isRecording) {
-                        mCurrentPart++;
+                    if (!isRecording && mUserReady) {
+
+                        mAscii.clear();
+                        mUserReady = false;
                         if (initMediaRecorder()) {
 
                             mRecorder.start();
 
+
                             isRecording = true;//Probably can get that from mRecorder..
                         }
                         if (mCurrentPart == 0) {
-                            mTimeLeft = 180;
+                            mTimeLeft = 3;
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
                         }
-                        if (mCurrentPart == mQuestion.length) {
+                        if (mCurrentPart > mQuestion.length) {
                             finishRecording();
                             this.cancel();
+                            isRecording = false;
                         }
-                    } else {
+                    } else if (isRecording) {
                         tAct.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 0, -1);
                                 mAscii.modLine("current part:" + mCurrentPart, 1, -1);
@@ -272,8 +290,11 @@ public class RecorderActivity extends Activity {
                                     mAscii.modLine("" + mQuestion[mCurrentPart - 1], 3, -1);
                                 }
                                 if (mTimeLeft <= 0) {
+                                    mCurrentPart++;
+                                    mUserReady = false;
 
                                     forceStopCapture();
+
                                 }
                             }
                         });
@@ -291,8 +312,8 @@ public class RecorderActivity extends Activity {
     //FORCE TO START CAPTURING
     public void forceStartCapture()
     {
-
-
+        mUserReady=true;
+        mCurrentPart++;
         startRecordingSequence();
         /*if (!isRecording && tAct!=null)
         {
@@ -350,7 +371,7 @@ public class RecorderActivity extends Activity {
     //WHEN TIME IS OUT
     public void forceStopCapture()
     {
-        if (isRecording) {
+        if (isRecording) {//<-MAYBE UNNECCESARY TODO: check that
 
 
             // stop recording and release camera
@@ -363,10 +384,26 @@ public class RecorderActivity extends Activity {
                 mCurrentNdx=mServer.reserveNdx();
             }
 
-            if(mCurrentPart==mQuestion.length)
+
+            else
             {
-                releaseCamera();
-                releasePreview();
+                if(mCurrentPart<=mQuestion.length)
+                {
+                    mAscii.modLine("Question:" + mQuestion[mCurrentPart-1], 0, -1);
+                    mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+
+                    mAscii.modLine("***************", 2, -1);
+                    mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                }
+                else
+                {
+                    mAscii.modLine("DONE!", 0, -1);
+                }
+                mAscii.modLine("***************", 2, -1);
+                mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+
+
+                mPreview.setAlpha(0.0f);
             }
 
 
@@ -387,6 +424,13 @@ public class RecorderActivity extends Activity {
 
     private boolean finishRecording()
     {
+
+            releaseCamera();
+            releasePreview();
+
+        mAscii.modLine("DONE!", 0, -1);
+
+
         //TODO: do cleanup on device, print some messages to user.
         return true;
     }
@@ -454,6 +498,8 @@ public class RecorderActivity extends Activity {
         mText=(TextView)findViewById(R.id.text_recorder);
         mAscii=new ASCIIscreen(this,mText);
         mAscii.mAsciiStartUpdater(100);
+
+
 
         mFilePath = getDir("VID", 0).getPath();
         //mFilePath=getApplicationInfo().dataDir;
