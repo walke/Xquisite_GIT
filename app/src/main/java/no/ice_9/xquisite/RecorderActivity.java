@@ -244,7 +244,7 @@ public class RecorderActivity extends Activity {
                 if (tAct != null) {
                     //IF NOT RECORDING START RECORDING CURRENT PART
                     if (!isRecording) {
-
+                        mCurrentPart++;
                         if (initMediaRecorder()) {
 
                             mRecorder.start();
@@ -257,8 +257,7 @@ public class RecorderActivity extends Activity {
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
                         }
-                        if(mCurrentPart==mQuestion.length)
-                        {
+                        if (mCurrentPart == mQuestion.length) {
                             finishRecording();
                             this.cancel();
                         }
@@ -292,7 +291,8 @@ public class RecorderActivity extends Activity {
     //FORCE TO START CAPTURING
     public void forceStartCapture()
     {
-        mCurrentPart++;
+
+
         startRecordingSequence();
         /*if (!isRecording && tAct!=null)
         {
@@ -351,6 +351,8 @@ public class RecorderActivity extends Activity {
     public void forceStopCapture()
     {
         if (isRecording) {
+
+
             // stop recording and release camera
             mRecorder.stop();  // stop the recording
             releaseMediaRecorder(); // release the MediaRecorder object
@@ -376,6 +378,8 @@ public class RecorderActivity extends Activity {
             //mNextButton.setVisibility(View.VISIBLE);
 
             isRecording = false;
+
+
 
             //forceToSubmit();
         }
