@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.util.TypedValue;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -48,6 +49,7 @@ public class MainActivity extends Activity {
         mAscii=new ASCIIscreen(this,mText);
         mAscii.mAsciiStartUpdater(50);
         mInitDone=false;
+
 
 
 

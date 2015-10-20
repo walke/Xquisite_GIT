@@ -432,6 +432,8 @@ public class RecorderActivity extends Activity {
 
 
         //TODO: do cleanup on device, print some messages to user.
+        cleanUp();
+
         return true;
     }
 
@@ -500,8 +502,8 @@ public class RecorderActivity extends Activity {
         mAscii.mAsciiStartUpdater(100);
 
 
-
-        mFilePath = getDir("VID", 0).getPath();
+        mFilePath = getExternalFilesDir("VID").getPath();
+        //mFilePath = getDir("VID", 0).getPath();
         //mFilePath=getApplicationInfo().dataDir;
         Log.d("RECORDER","filePath:"+mFilePath);
 
@@ -519,17 +521,31 @@ public class RecorderActivity extends Activity {
         releaseMediaRecorder();
         releaseCamera();
         releasePreview();
+
+    }
+
+    private void cleanUp()
+    {
+        String deleteCmd = "rm -r " + getExternalFilesDir("VID/tmp").getPath();
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec(deleteCmd);
+        } catch (IOException e) { }
     }
 
     //MAKE SURE IT IS OFF
     @Override
     protected void onDestroy()
     {
+
         super.onDestroy();
+
         Log.d("VIDEO_LOG", "DESTROYING main ");
         releaseCamera();
         releasePreview();
         tAct=null;
+
+        cleanUp();
     }
 
     //TODO:SORT THIS OUT
