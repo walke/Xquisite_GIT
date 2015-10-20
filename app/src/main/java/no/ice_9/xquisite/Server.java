@@ -52,13 +52,13 @@ public class Server {
     public int reserveNdx()
     {
         int result=-1;
-        String response=postToServer(CODE_CHECK_CONNECTION, null);
+        String response=postToServer(CODE_RESRV_NDX_ON_SRV, null);
 
 
         Log.d("SERVER","response"+response+";");
-        if(response.matches("1"))
+        if(!response.matches(""))
         {
-            Log.d("SERVER","got connection");
+            Integer.parseInt(response);
 
         }
 

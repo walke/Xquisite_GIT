@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.util.TypedValue;
@@ -37,6 +38,13 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(this, PlayerActivity.class);
             startActivity(intent);
         }
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mAscii.modLine("scienceFuture xquisite",0,-1);
+        return super.onTouchEvent(event);
 
     }
 
@@ -86,15 +94,15 @@ public class MainActivity extends Activity {
                     if(mTime==75){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_14)).getBitmap());}
                     if(mTime==80){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_15)).getBitmap());}
                     if(mTime==85){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_16)).getBitmap());}*/
-                    if(mTime>20){mAscii.setRage(false);mAscii.clear();}
-                    if(mTime>21 && !mAscii.isRage())
+                    if(mTime>200){mAscii.setRage(false);mAscii.clear();}
+                    if(mTime>210 && !mAscii.isRage())
                     {
                         mAscii.pushLine("########################");
                         mAscii.pushLine("#scienceFuture xquisite#");
                         mAscii.pushLine("########################");
                         mAscii.pushLine("Initializing sequence...");
                     }
-                    if(mTime>26 && !mAscii.isRage())
+                    if(mTime>260 && !mAscii.isRage())
                     {
                         mAscii.pushLine("Testing connection to the server...");
                         if(mServer.checkConnection())

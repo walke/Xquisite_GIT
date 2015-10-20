@@ -46,6 +46,7 @@ public class ASCIIscreen {
 
     TextView mText;
 
+
     static private int lineCount=50;
     private float lineHeight;
 
@@ -195,6 +196,8 @@ public class ASCIIscreen {
 
         //mAsciiStartUpdater(50);
     }
+
+
 
     public void mAsciiStartUpdater(int rate)
     {
