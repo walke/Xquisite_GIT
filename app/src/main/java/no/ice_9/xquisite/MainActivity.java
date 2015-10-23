@@ -94,15 +94,15 @@ public class MainActivity extends Activity {
                     if(mTime==75){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_14)).getBitmap());}
                     if(mTime==80){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_15)).getBitmap());}
                     if(mTime==85){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_16)).getBitmap());}*/
-                    if(mTime>200){mAscii.setRage(false);mAscii.clear();}
-                    if(mTime>210 && !mAscii.isRage())
+                    if(mTime>20){mAscii.setRage(false);mAscii.clear();}
+                    if(mTime>21 && !mAscii.isRage())
                     {
                         mAscii.pushLine("########################");
                         mAscii.pushLine("#scienceFuture xquisite#");
                         mAscii.pushLine("########################");
                         mAscii.pushLine("Initializing sequence...");
                     }
-                    if(mTime>260 && !mAscii.isRage())
+                    if(mTime>26 && !mAscii.isRage())
                     {
                         mAscii.pushLine("Testing connection to the server...");
                         if(mServer.checkConnection())

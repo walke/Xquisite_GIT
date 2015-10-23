@@ -50,6 +50,8 @@ public class RecorderActivity extends Activity {
     static String fileToUpload;
     static String mFilePath;
 
+    private boolean[] mPartDone;
+
     static String[] mQuestion;
     static int mQuestionTime;
     boolean mUserReady;
@@ -82,6 +84,12 @@ public class RecorderActivity extends Activity {
                         "What is she thinking?",
                         "What is her biggest challenge?"
                 };
+
+
+        //there are as many parts as questions +1 free part;
+        //initially they are not done
+        mPartDone=new boolean[mQuestion.length+1];
+        for(int i=0;i<mPartDone.length;i++){mPartDone[i]=false;}
     }
 
     //INIT CAMERA
@@ -315,55 +323,11 @@ public class RecorderActivity extends Activity {
         mUserReady=true;
         mCurrentPart++;
         startRecordingSequence();
-        /*if (!isRecording && tAct!=null)
-        {
-            if(initMediaRecorder())
-            {
-                mRecorder.start();
-
-                isRecording = true;//Probably can get that from mRecorder..
-            }
-            mTimeLeft=120;
-            //mRecorderMessageText.setText("REC");
-            //mRecorderMessageText.setTextColor(Color.RED);
-
-
-            new Timer().scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    if (mTimeLeft <= 0) {
-                        this.cancel();
-
-                    }
-                    tAct.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                           // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                            mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)),0,-1);
-                            if (mTimeLeft <= 0) {
-
-                                forceStopCapture();
-                            }
-                        }
-                    });
-
-
-                    mTimeLeft--;
-
-                }
-            }, 0, 1000);
-
-            // initialize video camera
-            //if (prepareVideoRecorder()) {
-            // Camera is available and unlocked, MediaRecorder is prepared,
-            // now you can start recording
-
-
-            // inform the user that recording has started
 
 
 
-        }*/
+
+
 
 
     }
