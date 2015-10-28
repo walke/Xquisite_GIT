@@ -26,11 +26,11 @@ import java.net.UnknownHostException;
  */
 public class Server {
 
-    static String CODE_CHECK_CONNECTION="23354700000";//check connection
-    static String CODE_GET_LST_STRY_NDX="23354700003";//get last story ndx
-    static String CODE_UPLOAD_STORY_PRT="23354700005";//upload part of the story
-    static String CODE_RESRV_NDX_ON_SRV="23354700006";//reserve ndx for recording story
-    static String CODE_COMPL_NDX_ON_SRV="23354700007";//reserve ndx for recording story
+    static String CODE_CHECK_CONNECTION="23160000";//check connection
+    static String CODE_GET_LST_STRY_NDX="23160003";//get last story ndx
+    static String CODE_UPLOAD_STORY_PRT="23160005";//upload part of the story
+    static String CODE_RESRV_NDX_ON_SRV="23160006";//reserve ndx for recording story
+    static String CODE_COMPL_NDX_ON_SRV="23160007";//complete reserved ndx
 
     String adress;
     int serverResponseCode = 0;
@@ -127,7 +127,7 @@ public class Server {
 
         try
         {
-            InetAddress serverAdrr = InetAddress.getByName("81.191.243.140");
+            InetAddress serverAdrr = InetAddress.getByName(adress);
 
             sck = new Socket(serverAdrr,237);
 
@@ -135,7 +135,13 @@ public class Server {
             DataOutputStream out = new DataOutputStream(sck.getOutputStream());
             InputStream input =  new BufferedInputStream(sck.getInputStream());
 
-            out.writeBytes("GET");
+            out.writeBytes("3547");
+            out.writeBytes(code);
+            if(data!=null)
+            {
+                out.writeBytes(data);
+            }
+
             int a;
             boolean done=false;
             String buf="";

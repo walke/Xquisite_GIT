@@ -41,6 +41,7 @@ public class MainActivity extends Activity {
 
     }
 
+    //TODO: fix on touch event
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mAscii.modLine("scienceFuture xquisite",0,-1);
