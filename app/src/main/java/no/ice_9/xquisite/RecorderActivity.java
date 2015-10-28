@@ -74,7 +74,7 @@ public class RecorderActivity extends Activity {
 
     private void initQuestions()
     {
-        mQuestionTime=2;
+        mQuestionTime=5;
         mQuestion=new String[]
                 {
                         "How old is X now?",
@@ -128,6 +128,7 @@ public class RecorderActivity extends Activity {
                     tAct.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+
                             //mRecorderTimeText.setText(""+mTimeLeft);
                             mAscii.modLine("recording will start in "+mTimeLeft+"seconds",0,-1);
                             if(mTimeLeft<=0){forceStartCapture();}//TODO: yes that is target entry point of the crash
@@ -276,7 +277,7 @@ public class RecorderActivity extends Activity {
                             isRecording = true;//Probably can get that from mRecorder..
                         }
                         if (mCurrentPart == 0) {
-                            mTimeLeft = 3;
+                            mTimeLeft = 30;//FREE TIME
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
@@ -342,10 +343,10 @@ public class RecorderActivity extends Activity {
             mRecorder.stop();  // stop the recording
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
-
+            Log.d("RECORDER","part:"+mCurrentPart);
             if(mCurrentPart==0)
             {
-                mCurrentNdx=mServer.reserveNdx();
+                mCurrentNdx=mServer.reserveNdx();//DELETE OR MODIFY
             }
 
 
@@ -457,6 +458,17 @@ public class RecorderActivity extends Activity {
         mCurrentUser=-1;
         mCurrentNdx=-1;
         mCurrentParent=-1;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mCurrentNdx=mServer.reserveNdx();
+
+            }
+        }).start();
+
+
+
 
         initQuestions();
 

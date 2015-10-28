@@ -147,19 +147,32 @@ public class Server {
             String buf="";
             while(!done)
             {
+                Log.d("SERVER","geting buffer");
                 a=input.read();
                 if(a==-1 || a==36){done=true;}
                 else{buf+=(char)a;}
 
             }
             if(buf!=""){result=buf;}
-            Log.d("SERVER","!!!"+result);
+            Log.d("SERVER", "!!!" + result);
             sck.close();
+            Log.d("SERVER","closed socket");
+
 
 
         } catch(IOException ex)
         {
             ex.printStackTrace();
+        }
+        finally {
+            if(sck!=null)
+            {
+                try {
+                    sck.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
 
