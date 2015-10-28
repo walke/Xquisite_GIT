@@ -97,11 +97,11 @@ public class Server {
     public boolean uploadPart(String fileUri,int storyPart, int ndx, int parent, int user)
     {
         //TODO:COMBINE ALL INPUTS and POST IT TO SERVER
-        int response=uploadToServer(CODE_UPLOAD_STORY_PRT, String.valueOf(storyPart),String.valueOf(ndx),String.valueOf(parent),String.valueOf(user));
+        String response=uploadToServer(fileUri, String.valueOf(storyPart),String.valueOf(ndx),String.valueOf(parent),String.valueOf(user));
 
         boolean result=false;
         Log.d("SERVER","response"+response+";");
-        if(response==0){result=false;}
+        if(response.matches("-1")){result=false;}
         else{result=true;}
 
         return result;
@@ -264,9 +264,93 @@ public class Server {
     }
 
 
-    private int uploadToServer(String sourceFileUri,String part,String ndx, String parent,String user)
+    private String uploadToServer(String sourceFileUri,String part,String ndx, String parent,String user)
     {
-        String fileName = sourceFileUri;
+
+        String result="-1";
+        Socket sck=null;
+        int bytesRead, bytesAvailable, bufferSize;
+        File sourceFile = new File(sourceFileUri);
+        int maxBufferSize = 1* 1024 * 1024;
+        byte[] buffer;
+
+        if(!sourceFile.isFile())
+        {
+            Log.e("uploadFile", "Source File not exist :"
+                    + sourceFileUri);
+
+
+
+            return "-1";
+        }
+
+        try
+        {
+            FileInputStream fileInputStream = new FileInputStream(sourceFile);
+            InetAddress serverAdrr = InetAddress.getByName(adress);
+
+            sck = new Socket(serverAdrr,237);
+
+
+            DataOutputStream out = new DataOutputStream(sck.getOutputStream());
+            InputStream input =  new BufferedInputStream(sck.getInputStream());
+
+            out.writeBytes("3547");
+            out.writeBytes(CODE_UPLOAD_STORY_PRT);
+
+            bytesAvailable = fileInputStream.available();
+
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+            while (bytesRead > 0) {
+
+                out.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+            }
+
+
+
+            int a;
+            boolean done=false;
+            String buf="";
+            while(!done)
+            {
+                Log.d("SERVER","geting buffer");
+                a=input.read();
+                if(a==-1 || a==36){done=true;}
+                else{buf+=(char)a;}
+
+            }
+            if(buf!=""){result=buf;}
+            Log.d("SERVER", "!!!" + result);
+            sck.close();
+            Log.d("SERVER","closed socket");
+
+
+
+        } catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        finally {
+            if(sck!=null)
+            {
+                try {
+                    sck.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return result;
+        /*String fileName = sourceFileUri;
         HttpURLConnection conn = null;
         String result="-1";
         DataOutputStream outSt;
@@ -404,7 +488,7 @@ public class Server {
         }
 
 
-        return serverResponseCode;
+        return serverResponseCode;*/
     }
 
 

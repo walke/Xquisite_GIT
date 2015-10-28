@@ -343,7 +343,7 @@ public class RecorderActivity extends Activity {
             mRecorder.stop();  // stop the recording
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
-            Log.d("RECORDER","part:"+mCurrentPart);
+            Log.d("RECORDER", "part:" + mCurrentPart);
             if(mCurrentPart==0)
             {
                 mCurrentNdx=mServer.reserveNdx();//DELETE OR MODIFY
@@ -372,8 +372,13 @@ public class RecorderActivity extends Activity {
             }
 
 
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    mServer.uploadPart(fileToUpload,mCurrentPart,mCurrentNdx,mCurrentParent,mCurrentUser);
+                }
+            }).start();
 
-            mServer.uploadPart(fileToUpload,mCurrentPart,mCurrentNdx,mCurrentParent,mCurrentUser);
 
 
             //mNextButton.setAlpha(1.0f);
