@@ -298,15 +298,17 @@ public class Server {
             out.writeBytes("3547");
             out.writeBytes(CODE_UPLOAD_STORY_PRT);
 
+            out.writeBytes("0001");
+
             bytesAvailable = fileInputStream.available();
 
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
             buffer = new byte[bufferSize];
 
             bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
+            int tot=0;
             while (bytesRead > 0) {
-
+                tot+=bufferSize;
                 out.write(buffer, 0, bufferSize);
                 bytesAvailable = fileInputStream.available();
                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
@@ -314,7 +316,7 @@ public class Server {
 
             }
 
-
+            Log.d("SERVER","SENT "+tot+" bytes");
 
             int a;
             boolean done=false;
