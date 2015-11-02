@@ -26,11 +26,16 @@ import java.net.UnknownHostException;
  */
 public class Server {
 
-    static String CODE_CHECK_CONNECTION="23160000";//check connection
-    static String CODE_GET_LST_STRY_NDX="23160003";//get last story ndx
-    static String CODE_UPLOAD_STORY_PRT="23160005";//upload part of the story
-    static String CODE_RESRV_NDX_ON_SRV="23160006";//reserve ndx for recording story
-    static String CODE_COMPL_NDX_ON_SRV="23160007";//complete reserved ndx
+    static String CODE_SERVER_PIN="3547";//SERVER PIN
+    static String CODE_PACK_ID_PINC="23";//PACKET ID PIN
+    static String CODE_PACK_ID_TASK="95";//PACKET ID TASK
+    static String CODE_PACK_ID_DONE="124";//PACKET ID DONE
+
+    static String CODE_CHECK_CONNECTION="0000";//check connection
+    static String CODE_GET_LST_STRY_NDX="0003";//get last story ndx
+    static String CODE_UPLOAD_STORY_PRT="0005";//upload part of the story
+    static String CODE_RESRV_NDX_ON_SRV="0006";//reserve ndx for recording story
+    static String CODE_COMPL_NDX_ON_SRV="0007";//complete reserved ndx
 
     String adress;
     int serverResponseCode = 0;
@@ -51,7 +56,7 @@ public class Server {
 
         boolean result=false;
         Log.d("SERVER","response"+response+";");
-        if(response.matches("1"))
+        if(response.matches("succ"))
         {
             Log.d("SERVER","got connection");
             result=true;
@@ -135,26 +140,26 @@ public class Server {
             DataOutputStream out = new DataOutputStream(sck.getOutputStream());
             InputStream input =  new BufferedInputStream(sck.getInputStream());
 
-            out.writeBytes("3547");
-            out.writeBytes(code);
-            if(data!=null)
-            {
-                out.writeBytes(data);
-            }
 
-            int a;
-            boolean done=false;
-            String buf="";
-            while(!done)
-            {
-                Log.d("SERVER","geting buffer");
-                a=input.read();
-                if(a==-1 || a==36){done=true;}
-                else{buf+=(char)a;}
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_PINC), 4, CODE_SERVER_PIN));
 
-            }
-            if(buf!=""){result=buf;}
-            Log.d("SERVER", "!!!" + result);
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_TASK), 4, code));
+
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
+
+
+            byte[] bbuf=new byte[4];
+            input.read(bbuf, 0, 4);
+
+            int size=bbuf[0]*16777216+bbuf[1]*65536+bbuf[2]*256+bbuf[3];
+
+            bbuf=new byte[size];
+
+            input.read(bbuf,0,size);
+            Log.d("SERVER", "resp:" +new String(bbuf,"ASCII"));
+
+            result=new String(bbuf,"ASCII");
+
             sck.close();
             Log.d("SERVER","closed socket");
 
@@ -491,6 +496,29 @@ public class Server {
 
 
         return serverResponseCode;*/
+    }
+
+    private byte[] createPacket(int id,int size, String cont)
+    {
+        Log.d("SERVER", "CHAECK2");
+        int totsize=5+size;
+        byte[] result=new byte[totsize];
+
+        String packet=""+
+                (char)id+
+                (char)((((size/256)/256)/256)%256)+
+                (char)(((size/256)/256)%256)+
+                (char)((size/256)%256)+
+                (char)(size%256);
+
+        packet+=cont;
+
+
+        result=packet.getBytes();
+
+
+
+        return result;
     }
 
 
