@@ -29,6 +29,7 @@ public class Server {
     static String CODE_SERVER_PIN="3547";//SERVER PIN
     static String CODE_PACK_ID_PINC="23";//PACKET ID PIN
     static String CODE_PACK_ID_TASK="95";//PACKET ID TASK
+    static String CODE_PACK_ID_FILE="108";//PACKET ID FILE
     static String CODE_PACK_ID_DONE="124";//PACKET ID DONE
 
     static String CODE_CHECK_CONNECTION="0000";//check connection
@@ -68,16 +69,17 @@ public class Server {
     //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
     public int reserveNdx()
     {
-        int result=-1;
+
         String response=postToServer(CODE_RESRV_NDX_ON_SRV, null);
 
 
-        Log.d("SERVER","response"+response+";");
-        if(!response.matches(""))
-        {
-            result=Integer.parseInt(response);
+        int result;
+        result=response.getBytes()[3];
+        result+=response.getBytes()[2]*256;
+        result+=response.getBytes()[1]*256*256;
+        result+=response.getBytes()[0]*256*256*256;
+        Log.d("SERVER","responseLI"+result+";");
 
-        }
 
         return result;
     }
@@ -112,16 +114,17 @@ public class Server {
         return result;
     }
 
-    public String getLastStoryNdx()
+    public int getLastStoryNdx()
     {
         String response=postToServer(CODE_GET_LST_STRY_NDX, null);
 
-        String result="-1";
-        Log.d("SERVER","response"+response+";");
-        if(!response.matches("-1"))
-        {
-            result=response;
-        }
+        int result;
+        result=response.getBytes()[3];
+        result+=response.getBytes()[2]*256;
+        result+=response.getBytes()[1]*256*256;
+        result+=response.getBytes()[0]*256*256*256;
+        Log.d("SERVER","responseLI"+result+";");
+
 
         return result;
     }
@@ -300,26 +303,33 @@ public class Server {
             DataOutputStream out = new DataOutputStream(sck.getOutputStream());
             InputStream input =  new BufferedInputStream(sck.getInputStream());
 
-            out.writeBytes("3547");
-            out.writeBytes(CODE_UPLOAD_STORY_PRT);
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_PINC), 4, CODE_SERVER_PIN));
 
-            out.writeBytes("0001");
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_TASK), 4, CODE_UPLOAD_STORY_PRT));
+
+
 
             bytesAvailable = fileInputStream.available();
+            Log.d("SERVER","AVAILABLE "+bytesAvailable+" bytes");
+
+            out.write(createFileStartPacket(Integer.parseInt(CODE_PACK_ID_FILE), bytesAvailable));
 
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
             buffer = new byte[bufferSize];
 
             bytesRead = fileInputStream.read(buffer, 0, bufferSize);
             int tot=0;
+            tot+=bytesRead;
             while (bytesRead > 0) {
-                tot+=bufferSize;
+
                 out.write(buffer, 0, bufferSize);
                 bytesAvailable = fileInputStream.available();
                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
                 bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-
+                tot+=bytesRead;
             }
+
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
 
             Log.d("SERVER","SENT "+tot+" bytes");
 
@@ -515,6 +525,33 @@ public class Server {
 
 
         result=packet.getBytes();
+
+
+
+        return result;
+    }
+
+    private byte[] createFileStartPacket(int id,int size)
+    {
+        Log.d("SERVER", "CHAECK8");
+        int totsize=5;
+        byte[] result=new byte[totsize];
+
+        /*String packet=""+
+                (char)id+
+                (char)((((size/256)/256)/256)%256)+
+                (char)(((size/256)/256)%256)+
+                (char)((size/256)%256)+
+                (char)(size%256);*/
+
+        result[0]=(byte)id;
+        result[1]=(byte)((((size/256)/256)/256)%256);
+        result[2]=(byte)(((size/256)/256)%256);
+        result[3]=(byte)((size/256)%256);
+        result[4]=(byte)(size%256);
+
+
+        //result=packet.getBytes();
 
 
 

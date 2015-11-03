@@ -38,11 +38,11 @@ public class PlayerActivity extends Activity {
     //LOAD VIDEO
     public boolean loadVideo()
     {
-        int storyindx = Integer.parseInt(mServer.getLastStoryNdx());
+        int storyindx = mServer.getLastStoryNdx();
         //int storyindx=0;
-
+        //storyindx=-1;
         //ParentNdx=storyindx;
-        if(storyindx==-1)
+        if(storyindx==0)
         {
             Log.d("PLAYER", "no video ");
             mAscii.pushLine("no video found");
