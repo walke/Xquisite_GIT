@@ -346,7 +346,7 @@ public class RecorderActivity extends Activity {
             Log.d("RECORDER", "part:" + mCurrentPart);
             if(mCurrentPart==0)
             {
-                mCurrentNdx=mServer.reserveNdx();//DELETE OR MODIFY
+                //mCurrentNdx=mServer.reserveNdx(String.valueOf(mCurrentParent));//DELETE OR MODIFY
             }
 
 
@@ -462,12 +462,12 @@ public class RecorderActivity extends Activity {
         mServer=new Server(this);
         mCurrentUser=-1;
         mCurrentNdx=-1;
-        mCurrentParent=-1;
+        mCurrentParent=0;
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mCurrentNdx=mServer.reserveNdx();
+                mCurrentNdx=mServer.reserveNdx(String.valueOf(mCurrentParent));
 
             }
         }).start();

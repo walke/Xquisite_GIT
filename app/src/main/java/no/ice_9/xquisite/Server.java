@@ -29,6 +29,7 @@ public class Server {
     static String CODE_SERVER_PIN="3547";//SERVER PIN
     static String CODE_PACK_ID_PINC="23";//PACKET ID PIN
     static String CODE_PACK_ID_TASK="95";//PACKET ID TASK
+    static String CODE_PACK_ID_TSKD="100";//PACKET ID TASK DATA
     static String CODE_PACK_ID_FILE="108";//PACKET ID FILE
     static String CODE_PACK_ID_DONE="124";//PACKET ID DONE
 
@@ -67,10 +68,17 @@ public class Server {
     }
 
     //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
-    public int reserveNdx()
+    public int reserveNdx(int parent)
     {
+        byte[] parentStr = new byte[4];
+        parentStr[0]=(byte)((((parent/256)/256)/256)%256);
+        parentStr[1]=(byte)(((parent/256)/256)%256);
+        parentStr[2]=(byte)((parent/256)%256);
+        parentStr[3]=(byte)(parent%256);
 
-        String response=postToServer(CODE_RESRV_NDX_ON_SRV, null);
+
+
+        String response=postToServer(CODE_RESRV_NDX_ON_SRV, parentStr.toString());
 
 
         int result;
@@ -147,6 +155,8 @@ public class Server {
             out.write(createPacket(Integer.parseInt(CODE_PACK_ID_PINC), 4, CODE_SERVER_PIN));
 
             out.write(createPacket(Integer.parseInt(CODE_PACK_ID_TASK), 4, code));
+
+            out.write(createPacket(Integer.parseInt(CODE_PACK_ID_TSKD), 4, data));
 
             out.write(createPacket(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
 
