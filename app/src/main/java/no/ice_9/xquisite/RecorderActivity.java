@@ -55,11 +55,14 @@ public class RecorderActivity extends Activity {
     static String[] mQuestion;
     static int mQuestionTime;
     boolean mUserReady;
+    boolean mMainDone;
 
     //VARS USED TO UPLOAD FILE TO SERVER
     int mCurrentNdx;
     int mCurrentParent;
     int mCurrentUser;
+
+    int mServerReserved;
 
     //ASCII ACTION
     public void asciiAction(View view)
@@ -262,10 +265,11 @@ public class RecorderActivity extends Activity {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                if(mMainDone){this.cancel();}
                 if (tAct != null) {
                     Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
-                    if (!isRecording && mUserReady) {
+                    if (!isRecording && mUserReady && !mMainDone) {
 
                         mAscii.clear();
                         mUserReady = false;
@@ -277,7 +281,7 @@ public class RecorderActivity extends Activity {
                             isRecording = true;//Probably can get that from mRecorder..
                         }
                         if (mCurrentPart == 0) {
-                            mTimeLeft = 30;//FREE TIME
+                            mTimeLeft = 10;//FREE TIME
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
@@ -359,10 +363,27 @@ public class RecorderActivity extends Activity {
 
                     mAscii.modLine("***************", 2, -1);
                     mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mServer.uploadPart(fileToUpload,mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
+                        }
+                    }).start();
                 }
                 else
                 {
+                    mMainDone=true;
                     mAscii.modLine("DONE!", 0, -1);
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mServer.uploadPart(fileToUpload,mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
+                            mServer.completeNdx(mServerReserved);
+
+                        }
+                    }).start();
                 }
                 mAscii.modLine("***************", 2, -1);
                 mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
@@ -372,12 +393,7 @@ public class RecorderActivity extends Activity {
             }
 
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mServer.uploadPart(fileToUpload,mCurrentPart,mCurrentNdx,mCurrentParent,mCurrentUser);
-                }
-            }).start();
+
 
 
 
@@ -462,12 +478,13 @@ public class RecorderActivity extends Activity {
         mServer=new Server(this);
         mCurrentUser=-1;
         mCurrentNdx=-1;
-        mCurrentParent=0;
+        mCurrentParent=0;//TODO:GET FROM PREVIOUS ACTIVITY
+        mMainDone=false;
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mCurrentNdx=mServer.reserveNdx(String.valueOf(mCurrentParent));
+                mServerReserved=mServer.reserveNdx(mCurrentParent);
 
             }
         }).start();

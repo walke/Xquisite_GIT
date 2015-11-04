@@ -53,6 +53,7 @@ public class PlayerActivity extends Activity {
         }
         else
         {
+            mServer.loadPart();
             /*String storyaddr = mServer.getVideoFile(storyindx);
             Log.d("PLAYER","ndx; "+ParentNdx);
 
