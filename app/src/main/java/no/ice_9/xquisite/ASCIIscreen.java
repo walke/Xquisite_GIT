@@ -47,7 +47,7 @@ public class ASCIIscreen {
     TextView mText;
 
 
-    static private int lineCount=50;
+    static private int lineCount=30;
     private float lineHeight;
 
 

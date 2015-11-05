@@ -130,8 +130,9 @@ public class MainActivity extends Activity {
                         mAscii.pushLine("THERE WAS A PROBLEM WITH A CONNECTION TO SERVER");
                         mAscii.pushLine("try to check your internet connection");
                         mAscii.pushLine("if your internet works fine, the problem is on server side");
-                        this.cancel();
                         mAscii.mAsciiStopUpdater();
+                        this.cancel();
+
                     }
                     mTime++;
                 }

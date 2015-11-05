@@ -38,11 +38,13 @@
         <activity
             android:name=".PlayerActivity"
             android:label="@string/title_activity_player"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name=".RecorderActivity"
             android:label="@string/title_activity_recorder"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
     </application>
