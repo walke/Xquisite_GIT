@@ -1,6 +1,7 @@
 package no.ice_9.xquisite;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -77,7 +78,7 @@ public class RecorderActivity extends Activity {
 
     private void initQuestions()
     {
-        mQuestionTime=5;
+        mQuestionTime=20;
         mQuestion=new String[]
                 {
                         "How old is X now?",
@@ -281,7 +282,7 @@ public class RecorderActivity extends Activity {
                             isRecording = true;//Probably can get that from mRecorder..
                         }
                         if (mCurrentPart == 0) {
-                            mTimeLeft = 10;//FREE TIME
+                            mTimeLeft = 180;//FREE TIME
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
@@ -478,7 +479,9 @@ public class RecorderActivity extends Activity {
         mServer=new Server(this);
         mCurrentUser=-1;
         mCurrentNdx=-1;
-        mCurrentParent=0;//TODO:GET FROM PREVIOUS ACTIVITY
+
+        Intent intent = getIntent();
+        mCurrentParent = Integer.parseInt(intent.getStringExtra(PlayerActivity.EXTRA_MESSAGE2));
         mMainDone=false;
 
         new Thread(new Runnable() {

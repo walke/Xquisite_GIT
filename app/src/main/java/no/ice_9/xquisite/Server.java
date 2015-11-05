@@ -141,6 +141,7 @@ public class Server {
 
     public String loadPart(int ndx, int storyPart)
     {
+        Log.d("SERVER","loading part:"+storyPart);
         String fpath=mContext.getExternalFilesDir("VID").toString()+"/part"+storyPart+".mp4";
         String result;
         Log.d("SERVER","fpath:"+fpath);
@@ -159,7 +160,7 @@ public class Server {
     {
         String response=postToServer(CODE_GET_LST_STRY_NDX, "0000".getBytes());
 
-
+        //TODO: get correct unsigned!!
         int result;
         result=response.getBytes()[3];
         result+=response.getBytes()[2]*256;
@@ -198,7 +199,11 @@ public class Server {
             byte[] bbuf=new byte[4];
             int a=input.read(bbuf, 0, 4);
 
-            int size=bbuf[0]*16777216+bbuf[1]*65536+bbuf[2]*256+bbuf[3];
+            int size =
+                    (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
+                            ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
+                            ((0x00 << 24 | bbuf[2] & 0xff) * 256)+
+                            (0x00 << 24 | bbuf[3] & 0xff));
 
             bbuf=new byte[size];
 
@@ -383,7 +388,11 @@ public class Server {
             byte[] bbuf=new byte[4];
             input.read(bbuf, 0, 4);
 
-            int size=bbuf[0]*16777216+bbuf[1]*65536+bbuf[2]*256+bbuf[3];
+            int size =
+                    (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
+                            ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
+                            ((0x00 << 24 | bbuf[2] & 0xff) * 256)+
+                            (0x00 << 24 | bbuf[3] & 0xff));
 
             bbuf=new byte[size];
 
@@ -605,7 +614,11 @@ public class Server {
             byte[] bbuf = new byte[4];
             input.read(bbuf, 0, 4);
 
-            int size = bbuf[0] * 16777216 + bbuf[1] * 65536 + bbuf[2] * 256 + bbuf[3];
+            int size =
+                    (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
+                            ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
+                            ((0x00 << 24 | bbuf[2] & 0xff) * 256)+
+                            (0x00 << 24 | bbuf[3] & 0xff));
 
 
 

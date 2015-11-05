@@ -18,6 +18,8 @@ import java.io.File;
 
 public class PlayerActivity extends Activity {
 
+    public final static String EXTRA_MESSAGE2 = "no.ice_9.xquisite.MESSAGE2";
+
     private ASCIIscreen mAscii;
     TextView mText;
 
@@ -27,6 +29,9 @@ public class PlayerActivity extends Activity {
     private Uri mVideoUri;
     private VideoView mVideoView;
     private boolean mVideoReady;
+    private boolean mError;
+
+    private int mParent;
     private int mCurrentPart;
 
     private String[] mVideoPart;
@@ -34,9 +39,11 @@ public class PlayerActivity extends Activity {
     //ASCII ACTION
     public void asciiAction(View view)
     {
-
-        //finishVideo();
-        if(mVideoReady)
+        if(mError)
+        {
+            finishVideo();
+        }
+        else if(mVideoReady)
         {
             mAscii.clear();
             startVideo(view);
@@ -57,6 +64,7 @@ public class PlayerActivity extends Activity {
         //int storyindx=0;
         //storyindx=-1;
         //ParentNdx=storyindx;
+        mParent=storyindx;
         String filePath;
         if(storyindx==0)
         {
@@ -65,13 +73,14 @@ public class PlayerActivity extends Activity {
             mAscii.pushLine("****************************************");
             mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
             mAscii.mAsciiStopUpdater();
+            mError=true;
             return false;
         }
         else
         {
             mAscii.pushLine("we found some cluster of a story for you");
             mAscii.pushLine("we will now try to get it ready for you");
-            mVideoPart[0]=mServer.loadPart(0,1);
+            mVideoPart[0]=mServer.loadPart(storyindx,1);
             if(mVideoPart[0]=="-1")
             {
                 mAscii.pushLine("no sorry there was no cluster");
@@ -83,13 +92,13 @@ public class PlayerActivity extends Activity {
             }
 
             mAscii.pushLine("seems like it is ready");
-            Log.d("PLAYER","file path:"+mVideoPart[0]);
+            Log.d("PLAYER", "file path:" + mVideoPart[0]);
 
             /*String storyaddr = mServer.getVideoFile(storyindx);
             Log.d("PLAYER","ndx; "+ParentNdx);
 
             StoryParent=storyaddr;*/
-            loadRest();
+
         }
 
 
@@ -104,11 +113,11 @@ public class PlayerActivity extends Activity {
         //mVideoUri=Uri.parse(adr+"stories/"+StoryParent);
         //Log.d("VIDEO_LOG", "URI "+mVideoUri);
         //mVideoUri=Uri.("http://81.191.243.140/uploads/tmp.mp4");
-        Log.d("PLAYER","getting file");
+        Log.d("PLAYER", "getting file");
         mAscii.pushLine("one more second..");
         mVideoUri=Uri.fromFile(new File(mVideoPart[0]));
         Log.d("PLAYER","got file");
-        Log.d("PLAYER","URI"+mVideoUri);
+        Log.d("PLAYER", "URI" + mVideoUri);
 
 
 
@@ -128,7 +137,7 @@ public class PlayerActivity extends Activity {
 
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer player) {
-                if (mCurrentPart < 6) {
+                if (mCurrentPart < 5) {
                     mVideoReady = false;
                     mCurrentPart++;
                     playNext();
@@ -206,19 +215,21 @@ public class PlayerActivity extends Activity {
 
     }
 
-    private void loadRest()
+    public void loadRest()
     {
-        for(int i=0;i>5;i++)
+        Log.d("PLAYER","LOADING REST");
+        for(int i=0;i<5;i++)
         {
-            mVideoPart[i+1]=mServer.loadPart(0,i+2);
-            Log.d("PLAYER","part:"+i+1+"->"+mVideoPart[i+1]);
+            Log.d("PLAYER","part:"+(i+1));
+            mVideoPart[(i+1)]=mServer.loadPart(mParent,(i+2));
+            Log.d("PLAYER","part:"+(i+1)+"->"+mVideoPart[(i+1)]);
         }
     }
 
     public void finishVideo()
     {
         Intent intent = new Intent(this, RecorderActivity.class);
-        //intent.putExtra(EXTRA_MESSAGE2, String.valueOf(ParentNdx));
+        intent.putExtra(EXTRA_MESSAGE2, String.valueOf(mParent));
         startActivity(intent);
 
         //GO DIRECTLY TO RECORDING
@@ -232,7 +243,7 @@ public class PlayerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-
+        mError=false;
         mCurrentPart=0;
         mVideoPart=new String[6];
         for(int i=0;i<6;i++){mVideoPart[i]="-1";}
@@ -262,7 +273,7 @@ public class PlayerActivity extends Activity {
                             //playVideo();
 
                         }
-                    });
+                    });loadRest();
                 }
 
 
