@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
                         mAscii.pushLine("########################");
                         mAscii.pushLine("Initializing sequence...");
                     }
-                    if(mTime>26 && !mAscii.isRage())
+                    if(mTime==26 && !mAscii.isRage())
                     {
                         mAscii.pushLine("Testing connection to the server...");
                         if(mServer.checkConnection())
