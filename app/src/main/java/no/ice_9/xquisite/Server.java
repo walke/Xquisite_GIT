@@ -32,6 +32,7 @@ public class Server {
     static String CODE_PACK_ID_TASK="95";//PACKET ID TASK
     static String CODE_PACK_ID_TSKD="100";//PACKET ID TASK DATA
     static String CODE_PACK_ID_FILE="108";//PACKET ID FILE
+    static String CODE_PACK_ID_FDAT="109";//PACKET ID FILE
     static String CODE_PACK_ID_DONE="124";//PACKET ID DONE
 
     static String CODE_CHECK_CONNECTION="0000";//check connection
@@ -138,21 +139,18 @@ public class Server {
         return result;
     }
 
-    public boolean loadPart(int ndx, int storyPart)
+    public String loadPart(int ndx, int storyPart)
     {
-        byte[] ndxStr = new byte[4];
-        ndxStr[0]=(byte)((((ndx/256)/256)/256)%256);
-        ndxStr[1]=(byte)(((ndx/256)/256)%256);
-        ndxStr[2]=(byte)((ndx/256)%256);
-        ndxStr[3]=(byte)(ndx%256);
+        String fpath=mContext.getExternalFilesDir("VID").toString()+"/part"+storyPart+".mp4";
+        String result;
+        Log.d("SERVER","fpath:"+fpath);
 
-        //TODO:COMBINE ALL INPUTS and POST IT TO SERVER
-        String response=loadPartFromServer();
+        String response=loadPartFromServer(ndx,storyPart);
 
-        boolean result=false;
+
         Log.d("SERVER","response"+response+";");
-        if(response.matches("-1")){result=false;}
-        else{result=true;}
+        if(response.matches("1")){result=fpath;}
+        else{result="-1";}
 
         return result;
     }
@@ -198,14 +196,14 @@ public class Server {
             Log.d("SERVER", "#ALL SENT");
 
             byte[] bbuf=new byte[4];
-            input.read(bbuf, 0, 4);
+            int a=input.read(bbuf, 0, 4);
 
             int size=bbuf[0]*16777216+bbuf[1]*65536+bbuf[2]*256+bbuf[3];
 
             bbuf=new byte[size];
 
             input.read(bbuf,0,size);
-            Log.d("SERVER", "resp:" +new String(bbuf,"ASCII"));
+            Log.d("SERVER", "resp:" +new String(bbuf,"ASCII")+" code:"+a);
 
             result=new String(bbuf,"ASCII");
 
@@ -556,12 +554,12 @@ public class Server {
         return serverResponseCode;*/
     }
 
-    private String loadPartFromServer(int part,int ndx) {
+    private String loadPartFromServer(int ndx,int part) {
 
         String result = "-1";
         Socket sck = null;
-        int bytesRead, bytesAvailable, bufferSize;
-        File destenationFile = new File(mContext.getExternalFilesDir("VID").getPath(),"part"+part+"mp4");
+        int bytesRead, bufferSize;
+        File destenationFile = new File(mContext.getExternalFilesDir("VID").getPath(),"part"+part+".mp4");
         int maxBufferSize = 1 * 1024 * 1024;
         byte[] buffer;
 
@@ -571,11 +569,17 @@ public class Server {
         ndxB[2]=(byte)((ndx/256)%256);
         ndxB[3]=(byte)(ndx%256);
 
+        byte[] partB=new byte[4];
+        partB[0]=(byte)((((part/256)/256)/256)%256);
+        partB[1]=(byte)(((part/256)/256)%256);
+        partB[2]=(byte)((part/256)%256);
+        partB[3]=(byte)(part%256);
+
         if (destenationFile.isFile()) {
             Log.e("SERVER", "DESTINATION File exist :part"+part);
 
-
-            return "-1";
+            destenationFile.delete();
+            //return "-1";
         }
 
         try {
@@ -594,6 +598,8 @@ public class Server {
 
             out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_TSKD), 4, ndxB));
 
+            out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_FDAT), 4, partB));
+
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
 
             byte[] bbuf = new byte[4];
@@ -603,37 +609,39 @@ public class Server {
 
 
 
-            Log.d("SERVER", "AVAILABLE " +size + " bytes");
+            Log.d("SERVER", "AVAILABLE " + size + " bytes");
 
 
 
-            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            bufferSize = Math.min(size, maxBufferSize);
             buffer = new byte[bufferSize];
+            bytesRead = input.read(buffer, 0, bufferSize);
+            Log.d("SERVER", "bufsize:" + bufferSize);
 
-            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            //bytesRead = fileInputStream.read(buffer, 0, bufferSize);
             int tot = 0;
             tot += bytesRead;
-            while (bytesRead > 0) {
+            while (bytesRead > 0)
+            {
+                fileOutputStream.write(buffer,0, bytesRead);
+                Log.d("SERVER", "bRead:" + bytesRead);
+                Log.d("SERVER","size:"+size);
 
-                out.write(buffer, 0, bufferSize);
-                bytesAvailable = fileInputStream.available();
-                bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                size = size-bytesRead;
+                bufferSize = Math.min(size, maxBufferSize);
+                bytesRead = input.read(buffer, 0, bufferSize);
                 tot += bytesRead;
             }
 
-
+            fileOutputStream.close();
 
             Log.d("SERVER", "GOT " + tot + " bytes");
 
 
 
-            bbuf = new byte[size];
 
-            input.read(bbuf, 0, size);
-            Log.d("SERVER", "resp:" + new String(bbuf, "ASCII"));
 
-            result = new String(bbuf, "ASCII");
+            result = "1";
 
             sck.close();
             Log.d("SERVER", "closed socket");

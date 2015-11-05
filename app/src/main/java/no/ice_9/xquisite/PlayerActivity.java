@@ -26,11 +26,26 @@ public class PlayerActivity extends Activity {
 
     private Uri mVideoUri;
     private VideoView mVideoView;
+    private boolean mVideoReady;
+    private int mCurrentPart;
+
+    private String[] mVideoPart;
 
     //ASCII ACTION
     public void asciiAction(View view)
     {
-        finishVideo();
+
+        //finishVideo();
+        if(mVideoReady)
+        {
+            mAscii.clear();
+            startVideo(view);
+        }
+        else
+        {
+            mAscii.pushLine("You look a bit impatient");
+        }
+
     }
 
     Server mServer;
@@ -42,6 +57,7 @@ public class PlayerActivity extends Activity {
         //int storyindx=0;
         //storyindx=-1;
         //ParentNdx=storyindx;
+        String filePath;
         if(storyindx==0)
         {
             Log.d("PLAYER", "no video ");
@@ -53,11 +69,27 @@ public class PlayerActivity extends Activity {
         }
         else
         {
-            mServer.loadPart();
+            mAscii.pushLine("we found some cluster of a story for you");
+            mAscii.pushLine("we will now try to get it ready for you");
+            mVideoPart[0]=mServer.loadPart(0,1);
+            if(mVideoPart[0]=="-1")
+            {
+                mAscii.pushLine("no sorry there was no cluster");
+                mAscii.pushLine("try to create one");
+                mAscii.pushLine("****************************************");
+                mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
+                mAscii.mAsciiStopUpdater();
+                return false;
+            }
+
+            mAscii.pushLine("seems like it is ready");
+            Log.d("PLAYER","file path:"+mVideoPart[0]);
+
             /*String storyaddr = mServer.getVideoFile(storyindx);
             Log.d("PLAYER","ndx; "+ParentNdx);
 
             StoryParent=storyaddr;*/
+            loadRest();
         }
 
 
@@ -73,7 +105,8 @@ public class PlayerActivity extends Activity {
         //Log.d("VIDEO_LOG", "URI "+mVideoUri);
         //mVideoUri=Uri.("http://81.191.243.140/uploads/tmp.mp4");
         Log.d("PLAYER","getting file");
-        mVideoUri=Uri.fromFile(new File("/mnt/sdcard/tmp/tmp.mp4"));
+        mAscii.pushLine("one more second..");
+        mVideoUri=Uri.fromFile(new File(mVideoPart[0]));
         Log.d("PLAYER","got file");
         Log.d("PLAYER","URI"+mVideoUri);
 
@@ -94,10 +127,33 @@ public class PlayerActivity extends Activity {
         });
 
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer player){finishVideo();}
+            public void onCompletion(MediaPlayer player) {
+                if (mCurrentPart < 6) {
+                    mVideoReady = false;
+                    mCurrentPart++;
+                    playNext();
+                } else {
+                    finishVideo();
+                }
+
+            }
         });
 
 
+
+    }
+
+    public void playNext()
+    {
+        boolean done=false;
+        mAscii.pushLine("loading another part..");
+        while(!done)
+        {
+            if(mVideoPart[mCurrentPart]!="-1"){done=true;}
+        }
+        mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart]));
+
+        preparePlayer();
 
     }
 
@@ -111,27 +167,31 @@ public class PlayerActivity extends Activity {
         //mPlayButton.setVisibility(View.VISIBLE);
         //mPlayButton.setAlpha(1.0f);
 
-        mVideoView.start();
-        int totDuration=mVideoView.getDuration();
-        mVideoView.seekTo((totDuration/3)*2);
+        //mVideoView.start();
+        //int totDuration=mVideoView.getDuration();
+        //mVideoView.seekTo((totDuration/3)*2);
         //Log.d("PLAYER", "duration"+);
 
-        boolean done=false;
-        while(!done)
+        //boolean done=false;
+        /*while(!done)
         {
             if(mVideoView.isPlaying() && mVideoView.getCurrentPosition()>((totDuration/3)*2))
             {
                 done=true;
-                mVideoView.pause();
+                //mVideoView.pause();
 
                 //mLoadingFrame.setAlpha(0.0f);
             }
             else{mVideoView.start();Log.d("PLAYER", "not playing");}
 
-        }
+        }*/
         mVideoView.setAlpha(1.0f);
 
+        mVideoReady=true;
 
+        mAscii.pushLine("So now it looks ready");
+        mAscii.pushLine("#########################");
+        mAscii.pushLine("TAP THE SCREEN TO PLAY IT");
 
     }
 
@@ -142,6 +202,17 @@ public class PlayerActivity extends Activity {
         mPlayerMessage.setVisibility(View.GONE);
         mPlayButton.setAlpha(0.0f);*/
         mVideoView.start();
+
+
+    }
+
+    private void loadRest()
+    {
+        for(int i=0;i>5;i++)
+        {
+            mVideoPart[i+1]=mServer.loadPart(0,i+2);
+            Log.d("PLAYER","part:"+i+1+"->"+mVideoPart[i+1]);
+        }
     }
 
     public void finishVideo()
@@ -162,6 +233,10 @@ public class PlayerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        mCurrentPart=0;
+        mVideoPart=new String[6];
+        for(int i=0;i<6;i++){mVideoPart[i]="-1";}
+        mVideoReady=false;
         mText=(TextView)findViewById(R.id.text_player);
         mAscii=new ASCIIscreen(this,mText);
         mAscii.mAsciiStartUpdater(100);
