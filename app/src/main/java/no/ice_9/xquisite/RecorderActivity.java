@@ -33,6 +33,11 @@ public class RecorderActivity extends Activity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
+    public static final int FTIME = 5;
+    public static final int QTIME = 5;
+
+    public static final int NPARTS= 7;
+
     //CLASS VARIABLES
     RecorderActivity tAct;
 
@@ -58,6 +63,8 @@ public class RecorderActivity extends Activity {
     static int mQuestionTime;
     boolean mUserReady;
     boolean mMainDone;
+    StoryPart[] mVideoPart;
+    int[] mPartReady;//0:NOT READY, 1:READY TO UPLOAD, 2:UPLOADED
 
     //VARS USED TO UPLOAD FILE TO SERVER
     int mCurrentNdx;
@@ -79,9 +86,10 @@ public class RecorderActivity extends Activity {
 
     private void initQuestions()
     {
-        mQuestionTime=20;
+        mQuestionTime=QTIME;
         mQuestion=new String[]
                 {
+                        "ENJOY FREEDOM",
                         "How old is X now?",
                         "Where is X now?",
                         "What is she doing now?",
@@ -190,7 +198,8 @@ public class RecorderActivity extends Activity {
 
         Log.d("RECORDER", "setting outputfile ");
         mRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
-        Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
+
+        //Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
         // Create our Preview view and set it as the content of our activity.
         mRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
 
@@ -267,7 +276,9 @@ public class RecorderActivity extends Activity {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if(mMainDone){this.cancel();}
+                if (mMainDone) {
+                    this.cancel();
+                }
                 if (tAct != null) {
                     Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
@@ -283,17 +294,19 @@ public class RecorderActivity extends Activity {
                             isRecording = true;//Probably can get that from mRecorder..
                         }
                         if (mCurrentPart == 0) {
-                            mTimeLeft = 180;//FREE TIME
+                            mTimeLeft = FTIME;//FREE TIME
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
                         }
                         if (mCurrentPart > mQuestion.length) {
+                            Log.d("RECORDER", "finising");
                             finishRecording();
                             this.cancel();
                             isRecording = false;
                         }
                     } else if (isRecording) {
+                        Log.d("RECORDER", "recording");
                         tAct.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -301,11 +314,11 @@ public class RecorderActivity extends Activity {
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 0, -1);
                                 mAscii.modLine("current part:" + mCurrentPart, 1, -1);
-                                if (mCurrentPart > 0) {
-                                    mAscii.modLine("" + mQuestion[mCurrentPart - 1], 3, -1);
+                                if (mCurrentPart >= 0) {
+                                    mAscii.modLine("" + mQuestion[mCurrentPart], 3, -1);
                                 }
                                 if (mTimeLeft <= 0) {
-                                    mCurrentPart++;
+                                    //mCurrentPart++;
                                     mUserReady = false;
 
                                     forceStopCapture();
@@ -328,7 +341,7 @@ public class RecorderActivity extends Activity {
     public void forceStartCapture()
     {
         mUserReady=true;
-        mCurrentPart++;
+        //mCurrentPart++;
         startRecordingSequence();
 
 
@@ -342,25 +355,37 @@ public class RecorderActivity extends Activity {
     //WHEN TIME IS OUT
     public void forceStopCapture()
     {
+        Log.d("RECORDER", "vpart:" + mVideoPart[mCurrentPart]);
+
+        Log.d("RECORDER", "current part" + mCurrentPart);
+
         if (isRecording) {//<-MAYBE UNNECCESARY TODO: check that
 
-
+            isRecording = false;
             // stop recording and release camera
             mRecorder.stop();  // stop the recording
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
             Log.d("RECORDER", "part:" + mCurrentPart);
-            if(mCurrentPart==0)
+
+            /*if(mCurrentPart==0)
             {
                 //mCurrentNdx=mServer.reserveNdx(String.valueOf(mCurrentParent));//DELETE OR MODIFY
             }
 
 
             else
-            {
-                if(mCurrentPart<=mQuestion.length)
+            {*/
+
+                if(mCurrentPart<mQuestion.length)
                 {
-                    mAscii.modLine("Question:" + mQuestion[mCurrentPart-1], 0, -1);
+
+
+                    mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart], fileToUpload);
+                    Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
+                    Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
+
+                    mAscii.modLine("Question:" + mQuestion[mCurrentPart], 0, -1);
                     mAscii.modLine("current part:" + mCurrentPart, 1, -1);
 
                     mAscii.modLine("***************", 2, -1);
@@ -369,9 +394,14 @@ public class RecorderActivity extends Activity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            mServer.uploadPart(fileToUpload,mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
+                            //mServer.uploadPart(mVideoPart[mCurrentPart],mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
+
                         }
                     }).start();
+                    Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
+                    mPartReady[mCurrentPart]=1;
+                    mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
+
                 }
                 else
                 {
@@ -381,19 +411,21 @@ public class RecorderActivity extends Activity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            mServer.uploadPart(fileToUpload,mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
-                            mServer.completeNdx(mServerReserved);
+                            Log.d("RECORDER","up part"+mCurrentPart);
+                            //mServer.uploadPart(mVideoPart[mCurrentPart - 1], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
+                            //mServer.completeNdx(mServerReserved);
+
 
                         }
                     }).start();
+                    mCurrentPart++;
                 }
                 mAscii.modLine("***************", 2, -1);
                 mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
 
 
                 mPreview.setAlpha(0.0f);
-            }
-
+            //}
 
 
 
@@ -402,7 +434,7 @@ public class RecorderActivity extends Activity {
             //mNextButton.setAlpha(1.0f);
             //mNextButton.setVisibility(View.VISIBLE);
 
-            isRecording = false;
+
 
 
 
@@ -477,6 +509,14 @@ public class RecorderActivity extends Activity {
         //get pointer to this activity
         tAct=this;
 
+        mVideoPart = new StoryPart[NPARTS];
+        mPartReady=new int[NPARTS];
+        for(int i=0;i<NPARTS;i++)
+        {
+            mVideoPart[i]=new StoryPart();
+            mPartReady[i]=0;
+        }
+
         //SERVER INIT
         mServer=new Server(this);
         mCurrentUser=-1;
@@ -490,6 +530,38 @@ public class RecorderActivity extends Activity {
             @Override
             public void run() {
                 mServerReserved=mServer.reserveNdx(mCurrentParent);
+                boolean done=false;
+                int allDone=0;
+                while(!done)
+                {
+
+                    for(int i=0;i<NPARTS;i++)
+                    {
+                        if(mPartReady[i]==1)
+                        {
+                            mServer.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
+                            mPartReady[i]=2;
+                            Log.d("RECORDER to SERVER", "uploaded part "+i);
+                        }
+                    }
+                    allDone=0;
+                    for(int i=0;i<NPARTS;i++)
+                    {
+
+                        if(mPartReady[i]==2)
+                        {
+
+                            allDone++;
+
+                        }
+                    }
+                    if(allDone>=NPARTS)
+                    {
+                        mServer.completeNdx(mServerReserved);
+                        done=true;
+                        Log.d("RECORDER to SERVER", "all done completing ");
+                    }
+                }
 
             }
         }).start();
@@ -510,7 +582,7 @@ public class RecorderActivity extends Activity {
         //mFilePath=getApplicationInfo().dataDir;
         Log.d("RECORDER","filePath:"+mFilePath);
 
-        mCurrentPart=-1;
+        mCurrentPart=0;
         //INIT CAMERA AND ALL IT DEPENDS ON
         initCamera(1);//for now camId = 1; asuming front facing camera.
         // Will later be fixed to search for frontfacing camera

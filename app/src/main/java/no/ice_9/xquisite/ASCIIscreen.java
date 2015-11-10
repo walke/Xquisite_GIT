@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -41,12 +42,13 @@ import java.util.TimerTask;
  */
 public class ASCIIscreen {
 
+    //SCREEN VARIABLES
     Display display;
     DisplayMetrics displayMetrics;
 
     TextView mText;
 
-
+    //STATIC LINE NUMBER
     static private int lineCount=30;
     private float lineHeight;
 
@@ -76,6 +78,8 @@ public class ASCIIscreen {
 
     public ASCIIscreen(Context context,TextView text)
     {
+
+
         mAsciiCharSet=new AsciiCharSet("ASCII",null);
         mUpdating=false;
         mLine=new String[lineCount];
@@ -86,12 +90,15 @@ public class ASCIIscreen {
         displayMetrics=new DisplayMetrics();
         display.getMetrics(displayMetrics);
         mRage=false;
-
-        mWordList=new String[]{"science","life","corruption","future","source","utopia","time","order","chaos"};
         mRequestStop=false;
 
+        //WORDS TO BE USED
+        mWordList=new String[]{"science","life","corruption","future","source","utopia","time","order","chaos"};
+
+
+
         lineHeight=displayMetrics.heightPixels/lineCount;
-        Log.d("ASCII", "dispH,lineH:" + displayMetrics.heightPixels + " " + lineHeight);
+        //Log.d("ASCII", "dispH,lineH:" + displayMetrics.heightPixels + " " + lineHeight);
 
         mText.setTextSize(TypedValue.COMPLEX_UNIT_PX, lineHeight);
         float a = 100.0f/120.0f;
@@ -101,47 +108,50 @@ public class ASCIIscreen {
 
 
 
-            mText.post(new Runnable() {
-                @Override
-                public void run() {
+        mText.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
 
-                    Log.d("ASCII", "run");
-                    boolean done = false;
-                    String tmpstr = "";
-                    int i = 0;
-                    while (!done) {
-                        mText.setText(tmpstr);
-                        tmpstr += "#";
-                        if (mText.getLineCount() == 2) {
-                            done = true;
-                            mSymbolsPerLine = i - 1;
-                            //Log.d("ASCII", "symi" + mSymbolsPerLine);
+                Log.d("ASCII", "run");
+                boolean done = false;
+                String tmpstr = "";
+                int i = 0;
+                while (!done)
+                {
+                    mText.setText(tmpstr);
+                    tmpstr += "#";
+                    if (mText.getLineCount() == 2)
+                    {
+                        done = true;
+                        mSymbolsPerLine = i - 1;
+                        //Log.d("ASCII", "symi" + mSymbolsPerLine);
 
-                            Random rnd=new Random();
-                            mTrash=new String[100];
-                            for(int k=0;k<100;k++)
+                        Random rnd=new Random();
+                        mTrash=new String[100];
+                        for(int k=0;k<100;k++)
+                        {
+                            String tmpStr="";
+                            //rnd.nextBytes(buf);
+
+                            for(int l = 0;l<mSymbolsPerLine;l++)
                             {
-                                String tmpStr="";
-                                //rnd.nextBytes(buf);
-
-                                for(int l = 0;l<mSymbolsPerLine;l++)
-                                {
-                                    tmpStr+=(char)(rnd.nextInt(223)+32);
-                                }
-                                //tmpStr=new String(buf);
-                                mTrash[k]=tmpStr;
-
-
-
+                                tmpStr+=(char)(rnd.nextInt(223)+32);
                             }
-                            mReady=true;
+                            //tmpStr=new String(buf);
+                            mTrash[k]=tmpStr;
+
+
+
                         }
-                        i++;
-
+                        mReady=true;
                     }
-                }
+                    i++;
 
-            });
+                }
+            }
+        });
 
 
         /*while(mSymbolsPerLine==-1)

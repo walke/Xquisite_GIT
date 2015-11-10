@@ -22,11 +22,15 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
+    //ACII LAYER
     private ASCIIscreen mAscii;
     private TextView mText;
+
+    //TIMINGS
     private int mTime;
     private boolean mInitDone;
 
+    //SERVER
     private int mServerConnection;
     private Server mServer;
 
@@ -37,16 +41,22 @@ public class MainActivity extends Activity {
         {
             Intent intent = new Intent(this, PlayerActivity.class);
             startActivity(intent);
+            //view.setVisibility(View.GONE);
         }
 
     }
 
+
+
     //TODO: fix on touch event
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mAscii.modLine("scienceFuture xquisite",0,-1);
-        return super.onTouchEvent(event);
 
+        super.onTouchEvent(event);
+        mAscii.modLine("tatatat", 0, -1);
+        Log.d("MAIN","touch");
+
+        return true;
     }
 
     @Override
@@ -54,6 +64,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTime=0;
+
         mText=(TextView)findViewById(R.id.text_main);
         mAscii=new ASCIIscreen(this,mText);
         mAscii.mAsciiStartUpdater(50);

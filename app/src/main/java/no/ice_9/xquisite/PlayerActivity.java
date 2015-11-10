@@ -35,7 +35,10 @@ public class PlayerActivity extends Activity {
     private int mParent;
     private int mCurrentPart;
 
-    private String[] mVideoPart;
+    static String[] mQuestion;
+
+
+    private StoryPart[] mVideoPart;
 
     //ASCII ACTION
     public void asciiAction(View view)
@@ -81,8 +84,9 @@ public class PlayerActivity extends Activity {
         {
             mAscii.pushLine("we found some cluster of a story for you");
             mAscii.pushLine("we will now try to get it ready for you");
-            mVideoPart[0]=mServer.loadPart(storyindx,1);
-            if(mVideoPart[0]=="-1")
+            mVideoPart[0]=mServer.loadPart(storyindx,0);
+
+            if(mVideoPart[0].isEmpty())
             {
                 mAscii.pushLine("no sorry there was no cluster");
                 mAscii.pushLine("try to create one");
@@ -116,7 +120,7 @@ public class PlayerActivity extends Activity {
         //mVideoUri=Uri.("http://81.191.243.140/uploads/tmp.mp4");
         Log.d("PLAYER", "getting file");
         mAscii.pushLine("one more second..");
-        mVideoUri=Uri.fromFile(new File(mVideoPart[0]));
+        mVideoUri=Uri.fromFile(new File(mVideoPart[0].getFilePath()));
         Log.d("PLAYER","got file");
         Log.d("PLAYER", "URI" + mVideoUri);
 
@@ -159,9 +163,9 @@ public class PlayerActivity extends Activity {
         mAscii.pushLine("loading another part..");
         while(!done)
         {
-            if(mVideoPart[mCurrentPart]!="-1"){done=true;}
+            if(!mVideoPart[mCurrentPart].isEmpty()){done=true;}
         }
-        mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart]));
+        mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
 
         preparePlayer();
 
@@ -211,18 +215,20 @@ public class PlayerActivity extends Activity {
         mPlayerMessage.setAlpha(0.0f);
         mPlayerMessage.setVisibility(View.GONE);
         mPlayButton.setAlpha(0.0f);*/
+
         mVideoView.start();
 
-
+        mAscii.pushLine(mVideoPart[mCurrentPart].getQuestion());
     }
 
     public void loadRest()
     {
-        Log.d("PLAYER","LOADING REST");
-        for(int i=0;i<5;i++)
+        Log.d("PLAYER", "LOADING REST");
+        for(int i=0;i<6;i++)
         {
+
             Log.d("PLAYER","part:"+(i+1));
-            mVideoPart[(i+1)]=mServer.loadPart(mParent,(i+2));
+            mVideoPart[(i+1)]=mServer.loadPart(mParent,(i+1));
             Log.d("PLAYER","part:"+(i+1)+"->"+mVideoPart[(i+1)]);
         }
     }
@@ -238,6 +244,25 @@ public class PlayerActivity extends Activity {
         mNextButton.setVisibility(View.VISIBLE);*/
     }
 
+    private void initQuestions()
+    {
+
+        mQuestion=new String[]
+                {
+                        "How old is X now?",
+                        "Where is X now?",
+                        "What is she doing now?",
+                        "What is she feeling?",
+                        "What is she thinking?",
+                        "What is her biggest challenge?"
+                };
+
+
+        //there are as many parts as questions +1 free part;
+        //initially they are not done
+
+    }
+
 
 
     @Override
@@ -247,9 +272,16 @@ public class PlayerActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mError=false;
+
         mCurrentPart=0;
-        mVideoPart=new String[6];
-        for(int i=0;i<6;i++){mVideoPart[i]="-1";}
+        mVideoPart=new StoryPart[16];
+
+
+
+        mQuestion =new String[7];
+        initQuestions();
+
+        //for(int i=0;i<6;i++){mVideoPart[i]="-1";}
         mVideoReady=false;
         mText=(TextView)findViewById(R.id.text_player);
         mAscii=new ASCIIscreen(this,mText);
