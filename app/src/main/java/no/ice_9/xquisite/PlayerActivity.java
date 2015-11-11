@@ -61,6 +61,62 @@ public class PlayerActivity extends Activity {
 
     Server mServer;
 
+    //LOAD STORY DATA
+    public boolean loadStoryData()
+    {
+        int storyindx = mServer.getLastStoryNdx();
+        mParent=storyindx;
+
+        if(storyindx==0)
+        {
+            Log.d("PLAYER", "no video ");
+            mAscii.pushLine("no video found");
+            mAscii.pushLine("****************************************");
+            mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
+            mAscii.mAsciiStopUpdater();
+            mError=true;
+            return false;
+        }
+        else
+        {
+            mAscii.pushLine("we found some cluster of a story for you");
+            mAscii.pushLine("we will now try to get it ready for you");
+
+
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    loadParts();
+
+                }
+            }).start();
+
+
+            while(mVideoPart[mCurrentPart].isEmpty())
+            {
+
+            }
+
+
+
+            mAscii.pushLine("seems like it is ready");
+            Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart]);
+
+
+
+        }
+
+        Log.d("PLAYER", "getting file");
+        mAscii.pushLine("one more second..");
+        mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
+        Log.d("PLAYER","got file");
+        Log.d("PLAYER", "URI" + mVideoUri);
+
+        return true;
+    }
+
     //LOAD VIDEO
     public boolean loadVideo()
     {
@@ -107,6 +163,8 @@ public class PlayerActivity extends Activity {
         }
 
 
+
+
         //expectedResponse=3;
         //mServer.waitForResponse();
 
@@ -132,7 +190,7 @@ public class PlayerActivity extends Activity {
 
     public void preparePlayer()
     {
-        Log.d("PLAYER","URI"+mVideoUri);
+        Log.d("PLAYER", "URI" + mVideoUri);
         mVideoView.setVideoURI(mVideoUri);
         mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             public void onPrepared(MediaPlayer player) {
@@ -142,9 +200,12 @@ public class PlayerActivity extends Activity {
 
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer player) {
-                if (mCurrentPart < 5) {
+
+                if (mCurrentPart < 16) {
+
                     mVideoReady = false;
                     mCurrentPart++;
+                    Log.d("PLAYER", "PARTQ" + mVideoPart[mCurrentPart].getQuestion());
                     playNext();
                 } else {
                     finishVideo();
@@ -159,11 +220,17 @@ public class PlayerActivity extends Activity {
 
     public void playNext()
     {
-        boolean done=false;
+
         mAscii.pushLine("loading another part..");
-        while(!done)
+        while(mVideoPart[mCurrentPart].isEmpty())
         {
-            if(!mVideoPart[mCurrentPart].isEmpty()){done=true;}
+
+        }
+
+        if(mVideoPart[mCurrentPart].isLast())
+        {
+            mCurrentPart=16;
+            return;
         }
         mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
 
@@ -224,12 +291,25 @@ public class PlayerActivity extends Activity {
     public void loadRest()
     {
         Log.d("PLAYER", "LOADING REST");
-        for(int i=0;i<6;i++)
+        for(int i=0;i<16;i++)
         {
 
             Log.d("PLAYER","part:"+(i+1));
             mVideoPart[(i+1)]=mServer.loadPart(mParent,(i+1));
             Log.d("PLAYER","part:"+(i+1)+"->"+mVideoPart[(i+1)]);
+        }
+    }
+
+    //LOAD PARTS
+    public void loadParts()
+    {
+        Log.d("PLAYER", "LOADING PARTS");
+        for(int i=0;i<16;i++)
+        {
+
+            Log.d("PLAYER","part:"+i);
+            mVideoPart[i]=mServer.loadPart(mParent,i);
+            //Log.d("PLAYER","part:"+i+"->"+mVideoPart[i]);
         }
     }
 
@@ -273,8 +353,9 @@ public class PlayerActivity extends Activity {
 
         mError=false;
 
-        mCurrentPart=0;
+        mCurrentPart=1;
         mVideoPart=new StoryPart[16];
+        for(int i=0;i<16;i++){mVideoPart[i]=new StoryPart();}
 
 
 
@@ -296,8 +377,8 @@ public class PlayerActivity extends Activity {
                 Log.d("PLAYER", "getting list ");
                 Looper.prepare();
 
-                boolean result=loadVideo();
-
+                //boolean result=loadVideo();
+                boolean result=loadStoryData();
                 if(result)
                 {
                     tAct.runOnUiThread(new Runnable() {
@@ -308,7 +389,7 @@ public class PlayerActivity extends Activity {
                             //playVideo();
 
                         }
-                    });loadRest();
+                    });
                 }
 
 

@@ -90,12 +90,12 @@ public class RecorderActivity extends Activity {
         mQuestion=new String[]
                 {
                         "ENJOY FREEDOM",
-                        "How old is X now?",
-                        "Where is X now?",
-                        "What is she doing now?",
-                        "What is she feeling?",
-                        "What is she thinking?",
-                        "What is her biggest challenge?"
+                        "How old is X now??",
+                        "Where is X now??",
+                        "What is she doing now??",
+                        "What is she feeling??",
+                        "What is she thinking??",
+                        "What is her biggest challenge??"
                 };
 
 

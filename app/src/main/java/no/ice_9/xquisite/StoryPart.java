@@ -6,6 +6,7 @@ package no.ice_9.xquisite;
 public class StoryPart {
 
     boolean empty=true;
+    boolean last=false;
     String mFname;
     String mQuestion;
     String mPath;
@@ -25,6 +26,11 @@ public class StoryPart {
         mPath=path;
     }
 
+    public void setLast()
+    {
+        last=true;
+    }
+
     public String getFilePath() {
         return mPath;
     }
@@ -40,5 +46,10 @@ public class StoryPart {
     public boolean isEmpty()
     {
         return empty;
+    }
+
+    public boolean isLast()
+    {
+        return last;
     }
 }
