@@ -34,6 +34,7 @@ public class PlayerActivity extends Activity {
 
     private int mParent;
     private int mCurrentPart;
+    private static int mStartPart=1;
 
     static String[] mQuestion;
 
@@ -50,7 +51,7 @@ public class PlayerActivity extends Activity {
         else if(mVideoReady)
         {
             mAscii.clear();
-            startVideo(view);
+            startVideo();
         }
         else
         {
@@ -226,12 +227,15 @@ public class PlayerActivity extends Activity {
         {
 
         }
-
+        Log.d("PLAYER","loaded");
         if(mVideoPart[mCurrentPart].isLast())
         {
+            Log.d("PLAYER","LAST");
             mCurrentPart=16;
+            finishVideo();
             return;
         }
+
         mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
 
         preparePlayer();
@@ -274,9 +278,16 @@ public class PlayerActivity extends Activity {
         mAscii.pushLine("#########################");
         mAscii.pushLine("TAP THE SCREEN TO PLAY IT");
 
+        if(mCurrentPart>mStartPart)
+        {
+            mAscii.clear();
+            startVideo();
+        }
+
+
     }
 
-    public void startVideo(View view)
+    public void startVideo()
     {
         /*mPlayButton.setVisibility(View.GONE);
         mPlayerMessage.setAlpha(0.0f);
@@ -353,7 +364,7 @@ public class PlayerActivity extends Activity {
 
         mError=false;
 
-        mCurrentPart=1;
+        mCurrentPart=mStartPart;
         mVideoPart=new StoryPart[16];
         for(int i=0;i<16;i++){mVideoPart[i]=new StoryPart();}
 

@@ -16,6 +16,7 @@ public class StoryPart {
         mFname="";
         mQuestion="";
         mPath="";
+        last=false;
     }
 
     public void populate(String fname, String quest,String path)
@@ -29,6 +30,7 @@ public class StoryPart {
     public void setLast()
     {
         last=true;
+        empty=false;
     }
 
     public String getFilePath() {

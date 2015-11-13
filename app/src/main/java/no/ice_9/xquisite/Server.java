@@ -700,9 +700,11 @@ public class Server {
             Log.d("SERVER", "GOT " + tot + " bytes");
 
 
-
-            retPart.populate("part" + part + ".mp4", new String(bufferQ, "ASCII"), mContext.getExternalFilesDir("VID").toString() + "/part" + part + ".mp4");
-
+            if(buffer[0]==-1){retPart.setLast();}
+            else
+            {
+                retPart.populate("part" + part + ".mp4", new String(bufferQ, "ASCII"), mContext.getExternalFilesDir("VID").toString() + "/part" + part + ".mp4");
+            }
                     //result = "1";
 
                     sck.close();
