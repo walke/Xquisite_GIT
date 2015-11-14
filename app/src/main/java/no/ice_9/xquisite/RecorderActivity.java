@@ -33,8 +33,8 @@ public class RecorderActivity extends Activity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 5;
-    public static final int QTIME = 5;
+    public static final int FTIME = 60;
+    public static final int QTIME = 20;
 
     public static final int NPARTS= 7;
 
@@ -80,6 +80,10 @@ public class RecorderActivity extends Activity {
         {
             mAscii.fillTrash();
             mUserReady=true;
+        }
+        if(mMainDone)
+        {
+            finishRecording();
         }
 
     }
@@ -277,9 +281,11 @@ public class RecorderActivity extends Activity {
             @Override
             public void run() {
                 if (mMainDone) {
+                    Log.d("RECORDER","TIMER: exiting");
                     this.cancel();
+
                 }
-                if (tAct != null) {
+                else if (tAct != null) {
                     Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
                     if (!isRecording && mUserReady && !mMainDone) {
@@ -400,10 +406,11 @@ public class RecorderActivity extends Activity {
                     }).start();
                     Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
                     mPartReady[mCurrentPart]=1;
+                    Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
                     mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
 
                 }
-                else
+                if(mCurrentPart>=mQuestion.length)
                 {
                     mMainDone=true;
                     mAscii.modLine("DONE!", 0, -1);
@@ -452,7 +459,7 @@ public class RecorderActivity extends Activity {
 
 
         //TODO: do cleanup on device, print some messages to user.
-        cleanUp();
+        finish();
 
         return true;
     }

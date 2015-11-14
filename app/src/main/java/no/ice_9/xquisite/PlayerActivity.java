@@ -329,6 +329,7 @@ public class PlayerActivity extends Activity {
         Intent intent = new Intent(this, RecorderActivity.class);
         intent.putExtra(EXTRA_MESSAGE2, String.valueOf(mParent));
         startActivity(intent);
+        finish();
 
         //GO DIRECTLY TO RECORDING
         /*mNextButton.setAlpha(1.0f);
