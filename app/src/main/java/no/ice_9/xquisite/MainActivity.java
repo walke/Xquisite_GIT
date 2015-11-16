@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
                         mTime++;
                     }
                     if(mInitDone){Log.d("MAIN","WAITING FOR TOUCH");mTime++;}
-                    if(mServerConnection==-1  && !mAscii.isRage())
+                    if(mServerConnection==-1  && !mAscii.isRage() && !mInitDone)
                     {
                         mAscii.pushLine("Connection failed");
                         mAscii.pushLine("");
@@ -139,11 +139,15 @@ public class MainActivity extends Activity {
                         //mAscii.mAsciiStopUpdater();
                         //this.cancel();
                         mReconnectTime=mTime;
+                        mInitDone=true;
                         mTime++;
                     }
-                    if(mTime>(mReconnectTime+20) && mReconnectTime!=-1)
+                    if(mTime>(mReconnectTime+50) && mReconnectTime!=-1)
                     {
                         mServerConnection=0;
+                        mReconnectTime=-1;
+                        mInitDone=false;
+                        mAscii.pushLine("");
                         mAscii.pushLine("retrying connecting..");
                         mTime=23;
                     }
