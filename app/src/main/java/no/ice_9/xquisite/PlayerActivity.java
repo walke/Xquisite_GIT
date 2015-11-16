@@ -355,6 +355,13 @@ public class PlayerActivity extends Activity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mAscii.mAsciiStopUpdater();
+    }
+
 
 
     @Override

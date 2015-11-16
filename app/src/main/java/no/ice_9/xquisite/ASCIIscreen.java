@@ -175,6 +175,14 @@ public class ASCIIscreen {
 
         //Log.d("ASCII","runAQ"+3);
         //Log.d("ASCII", "real size" + mText.getExtendedPaddingTop());
+        createUpdater();
+
+
+        //mAsciiStartUpdater(50);
+    }
+
+    private void createUpdater()
+    {
         final Random Rnd=new Random();
         mUpdater=new TimerTask() {
             @Override
@@ -199,12 +207,10 @@ public class ASCIIscreen {
                 });
 
                 if(mRequestStop){ mUpdater.cancel();}
-
+                Log.d("ASCII","RUNNING");
 
             }
         };
-
-        //mAsciiStartUpdater(50);
     }
 
 
@@ -215,6 +221,7 @@ public class ASCIIscreen {
         {
             mUpdating=true;
             mRequestStop=false;
+            createUpdater();
             new Timer().scheduleAtFixedRate(mUpdater,0,rate);
         }
 
@@ -222,6 +229,7 @@ public class ASCIIscreen {
 
     public void mAsciiStopUpdater()
     {
+        mUpdater.cancel();
         mRequestStop=true;
         mUpdating=false;
     }

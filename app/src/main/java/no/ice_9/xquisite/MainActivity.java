@@ -26,9 +26,15 @@ public class MainActivity extends Activity {
     private ASCIIscreen mAscii;
     private TextView mText;
 
+    //MAIN LOOP
+    public TimerTask mTimerLoop;
+    public Timer mTimer;
+
     //TIMINGS
     private int mTime;
     private boolean mInitDone;
+    private int mReconnectTime;
+    private boolean mScreenSaver;
 
     //SERVER
     private int mServerConnection;
@@ -37,8 +43,15 @@ public class MainActivity extends Activity {
     //Start new activity for creating new part of a story.
     public void CreateNewStory(View view)
     {
-        if(mInitDone)
+        if(mScreenSaver)
         {
+            mTime=19;
+            mScreenSaver=false;
+        }
+        else if(mInitDone)
+        {
+            mAscii.mAsciiStopUpdater();
+            mTimerLoop.cancel();
             Intent intent = new Intent(this, PlayerActivity.class);
             startActivity(intent);
             //view.setVisibility(View.GONE);
@@ -46,39 +59,9 @@ public class MainActivity extends Activity {
 
     }
 
-
-
-    //TODO: fix on touch event
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        super.onTouchEvent(event);
-        mAscii.modLine("tatatat", 0, -1);
-        Log.d("MAIN","touch");
-
-        return true;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mTime=0;
-
-        mText=(TextView)findViewById(R.id.text_main);
-        mAscii=new ASCIIscreen(this,mText);
-        mAscii.mAsciiStartUpdater(50);
-        mInitDone=false;
-
-
-
-
-        mServer=new Server(this);
-        mServerConnection=0;
-
-        final Random rnd = new Random();
-
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+    private void createTimerTask()
+    {
+        mTimerLoop = new TimerTask() {
             @Override
             public void run() {
                 //mAscii.fillTrash();
@@ -88,8 +71,8 @@ public class MainActivity extends Activity {
                 if(mAscii.mReady)
                 {
 
-                    if(mTime==0){mAscii.fillTrash();/*mAscii.setRage(true);*/}
-                   // if(mTime<2000){mAscii.modLine("scienceFuture xquisite",rnd.nextInt(50),rnd.nextInt(100));}
+                    if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*/mTime++;}
+                    // if(mTime<2000){mAscii.modLine("scienceFuture xquisite",rnd.nextInt(50),rnd.nextInt(100));}
                     /*if(mTime==10){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_01)).getBitmap());}
                     if(mTime==15){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_02)).getBitmap());}
                     if(mTime==20){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_03)).getBitmap());}
@@ -106,34 +89,45 @@ public class MainActivity extends Activity {
                     if(mTime==75){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_14)).getBitmap());}
                     if(mTime==80){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_15)).getBitmap());}
                     if(mTime==85){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_16)).getBitmap());}*/
-                    if(mTime>20){mAscii.setRage(false);mAscii.clear();}
-                    if(mTime>21 && !mAscii.isRage())
+                    if(mTime==20){mAscii.setRage(false);mAscii.clear();mTime++;}
+                    if(mTime==21 && !mAscii.isRage())
                     {
                         mAscii.pushLine("########################");
                         mAscii.pushLine("#scienceFuture xquisite#");
                         mAscii.pushLine("########################");
                         mAscii.pushLine("Initializing sequence...");
+                        mTime++;
                     }
-                    if(mTime==26 && !mAscii.isRage())
+                    if(mTime==22 && !mAscii.isRage())
                     {
                         mAscii.pushLine("Testing connection to the server...");
+                        mInitDone=false;
+                        mTime++;
+                    }
+                    if(mTime==23 && !mAscii.isRage())
+                    {
+
                         if(mServer.checkConnection())
                         {
                             mServerConnection=1;
                         }
                         else{mServerConnection=-1;}
-                        Log.d("MAIN","servResp"+mServerConnection);
+                        Log.d("MAIN", "servResp" + mServerConnection);
+                        mTime++;
                     }
 
-                    if(mServerConnection==1  && !mAscii.isRage())
+                    if(mServerConnection==1  && !mAscii.isRage() && !mInitDone)
                     {
                         mAscii.pushLine("Connection succesed");
                         mAscii.pushLine("");
-                        mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");mInitDone=true;
+                        mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");
+                        mInitDone=true;
 
-                        this.cancel();
-                        mAscii.mAsciiStopUpdater();
+                        //this.cancel();
+                        //mAscii.mAsciiStopUpdater();
+                        mTime++;
                     }
+                    if(mInitDone){Log.d("MAIN","WAITING FOR TOUCH");mTime++;}
                     if(mServerConnection==-1  && !mAscii.isRage())
                     {
                         mAscii.pushLine("Connection failed");
@@ -141,15 +135,105 @@ public class MainActivity extends Activity {
                         mAscii.pushLine("THERE WAS A PROBLEM WITH A CONNECTION TO SERVER");
                         mAscii.pushLine("try to check your internet connection");
                         mAscii.pushLine("if your internet works fine, the problem is on server side");
-                        mAscii.mAsciiStopUpdater();
-                        this.cancel();
-
+                        mAscii.pushLine("any way we will try to reconnect in few seconds");
+                        //mAscii.mAsciiStopUpdater();
+                        //this.cancel();
+                        mReconnectTime=mTime;
+                        mTime++;
                     }
-                    mTime++;
+                    if(mTime>(mReconnectTime+20) && mReconnectTime!=-1)
+                    {
+                        mServerConnection=0;
+                        mAscii.pushLine("retrying connecting..");
+                        mTime=23;
+                    }
+
+                    if(mTime>1000)
+                    {
+                        mServerConnection=0;
+                        mScreenSaver=true;
+                        mAscii.fillTrash();
+                        mInitDone=false;
+                    }
+                    Log.d("MAIN","conn"+mServerConnection);
+                    Log.d("MAIN","time"+mTime);
                 }
 
             }
-        },0,60);
+        };
+    }
+
+
+
+    //TODO: fix on touch event
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        super.onTouchEvent(event);
+        mAscii.modLine("tatatat", 0, -1);
+        Log.d("MAIN","touch");
+
+        return true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("MAIN", "paused");
+        mAscii.mAsciiStopUpdater();
+        mTimerLoop.cancel();
+        mTimer.cancel();
+        mTimer.purge();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("MAIN","paused");
+        mAscii.mAsciiStopUpdater();
+        mTimerLoop.cancel();
+        mTimer.cancel();
+        mTimer.purge();
+        //mTimerLoop=null;
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAscii.mAsciiStartUpdater(50);
+        createTimerTask();
+        mTimer=new Timer();
+        mInitDone=false;
+        mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
+        mTime=0;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mTime=0;
+
+        mText=(TextView)findViewById(R.id.text_main);
+        mAscii=new ASCIIscreen(this,mText);
+        //mAscii.mAsciiStartUpdater(50);
+        mInitDone=false;
+        mReconnectTime=-1;
+        mScreenSaver=false;
+
+
+
+
+        mServer=new Server(this);
+        mServerConnection=0;
+
+        final Random rnd = new Random();
+
+
+        mTimer=new Timer();
+                //new Timer().scheduleAtFixedRate(mTimerLoop,0,60);
 
 
     }

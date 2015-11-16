@@ -33,8 +33,8 @@ public class RecorderActivity extends Activity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 60;
-    public static final int QTIME = 20;
+    public static final int FTIME = 5;//60
+    public static final int QTIME = 5;//20
 
     public static final int NPARTS= 7;
 
@@ -619,15 +619,24 @@ public class RecorderActivity extends Activity {
     @Override
     protected void onDestroy()
     {
-
+        mAscii.mAsciiStopUpdater();
         super.onDestroy();
 
         Log.d("VIDEO_LOG", "DESTROYING main ");
-        releaseCamera();
-        releasePreview();
-        tAct=null;
+        if(mCamera!=null)
+        {
+            releaseCamera();
+        }
+        if(mPreview!=null)
+        {
+            releasePreview();
+        }
+
+
 
         cleanUp();
+
+        tAct=null;
     }
 
     //TODO:SORT THIS OUT
