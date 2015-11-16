@@ -74,12 +74,14 @@ public class ASCIIscreen {
 
     boolean mRequestStop;
 
+    String mActParent;
 
 
-    public ASCIIscreen(Context context,TextView text)
+
+    public ASCIIscreen(Context context,TextView text,String actParent)
     {
 
-
+        mActParent=actParent;
         mAsciiCharSet=new AsciiCharSet("ASCII",null);
         mUpdating=false;
         mLine=new String[lineCount];
@@ -207,7 +209,7 @@ public class ASCIIscreen {
                 });
 
                 if(mRequestStop){ mUpdater.cancel();}
-                Log.d("ASCII","RUNNING");
+                Log.d("ASCII","RUNNING from "+ mActParent);
 
             }
         };

@@ -40,6 +40,7 @@ public class RecorderActivity extends Activity {
 
     //CLASS VARIABLES
     RecorderActivity tAct;
+    boolean mWorking;
 
     Server mServer;
 
@@ -125,13 +126,13 @@ public class RecorderActivity extends Activity {
             if(mCamera==null){return false;}
             else
             {
-                Log.d("VIDEO_LOG", "got Camera instance");
+                Log.d("RECORDER", "got Camera instance");
             }
 
             //try to get preview
             result = initPreview();
             if(!result){return false;}
-            else{Log.d("VIDEO_LOG","got Preview");}
+            else{Log.d("RECORDER","got Preview");}
 
             mTimeLeft=10;
 
@@ -140,18 +141,23 @@ public class RecorderActivity extends Activity {
             new Timer().scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
+                    Log.d("RECORDER","TIMER: cdown"+mWorking+" "+mTimeLeft);
                     mTimeLeft--;
-                    if(mTimeLeft<=0){this.cancel();}
-                    tAct.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    if(mTimeLeft<=0 || !mWorking){this.cancel();}
+                    if(tAct!=null)
+                    {
+                        tAct.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
 
-                            //mRecorderTimeText.setText(""+mTimeLeft);
-                            mAscii.modLine("recording will start in "+mTimeLeft+"seconds",0,-1);
-                            if(mTimeLeft<=0){forceStartCapture();}//TODO: yes that is target entry point of the crash
-                        }
-                    });
+                                //mRecorderTimeText.setText(""+mTimeLeft);
+                                mAscii.modLine("recording will start in "+mTimeLeft+"seconds",0,-1);
+                                if(mTimeLeft<=0){forceStartCapture();}//TODO: yes that is target entry point of the crash
+                            }
+                        });
+                    }
 
+                    Log.d("RECORDER", "TIMER: cdown end" + mWorking);
 
 
                 }
@@ -280,12 +286,13 @@ public class RecorderActivity extends Activity {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (mMainDone) {
+                Log.d("RECORDER","TIMER: rec");
+                if (mMainDone && mWorking) {
                     Log.d("RECORDER","TIMER: exiting");
                     this.cancel();
 
                 }
-                else if (tAct != null) {
+                else if (tAct != null && mWorking) {
                     Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
                     if (!isRecording && mUserReady && !mMainDone) {
@@ -515,7 +522,7 @@ public class RecorderActivity extends Activity {
 
         //get pointer to this activity
         tAct=this;
-
+        mWorking=true;
         mVideoPart = new StoryPart[NPARTS];
         mPartReady=new int[NPARTS];
         for(int i=0;i<NPARTS;i++)
@@ -580,7 +587,7 @@ public class RecorderActivity extends Activity {
 
         //ASCII INIT
         mText=(TextView)findViewById(R.id.text_recorder);
-        mAscii=new ASCIIscreen(this,mText);
+        mAscii=new ASCIIscreen(this,mText,"RECORDER");
         mAscii.mAsciiStartUpdater(100);
 
 
@@ -599,10 +606,15 @@ public class RecorderActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("VIDEO_LOG", "PAUSE main ");
+        Log.d("RECORDER", "PAUSE recorder ");
+
+        mWorking=false;
+        mAscii.mAsciiStopUpdater();
         releaseMediaRecorder();
         releaseCamera();
         releasePreview();
+
+        finish();
 
     }
 
@@ -619,18 +631,21 @@ public class RecorderActivity extends Activity {
     @Override
     protected void onDestroy()
     {
-        mAscii.mAsciiStopUpdater();
+
         super.onDestroy();
 
-        Log.d("VIDEO_LOG", "DESTROYING main ");
-        if(mCamera!=null)
+        mWorking=false;
+        mAscii.mAsciiStopUpdater();
+
+        Log.d("RECORDER", "DESTROYING recorder ");
+        /*if(mCamera!=null)
         {
             releaseCamera();
         }
         if(mPreview!=null)
         {
             releasePreview();
-        }
+        }*/
 
 
 

@@ -384,7 +384,7 @@ public class PlayerActivity extends Activity {
         //for(int i=0;i<6;i++){mVideoPart[i]="-1";}
         mVideoReady=false;
         mText=(TextView)findViewById(R.id.text_player);
-        mAscii=new ASCIIscreen(this,mText);
+        mAscii=new ASCIIscreen(this,mText,"PLAYER");
         mAscii.mAsciiStartUpdater(100);
         mServer = new Server(this);
         mVideoView=(VideoView)findViewById(R.id.playerSurface);
