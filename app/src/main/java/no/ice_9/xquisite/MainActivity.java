@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
         }
         else if(mInitDone)
         {
-            mAscii.mAsciiStopUpdater();
+            mAscii.mAsciiStopUpdater(1);
             mTimerLoop.cancel();
             Intent intent = new Intent(this, PlayerActivity.class);
             startActivity(intent);
@@ -184,7 +184,7 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         Log.d("MAIN", "paused");
-        mAscii.mAsciiStopUpdater();
+        mAscii.mAsciiStopUpdater(1);
         mTimerLoop.cancel();
         mTimer.cancel();
         mTimer.purge();
@@ -195,7 +195,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         Log.d("MAIN","paused");
-        mAscii.mAsciiStopUpdater();
+        mAscii.mAsciiStopUpdater(1);
         mTimerLoop.cancel();
         mTimer.cancel();
         mTimer.purge();

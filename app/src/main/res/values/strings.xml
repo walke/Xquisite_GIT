@@ -4,8 +4,8 @@
     <string name="hello_world">scienceFuture \n xquisite</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_player">PlayerActivity</string>
-    <string name="server_address">192.168.2.232</string>
-    <string name="server_address3">81.191.243.140</string>
+    <string name="server_address3">192.168.2.232</string>
+    <string name="server_address">81.191.243.140</string>
     <string name="server_address4">192.168.2.27</string>
     <string name="server_address2">http://81.191.243.140/xquisite/</string>
     <string name="title_activity_recorder">RecorderActivity</string>

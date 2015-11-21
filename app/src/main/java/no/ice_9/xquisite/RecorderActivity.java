@@ -33,8 +33,8 @@ public class RecorderActivity extends Activity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 5;//60
-    public static final int QTIME = 5;//20
+    public static final int FTIME = 60;//60
+    public static final int QTIME = 20;//20
 
     public static final int NPARTS= 7;
 
@@ -609,7 +609,7 @@ public class RecorderActivity extends Activity {
         Log.d("RECORDER", "PAUSE recorder ");
 
         mWorking=false;
-        mAscii.mAsciiStopUpdater();
+        mAscii.mAsciiStopUpdater(1);
         releaseMediaRecorder();
         releaseCamera();
         releasePreview();
@@ -635,7 +635,7 @@ public class RecorderActivity extends Activity {
         super.onDestroy();
 
         mWorking=false;
-        mAscii.mAsciiStopUpdater();
+        mAscii.mAsciiStopUpdater(1);
 
         Log.d("RECORDER", "DESTROYING recorder ");
         /*if(mCamera!=null)

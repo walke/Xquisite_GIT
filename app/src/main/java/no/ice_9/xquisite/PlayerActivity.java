@@ -74,7 +74,8 @@ public class PlayerActivity extends Activity {
             mAscii.pushLine("no video found");
             mAscii.pushLine("****************************************");
             mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
-            mAscii.mAsciiStopUpdater();
+            Log.d("PLAYER", "no video1 ");
+
             mError=true;
             return false;
         }
@@ -133,7 +134,7 @@ public class PlayerActivity extends Activity {
             mAscii.pushLine("no video found");
             mAscii.pushLine("****************************************");
             mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
-            mAscii.mAsciiStopUpdater();
+            mAscii.mAsciiStopUpdater(1);
             mError=true;
             return false;
         }
@@ -149,7 +150,7 @@ public class PlayerActivity extends Activity {
                 mAscii.pushLine("try to create one");
                 mAscii.pushLine("****************************************");
                 mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
-                mAscii.mAsciiStopUpdater();
+                mAscii.mAsciiStopUpdater(1);
                 return false;
             }
 
@@ -359,7 +360,7 @@ public class PlayerActivity extends Activity {
     protected void onPause() {
         super.onPause();
 
-        mAscii.mAsciiStopUpdater();
+        mAscii.mAsciiStopUpdater(1);
     }
 
 
@@ -386,6 +387,7 @@ public class PlayerActivity extends Activity {
         mText=(TextView)findViewById(R.id.text_player);
         mAscii=new ASCIIscreen(this,mText,"PLAYER");
         mAscii.mAsciiStartUpdater(100);
+        mAscii.pushLine("loading video..");
         mServer = new Server(this);
         mVideoView=(VideoView)findViewById(R.id.playerSurface);
         mVideoView.setAlpha(0.0f);
@@ -398,10 +400,13 @@ public class PlayerActivity extends Activity {
 
                 //boolean result=loadVideo();
                 boolean result=loadStoryData();
+
                 if(result)
                 {
+
                     tAct.runOnUiThread(new Runnable() {
                         public void run() {
+
                             Log.d("PLAYER", "got list");
                             preparePlayer();
 
@@ -409,6 +414,10 @@ public class PlayerActivity extends Activity {
 
                         }
                     });
+                }
+                else
+                {
+                    mAscii.mAsciiStopUpdater(100);
                 }
 
 

@@ -73,6 +73,7 @@ public class ASCIIscreen {
     boolean mUpdating;
 
     boolean mRequestStop;
+    int mStopTime;
 
     String mActParent;
 
@@ -185,6 +186,7 @@ public class ASCIIscreen {
 
     private void createUpdater()
     {
+        mStopTime=-1;
         final Random Rnd=new Random();
         mUpdater=new TimerTask() {
             @Override
@@ -208,7 +210,7 @@ public class ASCIIscreen {
                     }
                 });
 
-                if(mRequestStop){ mUpdater.cancel();}
+                if(mRequestStop){ mStopTime--;if(mStopTime<=0){mUpdater.cancel();}}
                 Log.d("ASCII","RUNNING from "+ mActParent);
 
             }
@@ -221,6 +223,7 @@ public class ASCIIscreen {
     {
         if(!mUpdating)
         {
+
             mUpdating=true;
             mRequestStop=false;
             createUpdater();
@@ -229,9 +232,10 @@ public class ASCIIscreen {
 
     }
 
-    public void mAsciiStopUpdater()
+    public void mAsciiStopUpdater(int delay)
     {
-        mUpdater.cancel();
+        mStopTime=delay;
+        //mUpdater.cancel();
         mRequestStop=true;
         mUpdating=false;
     }
