@@ -33,8 +33,8 @@ public class RecorderActivity extends Activity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 60;//60
-    public static final int QTIME = 20;//20
+    public static final int FTIME = 5;//60
+    public static final int QTIME = 5;//20
 
     public static final int NPARTS= 7;
 
@@ -123,6 +123,7 @@ public class RecorderActivity extends Activity {
 
             //try to get camera instance
             mCamera=getCameraInstance(camId);//TODO: get real fronfacing camera here or in <-this function
+
             if(mCamera==null){return false;}
             else
             {
@@ -174,6 +175,7 @@ public class RecorderActivity extends Activity {
     private boolean initPreview()
     {
         mPreview = new Preview(this,mCamera);
+
         Log.d("RECORDER","preview created "+mPreview.getHolder().getSurface());
 
         FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
