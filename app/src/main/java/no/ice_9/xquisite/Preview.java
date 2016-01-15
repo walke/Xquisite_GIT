@@ -84,7 +84,8 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback
             Log.d("VIDEO_LOG", "SETTING SIZE " + mPreviewSize.width + "," + mPreviewSize.height);
             mCamera.setParameters(parameters);
             mCamera.setDisplayOrientation(90);
-            //mHolder.setFormat(format);
+            mHolder.setFormat(format);
+
             //mHolder.setFixedSize(pSize.width,pSize.height);
 
             mCamera.setPreviewDisplay(mHolder);

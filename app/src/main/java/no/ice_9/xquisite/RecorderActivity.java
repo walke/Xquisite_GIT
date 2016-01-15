@@ -33,10 +33,10 @@ public class RecorderActivity extends Activity {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 5;//60
-    public static final int QTIME = 5;//20
+    public static final int FTIME = 90;//60
+    public static final int QTIME = 30;//20
 
-    public static final int NPARTS= 7;
+    public static final int NPARTS= 2;
 
     //CLASS VARIABLES
     RecorderActivity tAct;
@@ -95,12 +95,12 @@ public class RecorderActivity extends Activity {
         mQuestion=new String[]
                 {
                         "ENJOY FREEDOM",
-                        "How old is X now??",
-                        "Where is X now??",
-                        "What is she doing now??",
-                        "What is she feeling??",
-                        "What is she thinking??",
-                        "What is her biggest challenge??"
+                        "SOMEBODY IS WATCHING YOU!"//,
+                       // "Where is X now??",
+                       // "What is she doing now??",
+                        //"What is she feeling??",
+                        //"What is she thinking??",
+                       // "What is her biggest challenge??"
                 };
 
 
@@ -210,6 +210,8 @@ public class RecorderActivity extends Activity {
 
         Log.d("RECORDER", "setting outputfile ");
         mRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
+
+        mRecorder.setOrientationHint(90);
 
         //Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
         // Create our Preview view and set it as the content of our activity.

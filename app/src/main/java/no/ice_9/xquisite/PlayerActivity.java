@@ -86,6 +86,8 @@ public class PlayerActivity extends Activity {
 
 
 
+
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -111,7 +113,7 @@ public class PlayerActivity extends Activity {
         }
 
         Log.d("PLAYER", "getting file");
-        mAscii.pushLine("one more second..");
+        //mAscii.pushLine("one more second..");
         mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
         Log.d("PLAYER","got file");
         Log.d("PLAYER", "URI" + mVideoUri);
@@ -142,7 +144,17 @@ public class PlayerActivity extends Activity {
         {
             mAscii.pushLine("we found some cluster of a story for you");
             mAscii.pushLine("we will now try to get it ready for you");
+
+            mAscii.pushLine("");
+            mAscii.pushLine("This is a story game about XX chromosome human born in 2045");
+            mAscii.pushLine("Her name is X");
+            mAscii.pushLine("The person before you made up part of her story. You are invited to continue her story");
+            mAscii.pushLine("");
+            Log.d("PLAYER", "DESCINST");
+
             mVideoPart[0]=mServer.loadPart(storyindx,0);
+
+
 
             if(mVideoPart[0].isEmpty())
             {
@@ -154,7 +166,9 @@ public class PlayerActivity extends Activity {
                 return false;
             }
 
-            mAscii.pushLine("seems like it is ready");
+
+
+            //mAscii.pushLine("seems like it is ready");
             Log.d("PLAYER", "file path:" + mVideoPart[0]);
 
             /*String storyaddr = mServer.getVideoFile(storyindx);
@@ -179,7 +193,7 @@ public class PlayerActivity extends Activity {
         //Log.d("VIDEO_LOG", "URI "+mVideoUri);
         //mVideoUri=Uri.("http://81.191.243.140/uploads/tmp.mp4");
         Log.d("PLAYER", "getting file");
-        mAscii.pushLine("one more second..");
+        //mAscii.pushLine("one more second..");
         mVideoUri=Uri.fromFile(new File(mVideoPart[0].getFilePath()));
         Log.d("PLAYER","got file");
         Log.d("PLAYER", "URI" + mVideoUri);
@@ -275,7 +289,11 @@ public class PlayerActivity extends Activity {
 
         mVideoReady=true;
 
-        mAscii.pushLine("So now it looks ready");
+        //mAscii.pushLine("So now it looks ready");
+
+
+
+
         mAscii.pushLine("#########################");
         mAscii.pushLine("TAP THE SCREEN TO PLAY IT");
 
@@ -296,8 +314,8 @@ public class PlayerActivity extends Activity {
         mPlayButton.setAlpha(0.0f);*/
 
         mVideoView.start();
-
-        mAscii.pushLine(mVideoPart[mCurrentPart].getQuestion());
+        Log.d("PLAYER","VIDEO LINE");
+        //mAscii.pushLine(mVideoPart[mCurrentPart].getQuestion());
     }
 
     public void loadRest()
@@ -388,6 +406,13 @@ public class PlayerActivity extends Activity {
         mAscii=new ASCIIscreen(this,mText,"PLAYER");
         mAscii.mAsciiStartUpdater(100);
         mAscii.pushLine("loading video..");
+
+        mAscii.pushLine("");
+        mAscii.pushLine("This is a story game about XX chromosome human born in 2045");
+        mAscii.pushLine("Her name is X");
+        mAscii.pushLine("The person before you made up part of her story. You are invited to continue her story");
+        mAscii.pushLine("");
+        Log.d("PLAYER", "DESCINST");
         mServer = new Server(this);
         mVideoView=(VideoView)findViewById(R.id.playerSurface);
         mVideoView.setAlpha(0.0f);

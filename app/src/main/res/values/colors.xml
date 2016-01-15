@@ -7,6 +7,6 @@
     <color name="gray_light">#AAAAAA</color>
     <color name="white">#FFFFFF</color>
     <color name="red">#FFFF0000</color>
-    <color name="green">#FF00FF00</color>
+    <color name="green">#FFFFFFFF</color>
 
 </resources>
