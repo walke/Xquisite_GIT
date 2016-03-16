@@ -5,12 +5,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.TypedValue;
 
@@ -25,6 +27,8 @@ public class MainActivity extends Activity {
     //ACII LAYER
     private ASCIIscreen mAscii;
     private TextView mText;
+    private GLSurfaceView mGLView;
+
 
     //MAIN LOOP
     public TimerTask mTimerLoop;
@@ -61,6 +65,7 @@ public class MainActivity extends Activity {
 
     private void createTimerTask()
     {
+
         mTimerLoop = new TimerTask() {
             @Override
             public void run() {
@@ -200,6 +205,7 @@ public class MainActivity extends Activity {
         mTimer.cancel();
         mTimer.purge();
         //mTimerLoop=null;
+        mAscii.mGLView.onPause();
 
     }
 
@@ -212,16 +218,21 @@ public class MainActivity extends Activity {
         mInitDone=false;
         mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
         mTime=0;
+        mAscii.mGLView.onResume();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mTime=0;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        mTime=0;
         mText=(TextView)findViewById(R.id.text_main);
+
+        //mGlview=(TextView)findViewById(R.id.text_main);
         mAscii=new ASCIIscreen(this,mText,"MAIN");
+        setContentView(mAscii.mGLView);
         //mAscii.mAsciiStartUpdater(50);
         mInitDone=false;
         mReconnectTime=-1;

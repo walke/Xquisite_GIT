@@ -3,39 +3,37 @@ package no.ice_9.xquisite;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BitmapShader;
-import android.graphics.Matrix;
-import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.graphics.BitmapCompat;
+
+import android.opengl.EGLConfig;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+
+
+import android.text.BoringLayout;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.Buffer;
+
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
+import java.nio.charset.IllegalCharsetNameException;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.microedition.khronos.opengles.GL10;
+
 
 /**
  * Created by HUMAN on 15.10.2015.
@@ -46,7 +44,8 @@ public class ASCIIscreen {
     Display display;
     DisplayMetrics displayMetrics;
 
-    TextView mText;
+    //TextView mText;
+    XQGLSurfaceView mGLView;
 
     //STATIC LINE NUMBER
     static private int lineCount=30;
@@ -82,18 +81,22 @@ public class ASCIIscreen {
     public ASCIIscreen(Context context,TextView text,String actParent)
     {
 
+
+
         mActParent=actParent;
         mAsciiCharSet=new AsciiCharSet("ASCII",null);
         mUpdating=false;
         mLine=new String[lineCount];
         mLinePointer=0;
         tAct=(Activity)context;
-        mText=text;
+        //mText=text;
         display = ((WindowManager)context.getSystemService(context.WINDOW_SERVICE)).getDefaultDisplay();
         displayMetrics=new DisplayMetrics();
         display.getMetrics(displayMetrics);
         mRage=false;
         mRequestStop=false;
+
+        mGLView = new XQGLSurfaceView(context,displayMetrics,lineCount);
 
         //WORDS TO BE USED
         mWordList=new String[]{"science","life","corruption","future","source","utopia","time","order","chaos"};
@@ -103,14 +106,14 @@ public class ASCIIscreen {
         lineHeight=displayMetrics.heightPixels/lineCount;
         //Log.d("ASCII", "dispH,lineH:" + displayMetrics.heightPixels + " " + lineHeight);
 
-        mText.setTextSize(TypedValue.COMPLEX_UNIT_PX, lineHeight);
+        //mText.setTextSize(TypedValue.COMPLEX_UNIT_PX, lineHeight);
         float a = 100.0f/120.0f;
-        mText.setLineSpacing(0.0f, a);
+        //mText.setLineSpacing(0.0f, a);
 
         mSymbolsPerLine=-1;
 
-
-
+        mReady=true;
+        /*
         mText.post(new Runnable()
         {
             @Override
@@ -121,9 +124,11 @@ public class ASCIIscreen {
                 boolean done = false;
                 String tmpstr = "";
                 int i = 0;
+                mReady=true;
+                /*
                 while (!done)
                 {
-                    mText.setText(tmpstr);
+                    //mText.setText(tmpstr);
                     tmpstr += "#";
                     if (mText.getLineCount() == 2)
                     {
@@ -153,8 +158,9 @@ public class ASCIIscreen {
                     i++;
 
                 }
+
             }
-        });
+        });*/
 
 
         /*while(mSymbolsPerLine==-1)
@@ -206,12 +212,12 @@ public class ASCIIscreen {
                     @Override
                     public void run() {
 
-                        mText.setText(mAllLines + "a");
+                        //mText.setText(mAllLines + "a");
                     }
                 });
 
                 if(mRequestStop){ mStopTime--;if(mStopTime<=0){mUpdater.cancel();}}
-                Log.d("ASCII","RUNNING from "+ mActParent);
+                //Log.d("ASCII","RUNNING from "+ mActParent);
 
             }
         };
@@ -247,9 +253,12 @@ public class ASCIIscreen {
 
     public void pushLine(String line)
     {
+        //Log.d("ASCII","line:"+line);
+
         int i;
         if(mLinePointer<lineCount)
         {
+            mGLView.putString(line,mLinePointer,0);
             mLine[mLinePointer]=line;
             mLinePointer++;
         }
@@ -257,23 +266,24 @@ public class ASCIIscreen {
         {
             for(i=0;i<lineCount-1;i++)
             {
-
-                mLine[i]=mLine[i+1];
+               mGLView.putString(mLine[i+1],i,0);
+               //mLine[i]=mLine[i+1];
             }
             mLine[i]=line;
+            mGLView.putString(line,i,0);
         }
 
     }
 
-    public void modLine(String line, int ndx,int pos)
-    {
+    public void modLine(String line, int ndx,int pos) {
+        mGLView.putString(line,ndx,pos);
         //Log.d("ASCII","mll"+mLine[ndx].length());
-        if(ndx<mLine.length )
+        /*if(ndx<mLine.length )
         {
 
             if(pos==-1)
             {
-                mLine[ndx]=line;
+                //mLine[ndx]=line;
             }
             else if(mReady && pos+line.length()<mLine[ndx].length())
             {
@@ -288,9 +298,9 @@ public class ASCIIscreen {
 
                 }
 
-                mLine[ndx]=String.copyValueOf(tmpCh);
+                //mLine[ndx]=String.copyValueOf(tmpCh);
             }
-        }
+        }*/
 
 
     }
@@ -343,7 +353,7 @@ public class ASCIIscreen {
     {
 
 
-
+        /*
         if(mReady)
         {
             int i=0;
@@ -358,7 +368,7 @@ public class ASCIIscreen {
                 mLine[i]=mTrash[rnd.nextInt(100)];
             }
             mLinePointer=i;
-        }
+        }*/
 
     }
 
@@ -387,6 +397,80 @@ public class ASCIIscreen {
 
 
 }
+
+class XQGLSurfaceView extends GLSurfaceView{
+    private final XQGLRenderer mRenderer;
+
+    public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount)
+    {
+        super(context);
+
+        // Create an OpenGL ES 2.0 context
+        setEGLContextClientVersion(2);
+
+        mRenderer = new XQGLRenderer();
+        mRenderer.asciicols=(int)(lineCount*((float)metrics.widthPixels)/(float)metrics.heightPixels);
+        mRenderer.asciirows=lineCount;
+        Log.d("ASCII","cr"+mRenderer.asciicols+":"+mRenderer.asciirows);
+        mRenderer.actContext=context;
+        // Set the Renderer for drawing on the GLSurfaceView
+        setRenderer(mRenderer);
+
+    }
+
+    private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
+    private float mPreviousX;
+    private float mPreviousY;
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        // MotionEvent reports input details from the touch screen
+        // and other input controls. In this case, you are only
+        // interested in events where the touch position changed.
+
+        float x = e.getX();
+        float y = e.getY();
+
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+
+                float dx = x - mPreviousX;
+                float dy = y - mPreviousY;
+
+                // reverse direction of rotation above the mid-line
+                if (y > getHeight() / 2) {
+                    dx = dx * -1 ;
+                }
+
+                // reverse direction of rotation to left of the mid-line
+                if (x < getWidth() / 2) {
+                    dy = dy * -1 ;
+                }
+
+                mRenderer.setAngle(
+                        mRenderer.getAngle() +
+                                ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
+                requestRender();
+        }
+
+        mPreviousX = x;
+        mPreviousY = y;
+        return true;
+    }
+
+    public void putString(String str,int row,int pos)
+    {
+        Log.d("ASCII","line:"+str);
+        mRenderer.putString(str,row,pos);
+    }
+
+
+
+}
+
+
+
+
 
 class AsciiCharSet extends Charset {
     /**
