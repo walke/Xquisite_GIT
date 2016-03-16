@@ -123,6 +123,7 @@ public class RecorderActivity extends Activity {
 
             //try to get camera instance
             mCamera=getCameraInstance(camId);//TODO: get real fronfacing camera here or in <-this function
+            if(mCamera==null){mCamera=getCameraInstance(0);}
 
             if(mCamera==null){return false;}
             else
@@ -211,7 +212,7 @@ public class RecorderActivity extends Activity {
         Log.d("RECORDER", "setting outputfile ");
         mRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
 
-        mRecorder.setOrientationHint(90);
+        mRecorder.setOrientationHint(270);
 
         //Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
         // Create our Preview view and set it as the content of our activity.
@@ -290,6 +291,24 @@ public class RecorderActivity extends Activity {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                if (isRecording)
+                {
+                    tAct.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run()
+                        {
+                            mAscii.modLine(Integer.toString(mRecorder.getMaxAmplitude()),10,-1);
+                        }
+                    });
+
+                }
+
+
+            }
+        },0,100);
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
                 Log.d("RECORDER","TIMER: rec");
                 if (mMainDone && mWorking) {
                     Log.d("RECORDER","TIMER: exiting");
@@ -330,7 +349,8 @@ public class RecorderActivity extends Activity {
                                 mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 0, -1);
-                                mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+
+                                //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 if (mCurrentPart >= 0) {
                                     mAscii.modLine("" + mQuestion[mCurrentPart], 3, -1);
                                 }
