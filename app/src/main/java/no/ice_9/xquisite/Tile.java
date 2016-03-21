@@ -16,15 +16,20 @@ public class Tile {
 
     private int textureRef = -1;
     private int fsTexture;
+    private int avalTextureRef = -1;
+    private int avalfsTexture;
 
     private final String vertexShaderCode =
             "attribute vec4 vPosition;" +
                     "attribute vec2 TexCoordIn;" +
                     "varying vec2 TexCoordOut;" +
+                    "attribute vec2 AvalTexCoordIn;" +
+                    "varying vec2 AvalTexCoordOut;" +
                     "void main() {" +
                     //the matrix must be included as a modifier of gl_Position
                     "  gl_Position = vPosition;" +
                     "  TexCoordOut = TexCoordIn;" +
+                    "  AvalTexCoordOut = AvalTexCoordIn;" +
                     "}";
 
     private final String fragmentShaderCode =
@@ -32,6 +37,8 @@ public class Tile {
                     "uniform vec4 vColor;" +
                     "uniform sampler2D Texture;" +
                     "varying lowp vec2 TexCoordOut;" +
+                    "uniform sampler2D AvalTexture;" +
+                    "varying lowp vec2 AvalTexCoordOut;" +
                     "void main() {" +
                     "  gl_FragColor = (vColor * texture2D(Texture, TexCoordOut));" +
                     "}";
@@ -42,6 +49,7 @@ public class Tile {
     private FloatBuffer vertexBuffer;
     private ShortBuffer indexBuffer;
     private FloatBuffer textureBuffer;
+    private FloatBuffer avalTextureBuffer;
 
 
 
@@ -75,13 +83,25 @@ public class Tile {
 
             };
 
+    float[] tileAvalTextureCoords =
+            {
+                    // Front face
+
+
+                    0.0f, 1.0f,
+                    1.0f, 1.0f,
+                    0.0f, 0.0f,
+                    1.0f, 0.0f
+
+            };
+
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
     private final int mProgram;
 
 
-    public Tile(int x,int y,int totx,int toty, int texture) {
+    public Tile(int x,int y,int totx,int toty, int texture, int avalTexture) {
 
 
 
@@ -98,6 +118,15 @@ public class Tile {
         tileCoords[9]=((xscal*x))+xscal-1.0f;
         tileCoords[10]=((yscal*y))+yscal-1.0f;
 
+        tileAvalTextureCoords[0]=((xscal*x))-1.0f;
+        tileAvalTextureCoords[1]=((yscal*y))+yscal-1.0f;
+        tileAvalTextureCoords[2]=((xscal*x))+xscal-1.0f;
+        tileAvalTextureCoords[3]=((yscal*y))+yscal-1.0f;
+        tileAvalTextureCoords[4]=((xscal*x))-1.0f;
+        tileAvalTextureCoords[5]=((yscal*y))-1.0f;
+        tileAvalTextureCoords[6]=((xscal*x))+xscal-1.0f;
+        tileAvalTextureCoords[7]=((yscal*y))-1.0f;
+
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         vertexBuffer = byteBuffer.asFloatBuffer();
@@ -113,6 +142,12 @@ public class Tile {
         textureBuffer = byteBuffer.asFloatBuffer();
         textureBuffer.put(tileTextureCoords);
         textureBuffer.position(0);
+
+        byteBuffer = ByteBuffer.allocateDirect(tileAvalTextureCoords.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        avalTextureBuffer = byteBuffer.asFloatBuffer();
+        avalTextureBuffer.put(tileAvalTextureCoords);
+        avalTextureBuffer.position(0);
 
 
 
@@ -134,12 +169,14 @@ public class Tile {
         GLES20.glLinkProgram(mProgram);
 
         textureRef = texture;
+        avalTextureRef = avalTexture;
 
     }
 
     private int mPositionHandle;
     private int mColorHandle;
     private int mTextureHandle;
+    private int mAvalTextureHandle;
 
     private final int vertexCount = tileCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
@@ -169,6 +206,14 @@ public class Tile {
         fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
         if (fsTexture == -1) Log.e("ASCII", "Texture not found");
 
+        //get handle to texture coordinate variable
+        mAvalTextureHandle = GLES20.glGetAttribLocation(mProgram, "AvalTexCoordIn");
+        if (mTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
+
+        //get handle to shape's texture reference
+        avalfsTexture = GLES20.glGetUniformLocation(mProgram, "AvalTexture");
+        if (fsTexture == -1) Log.e("ASCII", "AvalTexture not found");
+
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
@@ -184,6 +229,10 @@ public class Tile {
                 GLES20.GL_FLOAT, false,
                 textureStride, textureBuffer);
 
+        GLES20.glVertexAttribPointer(mAvalTextureHandle, COORDS_PER_TEXTURE,
+                GLES20.GL_FLOAT, false,
+                textureStride, avalTextureBuffer);
+
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
         GLES20.glEnableVertexAttribArray(mTextureHandle);
@@ -195,19 +244,25 @@ public class Tile {
 
         GLES20.glUniform1i(fsTexture, 0);
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, avalTextureRef);
+
+        GLES20.glUniform1i(avalfsTexture, 0);
+
         //Draw the shape
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
 
 
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mTextureHandle);
+        GLES20.glDisableVertexAttribArray(mAvalTextureHandle);
         GLES20.glDisableVertexAttribArray(mPositionHandle);
 
 
 
         /*// Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
-
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);*/
 

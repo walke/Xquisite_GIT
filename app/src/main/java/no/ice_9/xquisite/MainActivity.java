@@ -25,9 +25,9 @@ import java.util.TimerTask;
 public class MainActivity extends Activity {
 
     //ACII LAYER
-    private ASCIIscreen mAscii;
+    public ASCIIscreen mAscii;
     private TextView mText;
-    private GLSurfaceView mGLView;
+
 
 
     //MAIN LOOP
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
     private Server mServer;
 
     //Start new activity for creating new part of a story.
-    public void CreateNewStory(View view)
+    public void CreateNewStory()
     {
         if(mScreenSaver)
         {
@@ -61,6 +61,11 @@ public class MainActivity extends Activity {
             //view.setVisibility(View.GONE);
         }
 
+    }
+
+    public void glTouch()
+    {
+        CreateNewStory();
     }
 
     private void createTimerTask()
@@ -179,7 +184,9 @@ public class MainActivity extends Activity {
     public boolean onTouchEvent(MotionEvent event) {
 
         super.onTouchEvent(event);
-        mAscii.modLine("tatatat", 0, -1);
+
+        CreateNewStory();
+        //mAscii.modLine("tatatat", 0, -1);
         Log.d("MAIN","touch");
 
         return true;

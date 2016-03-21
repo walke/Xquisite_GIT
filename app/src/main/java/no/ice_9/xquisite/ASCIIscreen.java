@@ -96,7 +96,7 @@ public class ASCIIscreen {
         mRage=false;
         mRequestStop=false;
 
-        mGLView = new XQGLSurfaceView(context,displayMetrics,lineCount);
+        mGLView = new XQGLSurfaceView(context,displayMetrics,lineCount,this);
 
         //WORDS TO BE USED
         mWordList=new String[]{"science","life","corruption","future","source","utopia","time","order","chaos"};
@@ -112,7 +112,7 @@ public class ASCIIscreen {
 
         mSymbolsPerLine=-1;
 
-        mReady=true;
+        //mReady=true;
         /*
         mText.post(new Runnable()
         {
@@ -212,7 +212,7 @@ public class ASCIIscreen {
                     @Override
                     public void run() {
 
-                        //mText.setText(mAllLines + "a");
+                        //mGLView.setText(mAllLines + "");
                     }
                 });
 
@@ -323,6 +323,8 @@ public class ASCIIscreen {
 
         btm2=Bitmap.createScaledBitmap(btm, mSymbolsPerLine,lineCount, false);
 
+        btm2.setPixel(0,0,0);
+
         ByteBuffer mChBuff = ByteBuffer.allocate(btm2.getByteCount());
         btm2.copyPixelsToBuffer(mChBuff);
 
@@ -353,8 +355,8 @@ public class ASCIIscreen {
     {
 
 
-        /*
-        if(mReady)
+
+        /*if(mReady)
         {
             int i=0;
             Random rnd=new Random();
@@ -366,6 +368,7 @@ public class ASCIIscreen {
 
                 //tmpStr=new String(buf);
                 mLine[i]=mTrash[rnd.nextInt(100)];
+
             }
             mLinePointer=i;
         }*/
@@ -400,17 +403,19 @@ public class ASCIIscreen {
 
 class XQGLSurfaceView extends GLSurfaceView{
     private final XQGLRenderer mRenderer;
+    private final Activity actContext;
 
-    public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount)
+    public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount,ASCIIscreen asciiscreen)
     {
         super(context);
-
+        actContext=(Activity)context;
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2);
 
         mRenderer = new XQGLRenderer();
         mRenderer.asciicols=(int)(lineCount*((float)metrics.widthPixels)/(float)metrics.heightPixels);
         mRenderer.asciirows=lineCount;
+        mRenderer.view=asciiscreen;
         Log.d("ASCII","cr"+mRenderer.asciicols+":"+mRenderer.asciirows);
         mRenderer.actContext=context;
         // Set the Renderer for drawing on the GLSurfaceView
@@ -424,6 +429,7 @@ class XQGLSurfaceView extends GLSurfaceView{
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
+
         // MotionEvent reports input details from the touch screen
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
@@ -433,24 +439,8 @@ class XQGLSurfaceView extends GLSurfaceView{
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
+                actContext.onTouchEvent(e);
 
-                float dx = x - mPreviousX;
-                float dy = y - mPreviousY;
-
-                // reverse direction of rotation above the mid-line
-                if (y > getHeight() / 2) {
-                    dx = dx * -1 ;
-                }
-
-                // reverse direction of rotation to left of the mid-line
-                if (x < getWidth() / 2) {
-                    dy = dy * -1 ;
-                }
-
-                mRenderer.setAngle(
-                        mRenderer.getAngle() +
-                                ((dx + dy) * TOUCH_SCALE_FACTOR));  // = 180.0f / 320
-                requestRender();
         }
 
         mPreviousX = x;
@@ -462,6 +452,11 @@ class XQGLSurfaceView extends GLSurfaceView{
     {
         Log.d("ASCII","line:"+str);
         mRenderer.putString(str,row,pos);
+    }
+
+    public void setText()
+    {
+
     }
 
 

@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.WindowManager;
@@ -614,6 +615,8 @@ public class RecorderActivity extends Activity {
         mAscii=new ASCIIscreen(this,mText,"RECORDER");
         mAscii.mAsciiStartUpdater(100);
 
+        setContentView(mAscii.mGLView);
+
 
         mFilePath = getExternalFilesDir("VID").getPath();
         //mFilePath = getDir("VID", 0).getPath();
@@ -634,12 +637,20 @@ public class RecorderActivity extends Activity {
 
         mWorking=false;
         mAscii.mAsciiStopUpdater(1);
+        mAscii.mGLView.onPause();
         releaseMediaRecorder();
         releaseCamera();
         releasePreview();
 
         finish();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mAscii.mGLView.onResume();
     }
 
     private void cleanUp()
@@ -707,5 +718,18 @@ public class RecorderActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //TODO: fix on touch event
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        super.onTouchEvent(event);
+
+
+        //mAscii.modLine("tatatat", 0, -1);
+        Log.d("REC","touch");
+
+        return true;
     }
 }

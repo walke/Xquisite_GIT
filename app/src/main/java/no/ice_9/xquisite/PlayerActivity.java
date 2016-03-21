@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -379,9 +380,15 @@ public class PlayerActivity extends Activity {
         super.onPause();
 
         mAscii.mAsciiStopUpdater(1);
+        mAscii.mGLView.onPause();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        mAscii.mGLView.onResume();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -450,6 +457,7 @@ public class PlayerActivity extends Activity {
         });
 
         mTask.start();
+        setContentView(mAscii.mGLView);
 
     }
 
@@ -473,5 +481,18 @@ public class PlayerActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //TODO: fix on touch event
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        super.onTouchEvent(event);
+
+
+        //mAscii.modLine("tatatat", 0, -1);
+        Log.d("PLAYER","touch");
+
+        return true;
     }
 }

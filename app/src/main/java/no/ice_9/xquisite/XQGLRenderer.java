@@ -18,13 +18,13 @@ import javax.microedition.khronos.opengles.GL10;
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private Tile[] mTile;
-    private int[] textures = new int[1];
+    private int[] textures = new int[2];
     public Context actContext;
 
     public int asciicols;
     public int asciirows;
 
-
+    public ASCIIscreen view;
 
     private float mAngle;
 
@@ -32,21 +32,54 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.3f, 0.0f, 0.5f);
 
+
+
         int textGridTex=loadTexture(actContext,R.drawable.textgrid);
+        textures[0]=textGridTex;
+
+
+
         Log.d("ASCII", "tex" + textGridTex);
         int sx=asciicols;
         int sy=asciirows;
+
+
+        GLES20.glGenTextures(1, textures, 1);
+        Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ALPHA_8 );
+
+        Random r= new Random();
+        for(int i=0;i<asciicols;i++)
+        {
+            for(int j=0;j<asciicols;j++)
+            {
+                bitmap.setPixel(i,j,r.nextInt(256*256*256));
+            }
+        }
+
+
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
+        // Set filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+        // Load the bitmap into the bound texture.
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+
+        int screenTileValue=textures[1];
+
 
         mTile=new Tile[sx*sy];
 
 
         int k=0;
 
-        for(int j=0;j<sy;j++)
+        for(int j=sy-1;j>=0;j--)
         {
             for(int i=0;i<sx;i++)
             {
-                mTile[k] =new Tile(i,j,sx,sy,textGridTex);
+                mTile[k] =new Tile(i,j,sx,sy,textGridTex,screenTileValue);
                 k++;
             }
         }
@@ -64,11 +97,18 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
         Random rnd=new Random();
+        view.mReady=true;
 
+        /*int l=0;
+        for(int j=0;j<asciirows;j++)
 
-        /*for(int i=0;i<mTile.length;i++)
         {
-            mTile[i].putChar("helasdlo woasdasdrld".charAt(rnd.nextInt(8)));
+            for(int i=0;i<asciicols;i++)
+            {
+                int ndx = i+(j*asciicols);// (asciicols*(asciirows*(j-1))-i-1);
+                mTile[ndx].putChar("helasdlo woasdasdfasdasfdafssdfgsdfsdfssdrld".charAt(j));
+                l++;
+            }
         }*/
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
@@ -76,9 +116,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         int sx=asciicols;
         int sy=asciirows;
         int k=0;
-        for(int i=0;i<sx;i++)
+        for(int j=0;j<sy;j++)
+
         {
-            for(int j=0;j<sy;j++)
+            for(int i=0;i<sx;i++)
             {
                 mTile[k].draw();
                 k++;
@@ -149,12 +190,21 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void putString(String str, int row, int pos)
     {
-        if(row<asciirows && pos+str.length()<asciicols)
+        if(row<asciirows &&/* pos+str.length()<asciicols &&*/ view.mReady)
         {
+            Log.d("ASCII","AS"+row+" :"+pos+"__"+str.length());
             for(int i=0;i<str.length();i++)
             {
-                Log.d("ASCII","CC"+(row*32+pos+i));
-                mTile[row * 32 + pos + i].putChar(str.charAt(i));
+                int ndx = ((asciicols*(row))+(pos))+i;
+                Log.d("ASCII","CC"+ndx+ ":"+mTile.length);
+
+                if(ndx>=mTile.length || ndx<0){continue;}
+
+                if(mTile[ndx]!=null && ndx>0 )
+                {
+                    Log.d("ASCII","CC"+mTile[ndx]+":"+mTile.length);
+                    mTile[ndx].putChar(str.charAt(i));
+                }
             }
         }
     }
