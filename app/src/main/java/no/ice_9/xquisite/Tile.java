@@ -40,10 +40,13 @@ public class Tile {
                     "uniform sampler2D AvalTexture;" +
                     "varying lowp vec2 AvalTexCoordOut;" +
                     "void main() {" +
-                    "vec4 col1 = texture2D(AvalTexture, TexCoordOut);"+
-                    "float i1=dot(col1,vec4(1.0,1.0,1.0,1.0));"+
+                    "vec4 col1 = texture2D(AvalTexture, AvalTexCoordOut);"+
+                    "float i1=col1.r;"+
+                    "float i2=col1.g;"+
+                    "float i3=col1.b;"+
+                    "float i4=col1.a;"+
                     //"  gl_FragColor = (vColor * texture2D(Texture, TexCoordOut));" +
-                    "  gl_FragColor = vec4(i1,1.0,i1,1.0);" +
+                    "  gl_FragColor = vec4(i1,i2,i3,i4);" +
                     "}";
 
 
@@ -121,14 +124,18 @@ public class Tile {
         tileCoords[9]=((xscal*x))+xscal-1.0f;
         tileCoords[10]=((yscal*y))+yscal-1.0f;
 
-        tileAvalTextureCoords[0]=((xscal*x))-1.0f;
-        tileAvalTextureCoords[1]=((yscal*y))+yscal-1.0f;
-        tileAvalTextureCoords[2]=((xscal*x))+xscal-1.0f;
-        tileAvalTextureCoords[3]=((yscal*y))+yscal-1.0f;
-        tileAvalTextureCoords[4]=((xscal*x))-1.0f;
-        tileAvalTextureCoords[5]=((yscal*y))-1.0f;
-        tileAvalTextureCoords[6]=((xscal*x))+xscal-1.0f;
-        tileAvalTextureCoords[7]=((yscal*y))-1.0f;
+        xscal=1.0f/(float)toty;
+        yscal=1.0f/(float)totx;
+        float xd=xscal*(float)x;
+        float yd=yscal*(float)y;
+        tileAvalTextureCoords[0]=xd+xscal*0.0f;
+        tileAvalTextureCoords[1]=yd+yscal*1.0f;
+        tileAvalTextureCoords[2]=xd+xscal*1.0f;
+        tileAvalTextureCoords[3]=yd+yscal*1.0f;
+        tileAvalTextureCoords[4]=xd+xscal*0.0f;
+        tileAvalTextureCoords[5]=yd+yscal*0.0f;
+        tileAvalTextureCoords[6]=xd+xscal*1.0f;
+        tileAvalTextureCoords[7]=yd+yscal*0.0f;
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
@@ -208,11 +215,11 @@ public class Tile {
 
         //get handle to texture coordinate variable
         mAvalTextureHandle = GLES20.glGetAttribLocation(mProgram, "AvalTexCoordIn");
-        if (mTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
+        if (mAvalTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
 
         //get handle to shape's texture reference
         avalfsTexture = GLES20.glGetUniformLocation(mProgram, "AvalTexture");
-        if (fsTexture == -1) Log.e("ASCII", "AvalTexture not found");
+        if (avalfsTexture == -1) Log.e("ASCII", "AvalTexture not found");
 
 
 
@@ -249,7 +256,7 @@ public class Tile {
 
         GLES20.glEnableVertexAttribArray(mTextureHandle);
 
-
+        GLES20.glEnableVertexAttribArray(mAvalTextureHandle);
 
 
 

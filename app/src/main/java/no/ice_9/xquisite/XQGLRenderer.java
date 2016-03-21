@@ -3,6 +3,7 @@ package no.ice_9.xquisite;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
@@ -45,14 +46,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
         GLES20.glGenTextures(1, textures, 1);
-        Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ALPHA_8 );
+        Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
         Random r= new Random();
+
         for(int i=0;i<asciicols;i++)
         {
-            for(int j=0;j<asciicols;j++)
+            for(int j=0;j<asciirows;j++)
             {
-                bitmap.setPixel(i,j,r.nextInt(256));
+                bitmap.setPixel(i,j, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
+                Log.d("GL","PX:"+bitmap.getPixel(i,j));
             }
         }
 
@@ -201,8 +204,32 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
                 if(mTile[ndx]!=null && ndx>0 )
                 {
+                    /*GLES20.glGenTextures(1, textures, 1);
+                    Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+                    Random r= new Random();
+
+
+                    bitmap.setPixel(i,row, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
+
+
+
+
+
+                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
+                    // Set filtering
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+                    // Load the bitmap into the bound texture.
+                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+
+
+                    //int screenTileValue=textures[1];*/
+
+
                     Log.d("ASCII","CC"+mTile[ndx]+":"+mTile.length);
-                    mTile[ndx].putChar(str.charAt(i));
+                    //mTile[ndx].putChar(str.charAt(i));
                 }
             }
         }
