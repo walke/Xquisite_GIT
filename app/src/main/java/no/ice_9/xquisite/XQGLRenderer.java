@@ -52,7 +52,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         {
             for(int j=0;j<asciicols;j++)
             {
-                bitmap.setPixel(i,j,r.nextInt(256*256*256));
+                bitmap.setPixel(i,j,r.nextInt(256));
             }
         }
 
@@ -101,7 +101,6 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         /*int l=0;
         for(int j=0;j<asciirows;j++)
-
         {
             for(int i=0;i<asciicols;i++)
             {
@@ -211,4 +210,3 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
 }
-

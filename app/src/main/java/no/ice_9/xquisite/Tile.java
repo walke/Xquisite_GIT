@@ -40,7 +40,10 @@ public class Tile {
                     "uniform sampler2D AvalTexture;" +
                     "varying lowp vec2 AvalTexCoordOut;" +
                     "void main() {" +
-                    "  gl_FragColor = (vColor * texture2D(Texture, TexCoordOut));" +
+                    "vec4 col1 = texture2D(AvalTexture, TexCoordOut);"+
+                    "float i1=dot(col1,vec4(1.0,1.0,1.0,1.0));"+
+                    //"  gl_FragColor = (vColor * texture2D(Texture, TexCoordOut));" +
+                    "  gl_FragColor = vec4(i1,1.0,i1,1.0);" +
                     "}";
 
 
@@ -188,10 +191,6 @@ public class Tile {
 
         // get handle to vertex shader's vPosition member
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-        //mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-        //mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoordIn");
-
-
 
 
         // get handle to fragment shader's vColor member
@@ -206,6 +205,7 @@ public class Tile {
         fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
         if (fsTexture == -1) Log.e("ASCII", "Texture not found");
 
+
         //get handle to texture coordinate variable
         mAvalTextureHandle = GLES20.glGetAttribLocation(mProgram, "AvalTexCoordIn");
         if (mTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
@@ -213,6 +213,9 @@ public class Tile {
         //get handle to shape's texture reference
         avalfsTexture = GLES20.glGetUniformLocation(mProgram, "AvalTexture");
         if (fsTexture == -1) Log.e("ASCII", "AvalTexture not found");
+
+
+
 
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
@@ -233,22 +236,26 @@ public class Tile {
                 GLES20.GL_FLOAT, false,
                 textureStride, avalTextureBuffer);
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
+        GLES20.glUniform1i(fsTexture, 0);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, avalTextureRef);
+        GLES20.glUniform1i(avalfsTexture, 1);
+
+
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
         GLES20.glEnableVertexAttribArray(mTextureHandle);
 
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
 
-        GLES20.glUniform1i(fsTexture, 0);
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, avalTextureRef);
 
-        GLES20.glUniform1i(avalfsTexture, 0);
+
 
         //Draw the shape
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
