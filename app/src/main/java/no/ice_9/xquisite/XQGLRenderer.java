@@ -19,8 +19,11 @@ import javax.microedition.khronos.opengles.GL10;
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private Tile[] mTile;
-    private int[] textures = new int[2];
+    public int[] textures = new int[2];
     public Context actContext;
+    public boolean upAval;
+
+    Bitmap mBitmap;
 
     public int asciicols;
     public int asciirows;
@@ -33,6 +36,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.3f, 0.0f, 0.5f);
 
+        upAval=true;
+        mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
 
         int textGridTex=loadTexture(actContext,R.drawable.textgrid);
@@ -46,7 +51,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
         GLES20.glGenTextures(1, textures, 1);
-        Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+        //mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
         Random r= new Random();
 
@@ -54,10 +59,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         {
             for(int j=0;j<asciirows;j++)
             {
-                bitmap.setPixel(i,j, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
-                Log.d("GL","PX:"+bitmap.getPixel(i,j));
+                //mBitmap.setPixel(i,j, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
+                mBitmap.setPixel(i, j, Color.argb(0, 0, 0, 0));
+                //Log.d("GL","PX:"+mBitmap.getPixel(i,j));
             }
         }
+
+
 
 
 
@@ -67,8 +75,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
         // Load the bitmap into the bound texture.
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
 
+        //bitmap.recycle();
 
         int screenTileValue=textures[1];
 
@@ -97,10 +106,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }*/
 
+
+
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
         Random rnd=new Random();
         view.mReady=true;
+
+        updateAval();
 
         /*int l=0;
         for(int j=0;j<asciirows;j++)
@@ -131,6 +144,29 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+    }
+
+    public void updateAval()
+    {
+        if (upAval)
+        {
+            //Log.d("GL","bpup"+mBitmap.getPixel(0,0));
+            Log.d("GL", "upval");
+            //GLES20.glGenTextures(1, textures, 1);
+
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
+            // Set filtering
+            // GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            // GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+            // Load the bitmap into the bound texture.
+            //GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, mBitmap);
+            GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0,0,0, mBitmap);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 1);
+
+
+            upAval=false;
+        }
     }
 
     public static int loadShader(int type, String shaderCode){
@@ -194,7 +230,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     {
         if(row<asciirows &&/* pos+str.length()<asciicols &&*/ view.mReady)
         {
-            Log.d("ASCII","AS"+row+" :"+pos+"__"+str.length());
+
+            //GLES20.glGenTextures(1, textures, 1);
+            //Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+            Random r= new Random();
+
+            Log.d("ASCII", "AS" + row + " :" + pos + "__" + str.length());
             for(int i=0;i<str.length();i++)
             {
                 int ndx = ((asciicols*(row))+(pos))+i;
@@ -204,34 +246,28 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
                 if(mTile[ndx]!=null && ndx>0 )
                 {
-                    /*GLES20.glGenTextures(1, textures, 1);
-                    Bitmap bitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
-                    Random r= new Random();
-
-
-                    bitmap.setPixel(i,row, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
-
-
-
-
-
-                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
-                    // Set filtering
-                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-                    GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-                    // Load the bitmap into the bound texture.
-                    GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-
-
-                    //int screenTileValue=textures[1];*/
-
-
-                    Log.d("ASCII","CC"+mTile[ndx]+":"+mTile.length);
+                    mBitmap.setPixel((pos+i)%asciicols, row, Color.argb(r.nextInt(256), 0, 0, 255));
+                    //mBitmap.setPixel(1, 0, Color.argb(r.nextInt(256), r.nextInt(256), r.nextInt(256), 255));
+                    Log.d("ASCII", "CC" + mTile[ndx] + ":" + mTile.length);
                     //mTile[ndx].putChar(str.charAt(i));
                 }
+
+
             }
+            Log.d("GL","bp"+mBitmap.getPixel(0,0));
+            upAval=true;
+            //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
+            // Set filtering
+            // GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            // GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+            // Load the bitmap into the bound texture.
+            //GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, bitmap);
+
+
+            //int screenTileValue=textures[1];
+            //bitmap.recycle();
         }
     }
 

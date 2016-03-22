@@ -114,7 +114,7 @@ public class Tile {
 
 
         float xscal=2/(float)totx;
-        float yscal=2/(float)toty;
+        float yscal=2/(float)toty;//TODO: REMOVE OFFSET
         tileCoords[0]=((xscal*x))-1.0f;
         tileCoords[1]=((yscal*y))-1.0f;
         tileCoords[3]=((xscal*x))+xscal-1.0f;
@@ -124,8 +124,8 @@ public class Tile {
         tileCoords[9]=((xscal*x))+xscal-1.0f;
         tileCoords[10]=((yscal*y))+yscal-1.0f;
 
-        xscal=1.0f/(float)toty;
-        yscal=1.0f/(float)totx;
+        xscal=1.0f/(float)totx;
+        yscal=1.0f/(float)toty;
         float xd=xscal*(float)x;
         float yd=yscal*(float)y;
         tileAvalTextureCoords[0]=xd+xscal*0.0f;
@@ -202,24 +202,24 @@ public class Tile {
 
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-        if (mColorHandle == -1) Log.e("ASCII", "vColor not found");
+        //if (mColorHandle == -1) Log.e("ASCII", "vColor not found");
 
         //get handle to texture coordinate variable
         mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoordIn");
-        if (mTextureHandle == -1) Log.e("ASCII", "TexCoordIn not found");
+        //if (mTextureHandle == -1) Log.e("ASCII", "TexCoordIn not found");
 
         //get handle to shape's texture reference
         fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
-        if (fsTexture == -1) Log.e("ASCII", "Texture not found");
+        //if (fsTexture == -1) Log.e("ASCII", "Texture not found");
 
 
         //get handle to texture coordinate variable
         mAvalTextureHandle = GLES20.glGetAttribLocation(mProgram, "AvalTexCoordIn");
-        if (mAvalTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
+        //if (mAvalTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
 
         //get handle to shape's texture reference
         avalfsTexture = GLES20.glGetUniformLocation(mProgram, "AvalTexture");
-        if (avalfsTexture == -1) Log.e("ASCII", "AvalTexture not found");
+        //if (avalfsTexture == -1) Log.e("ASCII", "AvalTexture not found");
 
 
 
@@ -307,7 +307,11 @@ public class Tile {
         textureBuffer.put(tileTextureCoords);
         textureBuffer.position(0);
 
-
+        byteBuffer = ByteBuffer.allocateDirect(tileTextureCoords.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        avalTextureBuffer = byteBuffer.asFloatBuffer();
+        avalTextureBuffer.put(tileAvalTextureCoords);
+        avalTextureBuffer.position(0);
 
 
 
