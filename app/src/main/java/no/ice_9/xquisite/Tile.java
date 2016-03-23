@@ -40,13 +40,19 @@ public class Tile {
                     "uniform sampler2D AvalTexture;" +
                     "varying lowp vec2 AvalTexCoordOut;" +
                     "void main() {" +
-                    "vec4 col1 = texture2D(AvalTexture, AvalTexCoordOut);"+
-                    "float i1=col1.r;"+
+                    "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
+                    "float i1=floor(col1.b);"+
                     "float i2=col1.g;"+
-                    "float i3=col1.b;"+
+                    "float i3=col1.r;"+
                     "float i4=col1.a;"+
-                    //"  gl_FragColor = (vColor * texture2D(Texture, TexCoordOut));" +
-                    "  gl_FragColor = vec4(i1,i2,i3,i4);" +
+                    "vec4 AvalData=vec4(i1,0.0,0.0,1.0);"+
+                    //"i1=i1/8.0;"+
+                    "float avalRow = (1.0/8.0)*floor(i1/32.0) + TexCoordOut.t;"+//1.0/floor(i1/32).0+
+                    "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
+                    "vec2 avalCoords=vec2(avalCol,avalRow);"+//+TexCoordOut;"+
+
+                    "  gl_FragColor = (vColor * texture2D(Texture, avalCoords));" +
+                    //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
                     "}";
 
 
@@ -77,10 +83,10 @@ public class Tile {
                     // Front face
 
 
-                    0.0f, 1.0f/8,
-                    1.0f/32, 1.0f/8,
-                    0.0f, 0.0f,
-                    1.0f/32, 0.0f
+                    0.0f,       1.0f/8.0f,
+                    1.0f/32.0f, 1.0f/8.0f,
+                    0.0f,       0.0f,
+                    1.0f/32.0f, 0.0f
 
 
 
@@ -127,7 +133,7 @@ public class Tile {
         xscal=1.0f/(float)totx;
         yscal=1.0f/(float)toty;
         float xd=xscal*(float)x;
-        float yd=yscal*(float)y;
+        float yd=yscal*(float)(toty-y-1);
         tileAvalTextureCoords[0]=xd+xscal*0.0f;
         tileAvalTextureCoords[1]=yd+yscal*1.0f;
         tileAvalTextureCoords[2]=xd+xscal*1.0f;

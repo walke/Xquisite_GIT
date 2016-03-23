@@ -20,6 +20,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import java.nio.CharBuffer;
@@ -38,7 +39,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created by HUMAN on 15.10.2015.
  */
-public class ASCIIscreen {
+public class ASCIIscreen implements Serializable{
 
     //SCREEN VARIABLES
     Display display;
@@ -305,8 +306,10 @@ public class ASCIIscreen {
 
     }
 
-    public void putImage(Bitmap btm)
+    public void putImage()
     {
+        mGLView.putImage();
+
         /*Uri uri=Uri.parse("/mnt/sdcard/tmp/tmp.jpg");
         Bitmap btm=BitmapFactory.decodeFile("/mnt/sdcard/tmp/tmp.jpg");
         Log.d("ASCII", "bm" + btm.getByteCount());*/
@@ -318,7 +321,7 @@ public class ASCIIscreen {
 
 
 
-        Bitmap btm2;
+       /* Bitmap btm2;
         Log.d("ASCII","W,H"+btm.getWidth()+", "+btm.getHeight());
 
         btm2=Bitmap.createScaledBitmap(btm, mSymbolsPerLine,lineCount, false);
@@ -326,7 +329,7 @@ public class ASCIIscreen {
         btm2.setPixel(0,0,0);
 
         ByteBuffer mChBuff = ByteBuffer.allocate(btm2.getByteCount());
-        btm2.copyPixelsToBuffer(mChBuff);
+        btm2.copyPixelsToBuffer(mChBuff);*/
 
 
 
@@ -336,7 +339,7 @@ public class ASCIIscreen {
             sttm+=(char)i;
         }
         CharSequence chseq=new String(sttm);*/
-        String s;
+        /*String s;
         for(int i=0;i<lineCount;i++)
         {
 
@@ -345,7 +348,7 @@ public class ASCIIscreen {
             //String s=String.copyValueOf(str);
 
             modLine(s, i, -1);
-        }
+        }*/
     }
 
 
@@ -452,6 +455,11 @@ class XQGLSurfaceView extends GLSurfaceView{
     {
         Log.d("ASCII","line:"+str);
         mRenderer.putString(str,row,pos);
+    }
+
+    public void putImage()
+    {
+        mRenderer.putImage();
     }
 
     public void setText()

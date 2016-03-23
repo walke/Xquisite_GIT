@@ -87,7 +87,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         int k=0;
 
-        for(int j=sy-1;j>=0;j--)
+        for(int j=0;j<sy;j++)
         {
             for(int i=0;i<sx;i++)
             {
@@ -226,6 +226,21 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mAngle = angle;
     }
 
+    public void putImage()
+    {
+        Random r = new Random();
+        for(int i=0;i<asciicols;i++)
+        {
+            for(int j=0;j<asciirows;j++)
+            {
+                mBitmap.setPixel(i, j, Color.argb(r.nextInt(), 0, 0, 255));
+
+            }
+        }
+
+        upAval=true;
+    }
+
     public void putString(String str, int row, int pos)
     {
         if(row<asciirows &&/* pos+str.length()<asciicols &&*/ view.mReady)
@@ -247,7 +262,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 if(mTile[ndx]!=null && ndx>0 )
                 {
 
-                    mBitmap.setPixel((pos+i)%asciicols, row, Color.argb(r.nextInt(256), 0, 0, 255));
+                    mBitmap.setPixel((pos+i)%asciicols, row, Color.argb(str.charAt(i), 0, 0, 255));
                     //mBitmap.setPixel(1, 0, Color.argb(r.nextInt(256), r.nextInt(256), r.nextInt(256), 255));
                     Log.d("ASCII", "CC" + mTile[ndx] + ":" + mTile.length);
                     //mTile[ndx].putChar(str.charAt(i));
@@ -255,7 +270,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
             }
-            Log.d("GL","bp"+mBitmap.getPixel(0,0));
+            //Log.d("GL","bp"+mBitmap.getPixel(0,0));
             upAval=true;
             //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
             // Set filtering

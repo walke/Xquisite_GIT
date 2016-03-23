@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
             mAscii.mAsciiStopUpdater(1);
             mTimerLoop.cancel();
             Intent intent = new Intent(this, PlayerActivity.class);
+            intent.putExtra("MyClass",mAscii);
             startActivity(intent);
             //view.setVisibility(View.GONE);
         }
@@ -137,7 +138,11 @@ public class MainActivity extends Activity {
                         //mAscii.mAsciiStopUpdater();
                         mTime++;
                     }
-                    if(mInitDone){Log.d("MAIN","WAITING FOR TOUCH");mTime++;}
+                    if(mInitDone)
+                    {
+
+                        Log.d("MAIN","WAITING FOR TOUCH");mTime++;
+                    }
                     if(mServerConnection==-1  && !mAscii.isRage() && !mInitDone)
                     {
                         mAscii.pushLine("Connection failed");
@@ -167,6 +172,7 @@ public class MainActivity extends Activity {
                         mServerConnection=0;
                         mScreenSaver=true;
                         mAscii.fillTrash();
+                        mAscii.putImage();
                         mInitDone=false;
                     }
                     Log.d("MAIN","conn"+mServerConnection);
