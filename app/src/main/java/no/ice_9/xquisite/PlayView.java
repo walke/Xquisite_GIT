@@ -18,6 +18,8 @@ public class PlayView extends SurfaceView implements SurfaceHolder.Callback
     SurfaceHolder mHolder;
     MediaPlayer mPlayer;
 
+    boolean ready=false;
+
 
     PlayView(Context context,MediaPlayer player)
     {
@@ -34,8 +36,9 @@ public class PlayView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
+        Log.d("PLAYER","surf created");
         mPlayer.setDisplay(holder);
-
+        ready=true;
 
     }
 

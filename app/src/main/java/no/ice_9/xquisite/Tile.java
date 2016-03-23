@@ -51,7 +51,7 @@ public class Tile {
                     "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
                     "vec2 avalCoords=vec2(avalCol,avalRow);"+//+TexCoordOut;"+
 
-                    "  gl_FragColor = (vColor * texture2D(Texture, avalCoords));" +
+                    "  gl_FragColor = ( vColor * texture2D(Texture, avalCoords));" +
                     //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
                     "}";
 

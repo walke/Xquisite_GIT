@@ -191,7 +191,7 @@ public class ASCIIscreen implements Serializable{
         }
 
         //mText.setText(allLines);
-        canvas=new Canvas(Bitmap.createBitmap(lineCount,(int)(lineCount*((float)displayMetrics.widthPixels)/(float)displayMetrics.heightPixels), Bitmap.Config.ARGB_8888));
+        canvas=new Canvas(Bitmap.createBitmap((int)(lineCount*((float)displayMetrics.widthPixels)/(float)displayMetrics.heightPixels),lineCount, Bitmap.Config.ARGB_8888));
 
         //Log.d("ASCII","runAQ"+3);
         //Log.d("ASCII", "real size" + mText.getExtendedPaddingTop());
@@ -361,10 +361,10 @@ public class ASCIIscreen implements Serializable{
         }*/
     }
 
-    public void putCanvas()
+    public void putCanvas(Canvas cnvs)
     {
-        Bitmap bitmap= Bitmap.createBitmap(canvas.getWidth(),canvas.getHeight(),Bitmap.Config.ARGB_8888);
-        canvas.drawBitmap(bitmap, new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()), new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), null);
+        Bitmap bitmap= Bitmap.createBitmap(cnvs.getWidth(),cnvs.getHeight(),Bitmap.Config.ARGB_8888);
+        cnvs.drawBitmap(bitmap, new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()), new Rect(0, 0, cnvs.getWidth(), cnvs.getHeight()), null);
         mGLView.putImage(bitmap);
         bitmap.recycle();
 
@@ -465,7 +465,8 @@ class XQGLSurfaceView extends GLSurfaceView{
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
                 actContext.onTouchEvent(e);
-
+            case MotionEvent.ACTION_DOWN:
+                actContext.onTouchEvent(e);
         }
 
         mPreviousX = x;

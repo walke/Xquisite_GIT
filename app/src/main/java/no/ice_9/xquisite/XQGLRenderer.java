@@ -19,7 +19,7 @@ import javax.microedition.khronos.opengles.GL10;
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private Tile[] mTile;
-    public int[] textures = new int[2];
+    public int[] textures = new int[3];
     public Context actContext;
     public boolean upAval;
 
@@ -52,6 +52,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         GLES20.glGenTextures(1, textures, 1);
         //mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+        GLES20.glGenTextures(2, textures, 2);
 
         Random r= new Random();
 
@@ -229,15 +231,15 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void putImage(Bitmap bitmap)
     {
         Random r = new Random();
-        /*for(int i=0;i<asciicols;i++)
+        for(int i=0;i<asciicols;i++)
         {
             for(int j=0;j<asciirows;j++)
             {
-                mBitmap.setPixel(i, j, Color.argb(r.nextInt(), 0, 0, 255));
-
+                //mBitmap.setPixel(i, j, Color.argb(r.nextInt(), 0, 0, 255));
+                mBitmap.setPixel(i, j, bitmap.getPixel(i, j));
             }
-        }*/
-        mBitmap=bitmap.copy(Bitmap.Config.ARGB_8888,true);
+        }
+        //mBitmap=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
         upAval=true;
     }

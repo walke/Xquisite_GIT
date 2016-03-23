@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
@@ -14,6 +15,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.VideoView;
 
 import java.io.File;
@@ -31,7 +33,8 @@ public class PlayerClass {
     int mTime=0;
 
     MediaPlayer mVideoView;
-    PlayView surfaceView;
+    Surface surfaceView;
+    FrameLayout mFrame;
 
     private Thread mTask;
     private boolean mVideoReady;
@@ -56,7 +59,7 @@ public class PlayerClass {
         mAscii = ascii;
 
         //mVideoView = new VideoView(tAct);
-        surfaceView=new PlayView(tAct,mVideoView);
+        mFrame=new FrameLayout(tAct);
 
 
 
@@ -156,8 +159,14 @@ public class PlayerClass {
 
 
                         //mAscii.canvas=surfaceView.getHolder().getSurface().lockCanvas(new Rect(0,0,10,10));
-                        surfaceView.draw(mAscii.canvas);
-                        mAscii.putCanvas();
+
+                            //Canvas canvas=surfaceView.getHolder().lockCanvas();
+
+                            //surfaceView.draw(canvas);
+                            //mAscii.putCanvas(canvas);
+                            //surfaceView.getHolder().unlockCanvasAndPost(canvas);
+
+
                         //surfaceView.getHolder().getSurface().unlockCanvasAndPost(mAscii.canvas);
 
                     }
@@ -327,7 +336,13 @@ public class PlayerClass {
 
     public void preparePlayer() {
         Log.d("PLAYER", "URI" + mVideoUri);
+        surfaceView=new Surface(mAscii.mGLView.);//TODO: GET TEXTURE
         mVideoView=MediaPlayer.create(tAct,mVideoUri);
+
+        mFrame.addView(surfaceView);
+        Log.d("PLAYER","WAITING");
+        while(!surfaceView.ready);
+
 
         //mVideoView.setSurface(surfaceView.getHolder().getSurface());
         //mVideoView.setVideoURI(mVideoUri);
