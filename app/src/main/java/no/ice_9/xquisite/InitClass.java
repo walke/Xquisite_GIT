@@ -1,135 +1,45 @@
 package no.ice_9.xquisite;
 
 import android.app.Activity;
-
+import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.opengl.GLSurfaceView;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.TextView;
-import android.util.TypedValue;
 
-import java.io.IOException;
-import java.util.Random;
-import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Created by human on 23.03.16.
+ */
+public class InitClass {
 
-public class MainActivity extends Activity {
+    ASCIIscreen mAscii;
+    Server mServer;
+    int mServerConnection=0;
+    int mReconnectTime=-1;
+    boolean mScreenSaver=false;
 
-    InitClass initClass;
-    PlayerClass playerClass;
+    int mTime;
+    public boolean mInitDone=false;
+    Dialog mLoadingDialog;
 
-    //CURRENT ACTION
-    private int mCurrentAction=0;
-
-    //ACII LAYER
-    public ASCIIscreen mAscii;
-    private TextView mText;
-
-    ProgressDialog mLoadingDialog;
-
-    //MAIN LOOP
-    public TimerTask mTimerLoop;
-    public Timer mTimer;
-
-    //TIMINGS
-    private int mTime;
-    private boolean mInitDone;
-    private int mReconnectTime;
-    private boolean mScreenSaver;
-
-    //SERVER
-    private int mServerConnection;
-    private Server mServer;
-
-    //Start new activity for creating new part of a story.
-    public void CreateNewStory()
+    public InitClass(Activity activity,ASCIIscreen ascii,Server server)
     {
+        mLoadingDialog = ProgressDialog.show(activity, "",
+                      "Loading. Please wait...", true);
 
-        if(mScreenSaver)
-        {
-            mTime=19;
-            mScreenSaver=false;
-        }
-        else if(initClass.mInitDone)
-        {
-            Log.d("PLAYER","IN");
-            mAscii.mAsciiStopUpdater(1);
-            mTimerLoop.cancel();
-            mTimer.cancel();
-            //Intent intent = new Intent(this, PlayerActivity.class);
-            //intent.putExtra("ascii",mAscii);
-            //startActivity(intent);
-            //view.setVisibility(View.GONE);
-            mCurrentAction++;
-            createTimerTask();
-
-            mTimer=new Timer();
-            mInitDone=false;
-            mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
-            mTime=0;
-        }
-
+        mServer=server;
+        mAscii = ascii;
+        mTime=0;
     }
 
-    public void glTouch()
+    public int action()
     {
-        Log.d("GL","TOUCH");
-        //CreateNewStory();
-        int result=-1;
-        switch(mCurrentAction)
-        {
-            case 0:
-                result=initClass.action();
-                break;
-            case 1:
-                result=playerClass.action();
-                break;
-        }
-
-        if(result==-1)
-        {
-            mAscii.mAsciiStopUpdater(1);
-            mTimerLoop.cancel();
-            mTimer.cancel();
-
-            mCurrentAction++;
-            createTimerTask();
-
-            mTimer=new Timer();
-            mInitDone=false;
-            mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
-            mTime=0;
-        }
+        return -1;
     }
 
-    private void createTimerTask()
+    public TimerTask getTimerTask()
     {
-        switch(mCurrentAction)
-        {
-            case 0:
-                initClass=new InitClass(this,mAscii,mServer);
-                mTimerLoop=initClass.getTimerTask();
-                break;
-
-            case 1:
-
-                playerClass=new PlayerClass(this,mAscii,mServer);
-                mTimerLoop=playerClass.getTimerTask();
-                break;
-        }
-
-
-        /*mTimerLoop = new TimerTask() {
+        return new TimerTask() {
             @Override
             public void run() {
                 //mAscii.fillTrash();
@@ -139,7 +49,7 @@ public class MainActivity extends Activity {
                 if(mAscii.mReady)
                 {
 
-                    if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*///mTime++;}
+                    if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*/mTime++;}
                     // if(mTime<2000){mAscii.modLine("scienceFuture xquisite",rnd.nextInt(50),rnd.nextInt(100));}
                     /*if(mTime==10){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_01)).getBitmap());}
                     if(mTime==15){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_02)).getBitmap());}
@@ -157,7 +67,7 @@ public class MainActivity extends Activity {
                     if(mTime==75){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_14)).getBitmap());}
                     if(mTime==80){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_15)).getBitmap());}
                     if(mTime==85){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_16)).getBitmap());}*/
-                    /*if(mTime==20){mAscii.setRage(false);mAscii.clear();mTime++;}
+                    if(mTime==20){mAscii.setRage(false);mAscii.clear();mTime++;}
                     if(mTime==21 && !mAscii.isRage())
                     {
                         mLoadingDialog.dismiss();
@@ -238,121 +148,7 @@ public class MainActivity extends Activity {
                 }
 
             }
-        };*/
+        };
     }
 
-
-
-    //TODO: fix on touch event
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        super.onTouchEvent(event);
-
-        glTouch();
-        //mAscii.modLine("tatatat", 0, -1);
-        Log.d("MAIN","touch");
-
-        return true;
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d("MAIN", "paused");
-        mAscii.mAsciiStopUpdater(1);
-        mTimerLoop.cancel();
-        mTimer.cancel();
-        mTimer.purge();
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d("MAIN","paused");
-        mAscii.mAsciiStopUpdater(1);
-        mTimerLoop.cancel();
-        mTimer.cancel();
-        mTimer.purge();
-        //mTimerLoop=null;
-        mAscii.mGLView.onPause();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mAscii.mAsciiStartUpdater(50);
-        createTimerTask();
-        mTimer=new Timer();
-        mInitDone=false;
-        mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
-        mTime=0;
-        mAscii.mGLView.onResume();
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        //LOADING POPUP
-        //mLoadingDialog = ProgressDialog.show(this, "",
-         //       "Loading. Please wait...", true);
-
-
-        //setContentView(R.layout.activity_main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-
-        //mText=(TextView)findViewById(R.id.text_main);
-
-        //mGlview=(TextView)findViewById(R.id.text_main);
-
-        //GET GLES
-        mTime=0;
-        mAscii=new ASCIIscreen(this,mText,"MAIN");
-        setContentView(mAscii.mGLView);
-        //mAscii.mAsciiStartUpdater(50);
-
-        //STAT VARS
-        mInitDone=false;
-        mReconnectTime=-1;
-        mScreenSaver=false;
-
-
-
-        //SERVER
-        mServer=new Server(this);
-        mServerConnection=0;
-
-
-        //MAIN TREAD
-        mTimer=new Timer();
-
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }

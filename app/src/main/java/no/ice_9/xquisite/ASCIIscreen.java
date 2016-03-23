@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.opengl.EGLConfig;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -39,6 +41,7 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * Created by HUMAN on 15.10.2015.
  */
+@SuppressWarnings("serial")
 public class ASCIIscreen implements Serializable{
 
     //SCREEN VARIABLES
@@ -77,6 +80,12 @@ public class ASCIIscreen implements Serializable{
 
     String mActParent;
 
+    public Canvas canvas;
+
+
+
+
+
 
 
     public ASCIIscreen(Context context,TextView text,String actParent)
@@ -101,6 +110,7 @@ public class ASCIIscreen implements Serializable{
 
         //WORDS TO BE USED
         mWordList=new String[]{"science","life","corruption","future","source","utopia","time","order","chaos"};
+
 
 
 
@@ -181,7 +191,7 @@ public class ASCIIscreen implements Serializable{
         }
 
         //mText.setText(allLines);
-
+        canvas=new Canvas(Bitmap.createBitmap(lineCount,(int)(lineCount*((float)displayMetrics.widthPixels)/(float)displayMetrics.heightPixels), Bitmap.Config.ARGB_8888));
 
         //Log.d("ASCII","runAQ"+3);
         //Log.d("ASCII", "real size" + mText.getExtendedPaddingTop());
@@ -308,7 +318,7 @@ public class ASCIIscreen implements Serializable{
 
     public void putImage()
     {
-        mGLView.putImage();
+        mGLView.putImage(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888));
 
         /*Uri uri=Uri.parse("/mnt/sdcard/tmp/tmp.jpg");
         Bitmap btm=BitmapFactory.decodeFile("/mnt/sdcard/tmp/tmp.jpg");
@@ -351,6 +361,16 @@ public class ASCIIscreen implements Serializable{
         }*/
     }
 
+    public void putCanvas()
+    {
+        Bitmap bitmap= Bitmap.createBitmap(canvas.getWidth(),canvas.getHeight(),Bitmap.Config.ARGB_8888);
+        canvas.drawBitmap(bitmap, new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight()), new Rect(0, 0, canvas.getWidth(), canvas.getHeight()), null);
+        mGLView.putImage(bitmap);
+        bitmap.recycle();
+
+
+    }
+
 
 
 
@@ -387,12 +407,14 @@ public class ASCIIscreen implements Serializable{
     public void clear()
     {
         mReady=false;
-        for(int i=0;i<lineCount;i++)
+
+        //Bitmap
+        /*for(int i=0;i<lineCount;i++)
         {
 
             mLine[i]="";
         }
-        mLinePointer=0;
+        mLinePointer=0;*/
         mReady=true;
     }
 
@@ -457,9 +479,9 @@ class XQGLSurfaceView extends GLSurfaceView{
         mRenderer.putString(str,row,pos);
     }
 
-    public void putImage()
+    public void putImage(Bitmap bitmap)
     {
-        mRenderer.putImage();
+        mRenderer.putImage(bitmap);
     }
 
     public void setText()

@@ -393,7 +393,7 @@ public class PlayerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player);
+        //setContentView(R.layout.activity_player);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         mError=false;
@@ -410,7 +410,10 @@ public class PlayerActivity extends Activity {
         //for(int i=0;i<6;i++){mVideoPart[i]="-1";}
         mVideoReady=false;
         mText=(TextView)findViewById(R.id.text_player);
-        mAscii=new ASCIIscreen(this,mText,"PLAYER");
+
+        Intent intent=getIntent();
+        mAscii=(ASCIIscreen)intent.getSerializableExtra("ascii");
+        //mAscii=new ASCIIscreen(this,mText,"PLAYER");
         mAscii.mAsciiStartUpdater(100);
         mAscii.pushLine("loading video..");
 

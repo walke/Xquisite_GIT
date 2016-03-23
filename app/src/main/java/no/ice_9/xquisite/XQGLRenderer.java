@@ -226,17 +226,18 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mAngle = angle;
     }
 
-    public void putImage()
+    public void putImage(Bitmap bitmap)
     {
         Random r = new Random();
-        for(int i=0;i<asciicols;i++)
+        /*for(int i=0;i<asciicols;i++)
         {
             for(int j=0;j<asciirows;j++)
             {
                 mBitmap.setPixel(i, j, Color.argb(r.nextInt(), 0, 0, 255));
 
             }
-        }
+        }*/
+        mBitmap=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
         upAval=true;
     }
