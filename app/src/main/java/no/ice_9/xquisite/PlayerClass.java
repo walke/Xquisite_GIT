@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 
@@ -33,7 +35,7 @@ public class PlayerClass {
     int mTime=0;
 
     MediaPlayer mVideoView;
-    Surface surfaceView;
+    PlayView surfaceView;
     FrameLayout mFrame;
 
     private Thread mTask;
@@ -336,13 +338,18 @@ public class PlayerClass {
 
     public void preparePlayer() {
         Log.d("PLAYER", "URI" + mVideoUri);
-        surfaceView=new Surface(mAscii.mGLView.);//TODO: GET TEXTURE
+        //surfaceView=new Surface(mAscii.mGLView);//TODO: GET TEXTURE
+
         mVideoView=MediaPlayer.create(tAct,mVideoUri);
+        mVideoView.setSurface(new Surface(mAscii.mGLView.mRenderer.mSurface));
+        //surfaceView=new PlayView(tAct,mVideoView);
+        //mFrame.addView(surfaceView);
+        //mAscii.mGLView.onPause();
+        //tAct.setContentView(surfaceView);
 
-        mFrame.addView(surfaceView);
-        Log.d("PLAYER","WAITING");
-        while(!surfaceView.ready);
-
+        //while(!surfaceView.ready){Log.d("PLAYER","WAITING");}
+        //tAct.setContentView(mAscii.mGLView);
+        //mAscii.mGLView.onResume();
 
         //mVideoView.setSurface(surfaceView.getHolder().getSurface());
         //mVideoView.setVideoURI(mVideoUri);
@@ -370,6 +377,8 @@ public class PlayerClass {
 
             public void onPrepared(MediaPlayer player) {
                 Log.d("PLAYER", "PLAY");
+                //tAct.setContentView(mAscii.mGLView);
+                mAscii.pushLine("123");
                 playVideo();
             }
         });

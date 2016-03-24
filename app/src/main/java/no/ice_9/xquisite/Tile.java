@@ -1,5 +1,6 @@
 package no.ice_9.xquisite;
 
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.util.Log;
 
@@ -18,30 +19,53 @@ public class Tile {
     private int fsTexture;
     private int avalTextureRef = -1;
     private int avalfsTexture;
+    private int vidTextureRef = -1;
+    private int vidfsTexture;
+
 
     private final String vertexShaderCode =
+            //"#extension GL_OES_EGL_image_external : require \n"+
             "attribute vec4 vPosition;" +
                     "attribute vec2 TexCoordIn;" +
                     "varying vec2 TexCoordOut;" +
                     "attribute vec2 AvalTexCoordIn;" +
                     "varying vec2 AvalTexCoordOut;" +
+                    "attribute vec2 VidTexCoordIn;" +
+                    "varying vec2 VidTexCoordOut;" +
                     "void main() {" +
                     //the matrix must be included as a modifier of gl_Position
                     "  gl_Position = vPosition;" +
                     "  TexCoordOut = TexCoordIn;" +
                     "  AvalTexCoordOut = AvalTexCoordIn;" +
+                    "  VidTexCoordOut = VidTexCoordIn;" +
                     "}";
 
     private final String fragmentShaderCode =
+            "#extension GL_OES_EGL_image_external : require \n"+
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
                     "uniform sampler2D Texture;" +
                     "varying lowp vec2 TexCoordOut;" +
                     "uniform sampler2D AvalTexture;" +
                     "varying lowp vec2 AvalTexCoordOut;" +
+                    "uniform samplerExternalOES VidTexture;" +
+                    //"uniform sampler2D VidTexture;" +
+                    "varying lowp vec2 VidTexCoordOut;" +
                     "void main() {" +
+
+                    "int si = int(VidTexCoordOut.s * 25.0);"+
+                    "int sj = int(VidTexCoordOut.t * 25.0);"+
+                    "vec2 vidCoords=vec2(float(si) / 25.0, float(sj) / 25.0);"+
+                    "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
+
                     "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
-                    "float i1=floor(col1.b);"+
+                    "float i1=(floor((col2.b+col2.r+col2.g)/6.0));"+
+                    //"if(i1>=256.0){i1=512.0-i1;}"+
+
+                    "float vidcol=floor(col2.b*col2.r*col2.g);"+
+                    "if(col2.b<=0.01){"+
+                    "vidcol=1.0;"+
+                    "i1=floor(col1.b);}"+
                     "float i2=col1.g;"+
                     "float i3=col1.r;"+
                     "float i4=col1.a;"+
@@ -51,7 +75,10 @@ public class Tile {
                     "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
                     "vec2 avalCoords=vec2(avalCol,avalRow);"+//+TexCoordOut;"+
 
-                    "  gl_FragColor = ( vColor * texture2D(Texture, avalCoords));" +
+                    //"  gl_FragColor = ( vColor * (i1/256.0));" +
+                    "  gl_FragColor = ( vColor * texture2D(Texture, avalCoords) );" +
+                    //"  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords) + texture2D(VidTexture, vidCoords));" +
+                    //"  gl_FragColor = ( vColor * texture2D(VidTexture, VidTexCoordOut));" +
                     //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
                     "}";
 
@@ -62,7 +89,7 @@ public class Tile {
     private ShortBuffer indexBuffer;
     private FloatBuffer textureBuffer;
     private FloatBuffer avalTextureBuffer;
-
+    private FloatBuffer vidTextureBuffer;
 
 
     // number of coordinates per vertex in this array
@@ -107,13 +134,31 @@ public class Tile {
 
             };
 
+    float[] tileVidTextureCoords =
+            {
+                    // Front face
+
+
+
+                    0.0f, 0.0f,//2
+                    0.0f, 1.0f,//0
+
+                    1.0f, 0.0f, //3
+                    1.0f, 1.0f,//1
+
+
+
+
+
+            };
+
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
     private final int mProgram;
 
 
-    public Tile(int x,int y,int totx,int toty, int texture, int avalTexture) {
+    public Tile(int x,int y,int totx,int toty, int texture, int avalTexture, int videoTexture) {
 
 
 
@@ -143,6 +188,19 @@ public class Tile {
         tileAvalTextureCoords[6]=xd+xscal*1.0f;
         tileAvalTextureCoords[7]=yd+yscal*0.0f;
 
+        xscal=1.0f/(float)totx;
+        yscal=1.0f/(float)toty;
+        xd=xscal*(float)x;
+        yd=yscal*(float)y;
+        tileVidTextureCoords[0]=yd+yscal*0.0f;
+        tileVidTextureCoords[1]=xd+xscal*0.0f;
+        tileVidTextureCoords[2]=yd+yscal*0.0f;
+        tileVidTextureCoords[3]=xd+xscal*1.0f;
+        tileVidTextureCoords[6]=yd+yscal*1.0f;
+        tileVidTextureCoords[7]=xd+xscal*1.0f;
+        tileVidTextureCoords[4]=yd+yscal*1.0f;
+        tileVidTextureCoords[5]=xd+xscal*0.0f;
+
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         vertexBuffer = byteBuffer.asFloatBuffer();
@@ -165,6 +223,12 @@ public class Tile {
         avalTextureBuffer.put(tileAvalTextureCoords);
         avalTextureBuffer.position(0);
 
+        byteBuffer = ByteBuffer.allocateDirect(tileVidTextureCoords.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        vidTextureBuffer = byteBuffer.asFloatBuffer();
+        vidTextureBuffer.put(tileVidTextureCoords);
+        vidTextureBuffer.position(0);
+
 
 
         int vertexShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
@@ -186,6 +250,7 @@ public class Tile {
 
         textureRef = texture;
         avalTextureRef = avalTexture;
+        vidTextureRef = videoTexture;
 
     }
 
@@ -193,6 +258,7 @@ public class Tile {
     private int mColorHandle;
     private int mTextureHandle;
     private int mAvalTextureHandle;
+    private int mVidTextureHandle;
 
     private final int vertexCount = tileCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
@@ -227,6 +293,13 @@ public class Tile {
         avalfsTexture = GLES20.glGetUniformLocation(mProgram, "AvalTexture");
         //if (avalfsTexture == -1) Log.e("ASCII", "AvalTexture not found");
 
+        //get handle to texture coordinate variable
+        mVidTextureHandle = GLES20.glGetAttribLocation(mProgram, "VidTexCoordIn");
+        //if (mAvalTextureHandle == -1) Log.e("ASCII", "AvalTexCoordIn not found");
+
+        //get handle to shape's texture reference
+        vidfsTexture = GLES20.glGetUniformLocation(mProgram, "VidTexture");
+        //if (avalfsTexture == -1) Log.e("ASCII", "AvalTexture not found");
 
 
 
@@ -249,6 +322,10 @@ public class Tile {
                 GLES20.GL_FLOAT, false,
                 textureStride, avalTextureBuffer);
 
+        GLES20.glVertexAttribPointer(mVidTextureHandle, COORDS_PER_TEXTURE,
+                GLES20.GL_FLOAT, false,
+                textureStride, vidTextureBuffer);
+
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
         GLES20.glUniform1i(fsTexture, 0);
@@ -257,12 +334,18 @@ public class Tile {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, avalTextureRef);
         GLES20.glUniform1i(avalfsTexture, 1);
 
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE2);
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, vidTextureRef);
+        GLES20.glUniform1i(vidfsTexture, 2);
+
 
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
         GLES20.glEnableVertexAttribArray(mTextureHandle);
 
         GLES20.glEnableVertexAttribArray(mAvalTextureHandle);
+
+        GLES20.glEnableVertexAttribArray(mVidTextureHandle);
 
 
 
@@ -277,6 +360,7 @@ public class Tile {
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mTextureHandle);
         GLES20.glDisableVertexAttribArray(mAvalTextureHandle);
+        GLES20.glDisableVertexAttribArray(mVidTextureHandle);
         GLES20.glDisableVertexAttribArray(mPositionHandle);
 
 

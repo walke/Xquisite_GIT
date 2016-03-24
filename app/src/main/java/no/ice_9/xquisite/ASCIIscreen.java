@@ -427,7 +427,7 @@ public class ASCIIscreen implements Serializable{
 }
 
 class XQGLSurfaceView extends GLSurfaceView{
-    private final XQGLRenderer mRenderer;
+    public final XQGLRenderer mRenderer;
     private final Activity actContext;
 
     public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount,ASCIIscreen asciiscreen)

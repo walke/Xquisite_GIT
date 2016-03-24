@@ -85,7 +85,13 @@ public class PlayView extends SurfaceView implements SurfaceHolder.Callback
         final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
         final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
 
+        float ratio;
+        if(height >= width)
+            ratio = (float) height / (float) width;
+        else
+            ratio = (float) width / (float) height;
 
+        setMeasuredDimension(width, (int) (width * ratio));
 
     }
 

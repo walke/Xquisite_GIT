@@ -3,11 +3,19 @@ package no.ice_9.xquisite;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
+import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.util.Log;
+import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.TextureView;
 
 import java.util.Random;
 
@@ -22,6 +30,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public int[] textures = new int[3];
     public Context actContext;
     public boolean upAval;
+    public boolean upVid;
 
     Bitmap mBitmap;
 
@@ -32,11 +41,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private float mAngle;
 
+    public SurfaceTexture mSurface;
+
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
         GLES20.glClearColor(0.0f, 0.3f, 0.0f, 0.5f);
 
         upAval=true;
+        upAval=false;
         mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
 
@@ -50,10 +62,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         int sy=asciirows;
 
 
-        GLES20.glGenTextures(1, textures, 1);
+        //GLES20.glGenTextures(1, textures, 1);
         //mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
-        GLES20.glGenTextures(2, textures, 2);
+        //GLES20.glGenTextures(2, textures, 2);
 
         Random r= new Random();
 
@@ -68,7 +80,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }
 
 
-
+        GLES20.glGenTextures(1, textures, 1);
 
 
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
@@ -84,6 +96,43 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         int screenTileValue=textures[1];
 
 
+        GLES20.glGenTextures(1, textures, 2);
+        //mSurface.setUseExternalTextureID();
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[2]);
+
+        // Set filtering
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GLES20.GL_TEXTURE_MAG_FILTER,
+                GLES20.GL_LINEAR);
+        //GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+
+
+
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
+                GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
+                GLES20.GL_REPEAT);
+
+
+
+        mSurface = new SurfaceTexture(textures[2]);
+        mSurface.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener()
+        {
+            @Override
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                //surfaceTexture.updateTexImage();
+
+
+
+
+                upVid=true;
+            }
+        });
+
+        int videoTex=textures[2];
+
         mTile=new Tile[sx*sy];
 
 
@@ -93,10 +142,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         {
             for(int i=0;i<sx;i++)
             {
-                mTile[k] =new Tile(i,j,sx,sy,textGridTex,screenTileValue);
+                mTile[k] =new Tile(i,j,sx,sy,textGridTex,screenTileValue,videoTex);
                 k++;
             }
         }
+
+
 
 
 
@@ -115,7 +166,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         Random rnd=new Random();
         view.mReady=true;
 
-        updateAval();
+
 
         /*int l=0;
         for(int j=0;j<asciirows;j++)
@@ -129,6 +180,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }*/
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+        updateAval();
 
         int sx=asciicols;
         int sy=asciirows;
@@ -150,8 +202,22 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void updateAval()
     {
+        //mSurface.updateTexImage();
+        //mSurface.
+        if(upVid)
+        {   float[] mtx = new float[16];
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[2]);
+            mSurface.updateTexImage();
+            mSurface.getTransformMatrix(mtx);
+
+            //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 1);
+        }
         if (upAval)
         {
+
+
+            //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 1);
+
             //Log.d("GL","bpup"+mBitmap.getPixel(0,0));
             Log.d("GL", "upval");
             //GLES20.glGenTextures(1, textures, 1);
@@ -165,6 +231,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0, 0, 0, mBitmap);
             GLUtils.texSubImage2D(GLES20.GL_TEXTURE_2D, 0,0,0, mBitmap);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 1);
+
+
 
 
             upAval=false;
