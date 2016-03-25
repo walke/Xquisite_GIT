@@ -77,7 +77,7 @@ public class PlayerClass {
         mVideoReady=false;
 
         mAscii.mAsciiStartUpdater(100);
-
+        mAscii.clear();
 
         mTask = new Thread(new Runnable() {
             @Override

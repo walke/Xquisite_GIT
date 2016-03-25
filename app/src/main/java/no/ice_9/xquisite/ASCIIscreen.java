@@ -406,7 +406,11 @@ public class ASCIIscreen implements Serializable{
 
     public void clear()
     {
+
         mReady=false;
+        Log.d("ASCII","CLEAR");
+        mGLView.mRenderer.clearAscii();
+
 
         //Bitmap
         /*for(int i=0;i<lineCount;i++)
@@ -441,7 +445,7 @@ class XQGLSurfaceView extends GLSurfaceView{
         mRenderer.asciicols=(int)(lineCount*((float)metrics.widthPixels)/(float)metrics.heightPixels);
         mRenderer.asciirows=lineCount;
         mRenderer.view=asciiscreen;
-        Log.d("ASCII","cr"+mRenderer.asciicols+":"+mRenderer.asciirows);
+        //Log.d("ASCII","cr"+mRenderer.asciicols+":"+mRenderer.asciirows);
         mRenderer.actContext=context;
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);

@@ -18,6 +18,8 @@ import android.view.SurfaceHolder;
 import android.view.TextureView;
 
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.microedition.khronos.opengles.GL10;
 
@@ -42,6 +44,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private float mAngle;
 
     public SurfaceTexture mSurface;
+
+    private boolean clearDone=true;
 
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
@@ -322,11 +326,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
             Random r= new Random();
 
-            Log.d("ASCII", "AS" + row + " :" + pos + "__" + str.length());
+            //Log.d("ASCII", "AS" + row + " :" + pos + "__" + str.length());
             for(int i=0;i<str.length();i++)
             {
                 int ndx = ((asciicols*(row))+(pos))+i;
-                Log.d("ASCII","CC"+ndx+ ":"+mTile.length);
+                //Log.d("ASCII","CC"+ndx+ ":"+mTile.length);
 
                 if(ndx>=mTile.length || ndx<0){continue;}
 
@@ -335,7 +339,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
                     mBitmap.setPixel((pos+i)%asciicols, row, Color.argb(str.charAt(i), 0, 0, 255));
                     //mBitmap.setPixel(1, 0, Color.argb(r.nextInt(256), r.nextInt(256), r.nextInt(256), 255));
-                    Log.d("ASCII", "CC" + mTile[ndx] + ":" + mTile.length);
+                    //Log.d("ASCII", "CC" + mTile[ndx] + ":" + mTile.length);
                     //mTile[ndx].putChar(str.charAt(i));
                 }
 
@@ -355,6 +359,31 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //int screenTileValue=textures[1];
             //bitmap.recycle();
         }
+    }
+
+    public void clearAscii()
+    {
+        clearDone=false;
+        TimerTask clearTrhead=new TimerTask() {
+            @Override
+            public void run() {
+                clearDone=true;
+                for(int i=0;i<asciicols;i++)
+                {
+                    for(int j=0;j<asciirows;j++)
+                    {
+                        int px=mBitmap.getPixel(i,j);
+                        if (px>0){clearDone=false;}
+                        mBitmap.setPixel(i,j,px/2);
+                    }
+                }
+                if(clearDone){this.cancel();}
+                else{upAval=true;}
+
+            }
+        };
+        new Timer().scheduleAtFixedRate(clearTrhead,0,5);
+
     }
 
 
