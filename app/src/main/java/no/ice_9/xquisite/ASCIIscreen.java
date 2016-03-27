@@ -408,17 +408,20 @@ public class ASCIIscreen implements Serializable{
     {
 
         mReady=false;
-        Log.d("ASCII","CLEAR");
-        mGLView.mRenderer.clearAscii();
-
 
         //Bitmap
-        /*for(int i=0;i<lineCount;i++)
+        for(int i=0;i<lineCount;i++)
         {
 
             mLine[i]="";
         }
-        mLinePointer=0;*/
+        mLinePointer=0;
+
+        Log.d("ASCII","CLEAR");
+        mGLView.mRenderer.clearAscii();
+
+
+
         mReady=true;
     }
 

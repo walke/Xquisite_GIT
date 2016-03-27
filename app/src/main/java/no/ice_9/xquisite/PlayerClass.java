@@ -61,7 +61,7 @@ public class PlayerClass {
         mAscii = ascii;
 
         //mVideoView = new VideoView(tAct);
-        mFrame=new FrameLayout(tAct);
+        //mFrame=new FrameLayout(tAct);
 
 
 
@@ -120,7 +120,8 @@ public class PlayerClass {
 
         if(mError)
         {
-            finishVideo();
+            return finishVideo();
+            //return -1;
         }
         else if(mVideoReady)
         {
@@ -160,98 +161,10 @@ public class PlayerClass {
                     {
 
 
-                        //mAscii.canvas=surfaceView.getHolder().getSurface().lockCanvas(new Rect(0,0,10,10));
 
-                            //Canvas canvas=surfaceView.getHolder().lockCanvas();
-
-                            //surfaceView.draw(canvas);
-                            //mAscii.putCanvas(canvas);
-                            //surfaceView.getHolder().unlockCanvasAndPost(canvas);
-
-
-                        //surfaceView.getHolder().getSurface().unlockCanvasAndPost(mAscii.canvas);
 
                     }
-                    //if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*/mTime++;}
 
-                    //if(mTime==20){mAscii.setRage(false);mAscii.clear();mTime++;}
-                    /*if(mTime==21 && !mAscii.isRage())
-                    {
-                        mLoadingDialog.dismiss();
-                        mAscii.pushLine("########################");
-                        mAscii.pushLine("#scienceFuture xquisite#");
-                        mAscii.pushLine("########################");
-                        mAscii.pushLine("Initializing sequence...");
-                        mTime++;
-                    }
-                    if(mTime==22 && !mAscii.isRage())
-                    {
-                        mAscii.pushLine("Testing connection to the server...");
-                        mInitDone=false;
-                        mTime++;
-                    }
-                    if(mTime==23 && !mAscii.isRage())
-                    {
-
-                        if(mServer.checkConnection())
-                        {
-                            mServerConnection=1;
-                        }
-                        else{mServerConnection=-1;}
-                        Log.d("MAIN", "servResp" + mServerConnection);
-                        mTime++;
-                    }
-
-                    if(mServerConnection==1  && !mAscii.isRage() && !mInitDone)
-                    {
-                        mAscii.pushLine("Connection succesed");
-                        mAscii.pushLine("");
-                        mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");
-                        mInitDone=true;
-
-                        //this.cancel();
-                        //mAscii.mAsciiStopUpdater();
-                        mTime++;
-                    }
-                    if(mInitDone)
-                    {
-
-                        Log.d("MAIN","WAITING FOR TOUCH");mTime++;
-                    }
-                    if(mServerConnection==-1  && !mAscii.isRage() && !mInitDone)
-                    {
-                        mAscii.pushLine("Connection failed");
-                        mAscii.pushLine("");
-                        mAscii.pushLine("THERE WAS A PROBLEM WITH A CONNECTION TO SERVER");
-                        mAscii.pushLine("try to check your internet connection");
-                        mAscii.pushLine("if your internet works fine, the problem is on server side");
-                        mAscii.pushLine("any way we will try to reconnect in few seconds");
-                        //mAscii.mAsciiStopUpdater();
-                        //this.cancel();
-                        mReconnectTime=mTime;
-                        mInitDone=true;
-                        mTime++;
-                    }
-                    if(mTime>(mReconnectTime+50) && mReconnectTime!=-1)
-                    {
-                        mServerConnection=0;
-                        mReconnectTime=-1;
-                        mInitDone=false;
-                        mAscii.pushLine("");
-                        mAscii.pushLine("retrying connecting..");
-                        mTime=23;
-                    }
-
-                    if(mTime>1000)
-                    {
-                        mServerConnection=0;
-                        mScreenSaver=true;
-                        mAscii.fillTrash();
-                        mAscii.putImage();
-                        mInitDone=false;
-                    }
-                    Log.d("MAIN","conn"+mServerConnection);
-                    Log.d("MAIN", "time" + mTime);*/
                 }
 
             }
@@ -393,7 +306,9 @@ public class PlayerClass {
                     Log.d("PLAYER", "PARTQ" + mVideoPart[mCurrentPart].getQuestion());
                     playNext();
                 } else {
-                    finishVideo();
+                    //mVideoView.release();
+                    mError=true;
+                    //finishVideo();
                 }
 
             }
@@ -500,8 +415,10 @@ public class PlayerClass {
 
     }
 
-    public void finishVideo()
+    public int finishVideo()
     {
+        return mParent;
+        //tAct.mParent=mParent;
         //Intent intent = new Intent(this, RecorderActivity.class);
         //intent.putExtra(EXTRA_MESSAGE2, String.valueOf(mParent));
         //startActivity(intent);
