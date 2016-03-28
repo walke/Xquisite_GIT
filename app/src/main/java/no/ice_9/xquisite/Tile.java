@@ -9,11 +9,14 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.util.Calendar;
 
 /**
  * Created by human on 16.03.16.
  */
 public class Tile {
+
+    
 
     private int textureRef = -1;
     private int fsTexture;
@@ -158,7 +161,7 @@ public class Tile {
     private final int mProgram;
 
 
-    public Tile(int x,int y,int totx,int toty, int texture, int avalTexture, int videoTexture) {
+    public Tile(int x,int y,int totx,int toty, int texture, int avalTexture, int videoTexture, int program) {
 
 
 
@@ -166,64 +169,71 @@ public class Tile {
 
         float xscal=2/(float)totx;
         float yscal=2/(float)toty;//TODO: REMOVE OFFSET
-        tileCoords[0]=((xscal*x))-1.0f;
-        tileCoords[1]=((yscal*y))-1.0f;
-        tileCoords[3]=((xscal*x))+xscal-1.0f;
-        tileCoords[4]=((yscal*y))-1.0f;
-        tileCoords[6]=((xscal*x))-1.0f;
-        tileCoords[7]=((yscal*y))+yscal-1.0f;
-        tileCoords[9]=((xscal*x))+xscal-1.0f;
-        tileCoords[10]=((yscal*y))+yscal-1.0f;
-
-        xscal=1.0f/(float)totx;
-        yscal=1.0f/(float)toty;
-        float xd=xscal*(float)x;
-        float yd=yscal*(float)(toty-y-1);
-        tileAvalTextureCoords[0]=xd+xscal*0.0f;
-        tileAvalTextureCoords[1]=yd+yscal*1.0f;
-        tileAvalTextureCoords[2]=xd+xscal*1.0f;
-        tileAvalTextureCoords[3]=yd+yscal*1.0f;
-        tileAvalTextureCoords[4]=xd+xscal*0.0f;
-        tileAvalTextureCoords[5]=yd+yscal*0.0f;
-        tileAvalTextureCoords[6]=xd+xscal*1.0f;
-        tileAvalTextureCoords[7]=yd+yscal*0.0f;
+        float xd=xscal*x;
+        float yd=yscal*y;
+        tileCoords[0]=(xd)-1.0f;
+        tileCoords[1]=(yd)-1.0f;
+        tileCoords[3]=(xd)+xscal-1.0f;
+        tileCoords[4]=(yd)-1.0f;
+        tileCoords[6]=(xd)-1.0f;
+        tileCoords[7]=(yd)+yscal-1.0f;
+        tileCoords[9]=(xd)+xscal-1.0f;
+        tileCoords[10]=(yd)+yscal-1.0f;
 
         xscal=1.0f/(float)totx;
         yscal=1.0f/(float)toty;
         xd=xscal*(float)x;
+        yd=yscal*(float)(toty-y-1);
+        //tileAvalTextureCoords[0]=xd+xscal*0.0f;
+        //tileAvalTextureCoords[1]=yd+yscal*1.0f;
+        tileAvalTextureCoords[0]=xd;
+        tileAvalTextureCoords[1]=yd+yscal;
+        tileAvalTextureCoords[2]=xd+xscal;
+        tileAvalTextureCoords[3]=yd+yscal;
+        tileAvalTextureCoords[4]=xd;
+        tileAvalTextureCoords[5]=yd;
+        tileAvalTextureCoords[6]=xd+xscal;
+        tileAvalTextureCoords[7]=yd;
+
+        //xscal=1.0f/(float)totx;
+        //yscal=1.0f/(float)toty;
+        //xd=xscal*(float)x;
         yd=yscal*(float)y;
-        tileVidTextureCoords[0]=yd+yscal*0.0f;
-        tileVidTextureCoords[1]=xd+xscal*0.0f;
-        tileVidTextureCoords[2]=yd+yscal*0.0f;
-        tileVidTextureCoords[3]=xd+xscal*1.0f;
-        tileVidTextureCoords[6]=yd+yscal*1.0f;
-        tileVidTextureCoords[7]=xd+xscal*1.0f;
-        tileVidTextureCoords[4]=yd+yscal*1.0f;
-        tileVidTextureCoords[5]=xd+xscal*0.0f;
+        tileVidTextureCoords[0]=yd;
+        tileVidTextureCoords[1]=xd;
+        tileVidTextureCoords[2]=yd;
+        tileVidTextureCoords[3]=xd+xscal;
+        tileVidTextureCoords[6]=yd+yscal;
+        tileVidTextureCoords[7]=xd+xscal;
+        tileVidTextureCoords[4]=yd+yscal;
+        tileVidTextureCoords[5]=xd;
+
+        //int texCords=8
+
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         vertexBuffer = byteBuffer.asFloatBuffer();
         vertexBuffer.put(tileCoords);
         vertexBuffer.position(0);
-        byteBuffer = ByteBuffer.allocateDirect(drawOrder.length*4);
+        byteBuffer = ByteBuffer.allocateDirect(drawOrder.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         indexBuffer = byteBuffer.asShortBuffer();
         indexBuffer.put(drawOrder);
         indexBuffer.position(0);
-        byteBuffer = ByteBuffer.allocateDirect(tileTextureCoords.length * 4);
+        byteBuffer = ByteBuffer.allocateDirect(32);
         byteBuffer.order(ByteOrder.nativeOrder());
         textureBuffer = byteBuffer.asFloatBuffer();
         textureBuffer.put(tileTextureCoords);
         textureBuffer.position(0);
 
-        byteBuffer = ByteBuffer.allocateDirect(tileAvalTextureCoords.length * 4);
+        byteBuffer = ByteBuffer.allocateDirect(32);
         byteBuffer.order(ByteOrder.nativeOrder());
         avalTextureBuffer = byteBuffer.asFloatBuffer();
         avalTextureBuffer.put(tileAvalTextureCoords);
         avalTextureBuffer.position(0);
 
-        byteBuffer = ByteBuffer.allocateDirect(tileVidTextureCoords.length * 4);
+        byteBuffer = ByteBuffer.allocateDirect(32);
         byteBuffer.order(ByteOrder.nativeOrder());
         vidTextureBuffer = byteBuffer.asFloatBuffer();
         vidTextureBuffer.put(tileVidTextureCoords);
@@ -231,26 +241,13 @@ public class Tile {
 
 
 
-        int vertexShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-                vertexShaderCode);
-        int fragmentShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentShaderCode);
-
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram();
-
-        // add the vertex shader to program
-        GLES20.glAttachShader(mProgram, vertexShader);
-
-        // add the fragment shader to program
-        GLES20.glAttachShader(mProgram, fragmentShader);
-
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mProgram);
+        mProgram=program;
 
         textureRef = texture;
         avalTextureRef = avalTexture;
         vidTextureRef = videoTexture;
+
+
 
     }
 

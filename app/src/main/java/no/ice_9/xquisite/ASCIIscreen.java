@@ -31,6 +31,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.IllegalCharsetNameException;
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,6 +44,10 @@ import javax.microedition.khronos.opengles.GL10;
  */
 @SuppressWarnings("serial")
 public class ASCIIscreen implements Serializable{
+
+    //DEBUG TIME MEASURE
+    long mMesTime=0;
+    long mLasTime=0;
 
     //SCREEN VARIABLES
     Display display;
@@ -90,7 +95,8 @@ public class ASCIIscreen implements Serializable{
 
     public ASCIIscreen(Context context,TextView text,String actParent)
     {
-
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        mLasTime=mMesTime;
 
 
         mActParent=actParent;
@@ -123,61 +129,7 @@ public class ASCIIscreen implements Serializable{
 
         mSymbolsPerLine=-1;
 
-        //mReady=true;
-        /*
-        mText.post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
 
-                Log.d("ASCII", "run");
-                boolean done = false;
-                String tmpstr = "";
-                int i = 0;
-                mReady=true;
-                /*
-                while (!done)
-                {
-                    //mText.setText(tmpstr);
-                    tmpstr += "#";
-                    if (mText.getLineCount() == 2)
-                    {
-                        done = true;
-                        mSymbolsPerLine = i - 1;
-                        //Log.d("ASCII", "symi" + mSymbolsPerLine);
-
-                        Random rnd=new Random();
-                        mTrash=new String[100];
-                        for(int k=0;k<100;k++)
-                        {
-                            String tmpStr="";
-                            //rnd.nextBytes(buf);
-
-                            for(int l = 0;l<mSymbolsPerLine;l++)
-                            {
-                                tmpStr+=(char)(rnd.nextInt(223)+32);
-                            }
-                            //tmpStr=new String(buf);
-                            mTrash[k]=tmpStr;
-
-
-
-                        }
-                        mReady=true;
-                    }
-                    i++;
-
-                }
-
-            }
-        });*/
-
-
-        /*while(mSymbolsPerLine==-1)
-        {
-            Log.d("ASCII","wait");
-        }*/
 
         for(int i=0;i<lineCount;i++)
         {
@@ -197,7 +149,9 @@ public class ASCIIscreen implements Serializable{
         //Log.d("ASCII", "real size" + mText.getExtendedPaddingTop());
         createUpdater();
 
-
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","  ASCII INIT "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
         //mAsciiStartUpdater(50);
     }
 
@@ -434,12 +388,20 @@ public class ASCIIscreen implements Serializable{
 }
 
 class XQGLSurfaceView extends GLSurfaceView{
+    //DEBUG TIME MEASURE
+    long mMesTime=0;
+    long mLasTime=0;
+
     public final XQGLRenderer mRenderer;
     private final Activity actContext;
 
     public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount,ASCIIscreen asciiscreen)
     {
         super(context);
+
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        mLasTime=mMesTime;
+
         actContext=(Activity)context;
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2);
@@ -452,6 +414,10 @@ class XQGLSurfaceView extends GLSurfaceView{
         mRenderer.actContext=context;
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);
+
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","    GL INIT "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
 
     }
 

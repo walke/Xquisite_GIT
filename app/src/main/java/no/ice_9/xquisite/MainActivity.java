@@ -18,12 +18,17 @@ import android.widget.TextView;
 import android.util.TypedValue;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class MainActivity extends Activity {
+
+    //DEBUG TIME MEASURE
+    long mMesTime=0;
+    long mLasTime=0;
 
     InitClass initClass;
     PlayerClass playerClass;
@@ -55,7 +60,7 @@ public class MainActivity extends Activity {
     public int mParent=-1;
 
     //Start new activity for creating new part of a story.
-    public void CreateNewStory()
+    /*public void CreateNewStory()
     {
 
         if(mScreenSaver)
@@ -82,7 +87,7 @@ public class MainActivity extends Activity {
             mTime=0;
         }
 
-    }
+    }*/
 
     public void glTouch()
     {
@@ -94,11 +99,11 @@ public class MainActivity extends Activity {
             case 0:
                 result=initClass.action();
                 break;
-            case 2:
+            case 3:
                 result=playerClass.action();
                 mParent=result;
                 break;
-            case 1:
+            case 4:
                 result=recorderClass.action();
                 break;
         }
@@ -128,13 +133,13 @@ public class MainActivity extends Activity {
                 mTimerLoop=initClass.getTimerTask();
                 break;
 
-            case 2:
+            case 3:
 
                 playerClass=new PlayerClass(this,mAscii,mServer);
                 mTimerLoop=playerClass.getTimerTask();
                 break;
 
-            case 1:
+            case 4:
 
                 recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=recorderClass.getTimerTask();
@@ -200,24 +205,28 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //LOADING POPUP
-        //mLoadingDialog = ProgressDialog.show(this, "",
-         //       "Loading. Please wait...", true);
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        mLasTime=mMesTime;
 
 
         //setContentView(R.layout.activity_main);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","start "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
 
-        //mText=(TextView)findViewById(R.id.text_main);
 
-        //mGlview=(TextView)findViewById(R.id.text_main);
 
         //GET GLES
         mTime=0;
         mAscii=new ASCIIscreen(this,mText,"MAIN");
         setContentView(mAscii.mGLView);
         //mAscii.mAsciiStartUpdater(50);
+
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","GLES INIT "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
 
         //STAT VARS
         mInitDone=false;
@@ -230,11 +239,17 @@ public class MainActivity extends Activity {
         mServer=new Server(this);
         mServerConnection=0;
 
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","SRV INIT "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
+
 
         //MAIN TREAD
         mTimer=new Timer();
 
-
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","TIMER INIT "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
 
     }
 
