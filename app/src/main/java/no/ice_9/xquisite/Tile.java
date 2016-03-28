@@ -16,7 +16,7 @@ import java.util.Calendar;
  */
 public class Tile {
 
-    
+
 
     private int textureRef = -1;
     private int fsTexture;
