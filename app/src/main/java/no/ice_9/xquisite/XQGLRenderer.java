@@ -12,6 +12,7 @@ import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -60,9 +61,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     "varying lowp vec2 VidTexCoordOut;" +
                     "void main() {" +
 
-                    "int si = int(VidTexCoordOut.s * 50.0);"+
-                    "int sj = int(VidTexCoordOut.t * 50.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 50.0, float(sj) / 50.0);"+
+                    "int si = int(VidTexCoordOut.s * 100.0);"+
+                    "int sj = int(VidTexCoordOut.t * 100.0);"+
+                    "vec2 vidCoords=vec2(float(si) / 100.0, float(sj) / 100.0);"+
                     "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
 
                     "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
@@ -94,10 +95,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     /*INFO TILES SHADERS*/
     private final String vertexInfoTileShaderCode =
-
+            "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
                     "void main() {" +
-                    "  gl_Position = vPosition;" +
+                    "  gl_Position = uMVPMatrix*vPosition;" +
                     "}";
 
     private final String fragmentInfoTileShaderCode =
@@ -113,18 +114,25 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     /*TEXT LINE SHADERS*/
     private final String vertexTextTileShaderCode =
-
+            "uniform mat4 uMVPMatrix;" +
+            "attribute vec2 TexCoordIn;" +
+            "varying vec2 TexCoordOut;" +
             "attribute vec4 vPosition;" +
                     "void main() {" +
-                    "  gl_Position = vPosition;" +
+                    "  TexCoordOut = TexCoordIn;" +
+                    "  gl_Position = uMVPMatrix*vPosition;" +
                     "}";
 
     private final String fragmentTextTileShaderCode =
 
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
+                    "uniform sampler2D Texture;" +
+                    "varying lowp vec2 TexCoordOut;" +
                     "void main() {" +
-                    "  gl_FragColor =  vColor ;" +
+                    "vec4 col = texture2D(Texture, TexCoordOut);"+//
+                    "col.a=0.1;"+
+                    "  gl_FragColor =  ( vColor * col);" +
                     "}";
 
     //INFO  TILE PROGRAM
@@ -156,8 +164,15 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private boolean clearDone=true;
 
+    private final float[] mMVPMatrix = new float[16];
+    private final float[] mViewMatrix = new float[16];
+    private final float[] mProjectionMatrix = new float[16];
+    private final float[] mTranslationMatrix = new float[16];
+
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
+
+        mAngle=0f;
 
         mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;
@@ -328,7 +343,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 k++;
             }
 
-            mTextLine[j] = new TextLine(j,mTextProgram);
+            mTextLine[j] = new TextLine(j,textGridTex,mTextProgram);
         }
 
 
@@ -357,6 +372,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         // Redraw background color
         //Random rnd=new Random();
         view.mReady=true;
+        float[] scratch = new float[16];
 
 
 
@@ -370,9 +386,19 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 l++;
             }
         }*/
-
+        mAngle+=0.01f;
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         updateAval();
+
+        // Set the camera position (View matrix)
+        Matrix.setLookAtM(mViewMatrix, 0, 0, 1, -1f - mAngle, 0f, -1f, 0f, 0f, 1f, 0f);
+        // Calculate the projection and view transformation
+        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+
+        //Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, -2f);
+        Matrix.setIdentityM(mTranslationMatrix,0);
+        Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, 0f);
+        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
 
         int sx=asciicols;
         int sy=asciirows;
@@ -387,13 +413,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
-        mInfoTile.draw();
+        //mInfoTile.draw(mTranslationMatrix);
 
         for(int j=0;j<sy;j++)
         {
             if(!mTextLine[j].isEmpty())
             {
-                mTextLine[j].draw();
+                Matrix.translateM(mTranslationMatrix, 0, 0f, -0.05f, 0f);
+                mTextLine[j].draw(mTranslationMatrix);
             }
 
         }
@@ -401,6 +428,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+
+        float ratio = (float) width / height;
+
+        // this projection matrix is applied to object coordinates
+        // in the onDrawFrame() method
+        Matrix.frustumM(mProjectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
     }
 
     public void updateAval()

@@ -1,6 +1,7 @@
 package no.ice_9.xquisite;
 
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,6 +12,8 @@ import java.nio.ShortBuffer;
  * Created by human on 31.03.16.
  */
 public class InfoTile {
+
+
 
     private final int mProgram;
 
@@ -33,6 +36,8 @@ public class InfoTile {
 
     public InfoTile(int program)
     {
+
+
         mProgram=program;
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
@@ -54,8 +59,9 @@ public class InfoTile {
     //handles
     private int mPositionHandle;
     private int mColorHandle;
+    private int mMVPMatrixHandle;
 
-    public void draw()
+    public void draw(float[] mvpMatrix)
     {
         GLES20.glUseProgram(mProgram);
 
@@ -67,6 +73,14 @@ public class InfoTile {
 
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+
+        // get handle to shape's transformation matrix
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        //XQGLRenderer.checkGlError("glGetUniformLocation");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+        //MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
         // Enable a handle to the triangle vertices
         GLES20.glEnableVertexAttribArray(mPositionHandle);
