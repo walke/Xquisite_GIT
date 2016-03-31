@@ -363,43 +363,63 @@ public class Server {
             InetAddress serverAdrr = InetAddress.getByName(adress);
 
             sck = new Socket(serverAdrr,237);
+            //sck.setSendBufferSize(maxBufferSize);
 
+            //sck.setKeepAlive(true);
 
+            //BufferedOutputStream out = new BufferedOutputStream(sck.getOutputStream());
             DataOutputStream out = new DataOutputStream(sck.getOutputStream());
             InputStream input = new BufferedInputStream(sck.getInputStream());
 
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_PINC), 4, CODE_SERVER_PIN));
-
+            //out.flush();
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_TASK), 4, CODE_UPLOAD_STORY_PRT));
-
+            //out.flush();
             out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_TSKD), 4, ndx));
-
+            //out.flush();
             out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_PRTQ), 64, partQuestion));
-
+            //out.flush();
 
             bytesAvailable = fileInputStream.available();
-            Log.d("SERVER","AVAILABLE "+bytesAvailable+" bytes");
+            Log.d("SERVER", "AVAILABLE " + bytesAvailable + " bytes");
 
             out.write(createFileStartPacket(Integer.parseInt(CODE_PACK_ID_FILE), bytesAvailable));
+            //out.flush();
+            /*
+            byte[] buf = new byte[1024*16];
+            int i;
+            for(i=0;i<100;i++)
+            {
+
+                out.write(buf,0,1024*16);
+                out.flush();
+                Log.d("SERVER","W"+i+","+(1024*16*i)+","+bytesAvailable);
+            }*/
+            //Log.d("SERVER", "CHCH" + bytesAvailable + " bytes" +1024*32*i+ "");
 
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
-            buffer = new byte[bufferSize];
-
+            buffer = new byte[maxBufferSize+1];
+            Log.d("SERVER","ch1 "+bufferSize);
             bytesRead = fileInputStream.read(buffer, 0, bufferSize);
             int tot=0;
             tot+=bytesRead;
+            Log.d("SERVER","ch2 "+bytesRead+","+maxBufferSize);
             while (bytesRead > 0) {
-
-                out.write(buffer, 0, bufferSize);
+                Log.d("SERVER", "ch3 ");
+                out.write(buffer, 0, bytesRead);
+                //out.flush();
+                //out.write(buffer);
+                Log.d("SERVER", "SENT " + bytesRead + " bytes");
                 bytesAvailable = fileInputStream.available();
                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
                 bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                Log.d("SERVER", "ch4 "+bytesRead);
                 tot+=bytesRead;
             }
 
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
 
-            Log.d("SERVER","SENT "+tot+" bytes");
+            Log.d("SERVER","SENT TOTAL "+tot+" bytes");
 
             byte[] bbuf=new byte[4];
             input.read(bbuf, 0, 4);
@@ -424,9 +444,11 @@ public class Server {
 
         } catch(IOException ex)
         {
+            Log.d("SERVER","EXP");
             ex.printStackTrace();
         }
         finally {
+            Log.d("SERVER","FIN FCLOSE");
             if(sck!=null)
             {
                 try {

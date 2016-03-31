@@ -87,7 +87,7 @@ public class PlayerClass {
 
                 //boolean result=loadVideo();
                 boolean result=loadStoryData();
-
+                Log.d("PLAYER","RES SD"+result);
                 if(result)
                 {
 
@@ -157,13 +157,16 @@ public class PlayerClass {
                         mTime++;
                     }
 
-                    if(mVideoView!=null && mVideoView.isPlaying())
+                    /*if(mVideoView!=null)
                     {
+                        if(mVideoView.isPlaying())
+                        {
+
+                        }
 
 
 
-
-                    }
+                    }*/
 
                 }
 
@@ -224,23 +227,23 @@ public class PlayerClass {
 
                 }
             }).start();
-
+            Log.d("PLAYER", "empt"+mCurrentPart);
 
             while(mVideoPart[mCurrentPart].isEmpty())
             {
-
+                //Log.d("PLAYER","prtpth "+mCurrentPart);
             }
-
+            Log.d("PLAYER","prtpth "+mVideoPart[1].getFilePath());
 
 
             mAscii.pushLine("seems like it is ready");
-            Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart]);
+            Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart].getFilePath());
 
 
 
         }
 
-        Log.d("PLAYER", "getting file");
+        Log.d("PLAYER", "getting file"+mVideoPart[mCurrentPart].getFilePath());
         //mAscii.pushLine("one more second..");
         mVideoUri= Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
         Log.d("PLAYER", "got file");
@@ -253,7 +256,15 @@ public class PlayerClass {
         Log.d("PLAYER", "URI" + mVideoUri);
         //surfaceView=new Surface(mAscii.mGLView);//TODO: GET TEXTURE
 
+
         mVideoView=MediaPlayer.create(tAct,mVideoUri);
+        if(mVideoView==null)
+        {
+            mAscii.pushLine("ERROR OCCURED WHILE LOADING VIDEO");
+            mAscii.pushLine("TAP TO RECORD NEW ONE");
+            mError=true;
+            return;
+        }
         mVideoView.setSurface(new Surface(mAscii.mGLView.mRenderer.mSurface));
         //surfaceView=new PlayView(tAct,mVideoView);
         //mFrame.addView(surfaceView);
@@ -308,6 +319,7 @@ public class PlayerClass {
                 } else {
                     //mVideoView.release();
                     mError=true;
+                    mAscii.pushLine("START RECORDING");
                     //finishVideo();
                 }
 
@@ -339,7 +351,7 @@ public class PlayerClass {
 
             Log.d("PLAYER","part:"+i);
             mVideoPart[i]=mServer.loadPart(mParent,i);
-            //Log.d("PLAYER","part:"+i+"->"+mVideoPart[i]);
+            Log.d("PLAYER","part:"+i+"->"+mVideoPart[i].getFilePath());
         }
     }
 
@@ -405,7 +417,8 @@ public class PlayerClass {
         {
             Log.d("PLAYER","LAST");
             mCurrentPart=16;
-            finishVideo();
+            mError=true;
+            //finishVideo();
             return;
         }
 
@@ -417,6 +430,12 @@ public class PlayerClass {
 
     public int finishVideo()
     {
+        if(mVideoView!=null)
+        {
+            mVideoView.release();
+        }
+
+
         return mParent;
         //tAct.mParent=mParent;
         //Intent intent = new Intent(this, RecorderActivity.class);

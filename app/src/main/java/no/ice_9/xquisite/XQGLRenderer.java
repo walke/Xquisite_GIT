@@ -29,6 +29,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
+    //ASCI TILES SHADERS
     private final String vertexTileShaderCode =
             //"#extension GL_OES_EGL_image_external : require \n"+
             "attribute vec4 vPosition;" +
@@ -59,9 +60,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     "varying lowp vec2 VidTexCoordOut;" +
                     "void main() {" +
 
-                    "int si = int(VidTexCoordOut.s * 25.0);"+
-                    "int sj = int(VidTexCoordOut.t * 25.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 25.0, float(sj) / 25.0);"+
+                    "int si = int(VidTexCoordOut.s * 50.0);"+
+                    "int sj = int(VidTexCoordOut.t * 50.0);"+
+                    "vec2 vidCoords=vec2(float(si) / 50.0, float(sj) / 50.0);"+
                     "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
 
                     "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
@@ -88,13 +89,55 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
                     "}";
 
+    //ASCII TILE PROGRAM
     private int mProgram;
+
+    /*INFO TILES SHADERS*/
+    private final String vertexInfoTileShaderCode =
+
+            "attribute vec4 vPosition;" +
+                    "void main() {" +
+                    "  gl_Position = vPosition;" +
+                    "}";
+
+    private final String fragmentInfoTileShaderCode =
+
+                    "precision mediump float;" +
+                    "uniform vec4 vColor;" +
+                    "void main() {" +
+                    "  gl_FragColor =  vColor ;" +
+                    "}";
+
+    //INFO  TILE PROGRAM
+    private int mInfoProgram;
+
+    /*TEXT LINE SHADERS*/
+    private final String vertexTextTileShaderCode =
+
+            "attribute vec4 vPosition;" +
+                    "void main() {" +
+                    "  gl_Position = vPosition;" +
+                    "}";
+
+    private final String fragmentTextTileShaderCode =
+
+            "precision mediump float;" +
+                    "uniform vec4 vColor;" +
+                    "void main() {" +
+                    "  gl_FragColor =  vColor ;" +
+                    "}";
+
+    //INFO  TILE PROGRAM
+    private int mTextProgram;
 
     //DEBUG TIME MEASURE
     long mMesTime=0;
     long mLasTime=0;
 
     private Tile[] mTile;
+    private InfoTile mInfoTile;
+    private TextLine[] mTextLine;
+
     public int[] textures = new int[3];
     public Context actContext;
     public boolean upAval;
@@ -119,6 +162,41 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;
 
+        /*TEXT LINE INIT*/
+        int vertexTextShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+                vertexTextTileShaderCode);
+        int fragmentTextShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                fragmentTextTileShaderCode);
+
+        mTextProgram = GLES20.glCreateProgram();
+
+        // add the vertex shader to program
+        GLES20.glAttachShader(mTextProgram, vertexTextShader);
+
+        // add the fragment shader to program
+        GLES20.glAttachShader(mTextProgram, fragmentTextShader);
+
+        // creates OpenGL ES program executables
+        GLES20.glLinkProgram(mTextProgram);
+
+        /*INFO TILE INIT*/
+        int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+                vertexInfoTileShaderCode);
+        int fragmentInfoShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                fragmentInfoTileShaderCode);
+
+        mInfoProgram = GLES20.glCreateProgram();
+
+        // add the vertex shader to program
+        GLES20.glAttachShader(mInfoProgram, vertexInfoShader);
+
+        // add the fragment shader to program
+        GLES20.glAttachShader(mInfoProgram, fragmentInfoShader);
+
+        // creates OpenGL ES program executables
+        GLES20.glLinkProgram(mInfoProgram);
+
+        /*ASCII TILES INIT*/
         int vertexShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexTileShaderCode);
         int fragmentShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
@@ -136,8 +214,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(mProgram);
 
+        /*RENDER INIT*/
         GLES20.glClearColor(0.0f, 0.3f, 0.0f, 0.5f);
 
+        /*TEXTURES INIT*/
         upAval=true;
         upAval=false;
         mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
@@ -191,7 +271,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         int screenTileValue=textures[1];
 
         mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","  GLREND TX1 INIT "+(mMesTime-mLasTime)+"ms");
+        Log.d("TIME", "  GLREND TX1 INIT " + (mMesTime - mLasTime) + "ms");
         mLasTime=mMesTime;
 
         GLES20.glGenTextures(1, textures, 2);
@@ -232,7 +312,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         Log.d("TIME","  GLREND TX2 INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
 
+        /*ASCII TILE BUILD*/
         mTile=new Tile[sx*sy];
+
+        mTextLine=new TextLine[sy];
 
 
         int k=0;
@@ -244,16 +327,22 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 mTile[k] =new Tile(i,j,sx,sy,textGridTex,screenTileValue,videoTex,mProgram);
                 k++;
             }
+
+            mTextLine[j] = new TextLine(j,mTextProgram);
         }
 
 
 
+        /*INFO TILE BUILD*/
+        mInfoTile=new InfoTile(mInfoProgram);
 
 
+
+/*
         mMesTime= Calendar.getInstance().getTimeInMillis();
         Log.d("TIME","  GLREND TILE INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
-
+*/
 
     }
 
@@ -266,7 +355,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
-        Random rnd=new Random();
+        //Random rnd=new Random();
         view.mReady=true;
 
 
@@ -296,6 +385,17 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 mTile[k].draw();
                 k++;
             }
+        }
+
+        mInfoTile.draw();
+
+        for(int j=0;j<sy;j++)
+        {
+            if(!mTextLine[j].isEmpty())
+            {
+                mTextLine[j].draw();
+            }
+
         }
     }
 
@@ -417,6 +517,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void putString(String str, int row, int pos)
     {
+        mTextLine[row].set(str);
         if(row<asciirows &&/* pos+str.length()<asciicols &&*/ view.mReady)
         {
 
@@ -433,7 +534,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
                 if(ndx>=mTile.length || ndx<0){continue;}
 
-                if(mTile[ndx]!=null && ndx>0 )
+                if(mTile[ndx]!=null && ndx>0 && ((pos+i)%asciicols)>=0)
                 {
 
                     mBitmap.setPixel((pos+i)%asciicols, row, Color.argb(str.charAt(i), 0, 0, 255));

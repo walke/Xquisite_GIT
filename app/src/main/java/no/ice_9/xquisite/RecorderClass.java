@@ -29,8 +29,8 @@ public class RecorderClass {
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 90;//60
-    public static final int QTIME = 30;//20
+    public static final int FTIME = 30;//90;//60
+    public static final int QTIME = 10;//30;//20
 
     public static final int NPARTS= 2;
 
@@ -169,7 +169,7 @@ public class RecorderClass {
         if(mMainDone)
         {
             finishRecording();
-
+            return 1;
         }
 
         return 0;
@@ -254,7 +254,7 @@ public class RecorderClass {
             if(!result){return false;}
             else{Log.d("RECORDER","got Preview");}
             mCamera.startPreview();
-            mTimeLeft=100;
+            mTimeLeft=10;
 
 
             //COUNT DOWN TIMER BEFORE RECORDING
@@ -381,7 +381,7 @@ public class RecorderClass {
                         @Override
                         public void run()
                         {
-                            TODO:mAscii.modLine(Integer.toString(mRecorder.getMaxAmplitude()),10,0);
+                            //mAscii.modLine(Integer.toString(mRecorder.getMaxAmplitude()),10,0);
                         }
                     });
 
@@ -477,7 +477,8 @@ public class RecorderClass {
         mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
         Log.d("RECORDER", "setting profile ");
-        mRecorder.setProfile(CamcorderProfile.get(1, CamcorderProfile.QUALITY_LOW));
+        mRecorder.setProfile(CamcorderProfile.get(1, CamcorderProfile.QUALITY_HIGH));
+        mRecorder.setVideoEncodingBitRate(69000);
 
         Log.d("RECORDER", "setting outputfile ");
         mRecorder.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString());
@@ -581,7 +582,7 @@ public class RecorderClass {
             mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
 
 
-            mPreview.setAlpha(0.0f);
+            //mPreview.setAlpha(0.0f);
             //}
 
 

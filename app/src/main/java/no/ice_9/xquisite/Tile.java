@@ -26,64 +26,7 @@ public class Tile {
     private int vidfsTexture;
 
 
-    private final String vertexShaderCode =
-            //"#extension GL_OES_EGL_image_external : require \n"+
-            "attribute vec4 vPosition;" +
-                    "attribute vec2 TexCoordIn;" +
-                    "varying vec2 TexCoordOut;" +
-                    "attribute vec2 AvalTexCoordIn;" +
-                    "varying vec2 AvalTexCoordOut;" +
-                    "attribute vec2 VidTexCoordIn;" +
-                    "varying vec2 VidTexCoordOut;" +
-                    "void main() {" +
-                        //the matrix must be included as a modifier of gl_Position
-                        "  gl_Position = vPosition;" +
-                        "  TexCoordOut = TexCoordIn;" +
-                        "  AvalTexCoordOut = AvalTexCoordIn;" +
-                        "  VidTexCoordOut = VidTexCoordIn;" +
-                    "}";
 
-    private final String fragmentShaderCode =
-            "#extension GL_OES_EGL_image_external : require \n"+
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "uniform sampler2D Texture;" +
-                    "varying lowp vec2 TexCoordOut;" +
-                    "uniform sampler2D AvalTexture;" +
-                    "varying lowp vec2 AvalTexCoordOut;" +
-                    "uniform samplerExternalOES VidTexture;" +
-                    //"uniform sampler2D VidTexture;" +
-                    "varying lowp vec2 VidTexCoordOut;" +
-                    "void main() {" +
-
-                        "int si = int(VidTexCoordOut.s * 25.0);"+
-                        "int sj = int(VidTexCoordOut.t * 25.0);"+
-                        "vec2 vidCoords=vec2(float(si) / 25.0, float(sj) / 25.0);"+
-                        "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
-
-                        "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
-                        "float i1=(floor((col2.b+col2.r+col2.g)/6.0));"+
-                        //"if(i1>=256.0){i1=512.0-i1;}"+
-
-                        "float vidcol=floor(col2.b+col2.r+col2.g)/768.0;"+
-                        "if(col1.b>=0.01){"+
-                            "vidcol=1.0;"+
-                            "i1=floor(col1.b);}"+
-                        "float i2=col1.g;"+
-                        "float i3=col1.r;"+
-                        "float i4=col1.a;"+
-                        "vec4 AvalData=vec4(i1,0.0,0.0,1.0);"+
-                        //"i1=i1/8.0;"+
-                        "float avalRow = (1.0/8.0)*floor(i1/32.0) + TexCoordOut.t;"+//1.0/floor(i1/32).0+
-                        "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
-                        "vec2 avalCoords=vec2(avalCol,avalRow);"+//+TexCoordOut;"+
-
-                        //"  gl_FragColor = ( vColor * (i1/256.0));" +
-                        "  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords));" +
-                        //"  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords) + texture2D(VidTexture, vidCoords));" +
-                        //"  gl_FragColor = ( vColor * texture2D(VidTexture, VidTexCoordOut));" +
-                        //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
-                    "}";
 
 
 
@@ -98,10 +41,10 @@ public class Tile {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     float tileCoords[] = {   // in counterclockwise order:
-            0.3f,  1.0f, 0.0f, // top
-            0.3f, 0.0f, 0.0f, // bottom left
-            1.0f, 0.0f, 0.0f, // bottom left
-            1.0f, 1.0f, 0.0f  // bottom right
+            0.1f, 0.1f, 0.0f, // top
+            0.1f, 0.9f, 0.0f, // bottom left
+            0.9f, 0.1f, 0.0f, // bottom left
+            0.9f, 0.9f, 0.0f  // bottom right
     };
 
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices

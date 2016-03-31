@@ -99,12 +99,13 @@ public class MainActivity extends Activity {
             case 0:
                 result=initClass.action();
                 break;
-            case 3:
+            case 1:
                 result=playerClass.action();
                 mParent=result;
                 break;
-            case 4:
+            case 2:
                 result=recorderClass.action();
+                if (result==1){mCurrentAction=0;}
                 break;
         }
 
@@ -133,13 +134,13 @@ public class MainActivity extends Activity {
                 mTimerLoop=initClass.getTimerTask();
                 break;
 
-            case 3:
+            case 1:
 
                 playerClass=new PlayerClass(this,mAscii,mServer);
                 mTimerLoop=playerClass.getTimerTask();
                 break;
 
-            case 4:
+            case 2:
 
                 recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=recorderClass.getTimerTask();
