@@ -13,6 +13,11 @@ import java.nio.ShortBuffer;
  */
 public class InfoTile {
 
+    public float midx;
+    public float midy;
+    public float sizx;
+    public float sizy;
+
     private final String vertexInfoTileShaderCode =
             "uniform mat4 uMVPMatrix;" +
                     "attribute vec4 vPosition;" +
@@ -49,6 +54,11 @@ public class InfoTile {
 
     public InfoTile()
     {
+        midx=0.0f;
+        midy=0.0f;
+        sizx=1.0f;
+        sizy=1.0f;
+
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);
         int fragmentInfoShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,

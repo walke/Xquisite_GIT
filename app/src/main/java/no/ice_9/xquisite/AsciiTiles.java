@@ -44,9 +44,9 @@ public class AsciiTiles
                     "varying lowp vec2 VidTexCoordOut;" +
                     "void main() {" +
 
-                    "int si = int(VidTexCoordOut.s * 100.0);"+
-                    "int sj = int(VidTexCoordOut.t * 100.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 100.0, float(sj) / 100.0);"+
+                    "int si = int(VidTexCoordOut.s * 150.0);"+
+                    "int sj = int(VidTexCoordOut.t * 150.0);"+
+                    "vec2 vidCoords=vec2(float(si) / 150.0, float(sj) / 150.0);"+
                     "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
 
                     "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
@@ -110,7 +110,7 @@ public class AsciiTiles
 
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+    float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
     private final int mProgram;
 
@@ -234,48 +234,7 @@ public class AsciiTiles
         }
 
 
-        //float xscal=2/(float)totx;
-        //float yscal=2/(float)toty;//TODO: REMOVE OFFSET
-        //float xd=xscal;//*x;
-        //float yd=yscal;//*y;
-        /*tileCoords[0]=(xd)-1.0f;
-        tileCoords[1]=(yd)-1.0f;
-        tileCoords[3]=(xd)+xscal-1.0f;
-        tileCoords[4]=(yd)-1.0f;
-        tileCoords[6]=(xd)-1.0f;
-        tileCoords[7]=(yd)+yscal-1.0f;
-        tileCoords[9]=(xd)+xscal-1.0f;
-        tileCoords[10]=(yd)+yscal-1.0f;*/
 
-        //xscal=1.0f/(float)totx;
-        //yscal=1.0f/(float)toty;
-       // xd=xscal;//*(float)x;
-        //yd=yscal;//*(float);//(toty-y-1);
-        //tileAvalTextureCoords[0]=xd+xscal*0.0f;
-        //tileAvalTextureCoords[1]=yd+yscal*1.0f;
-        /*tileAvalTextureCoords[0]=xd;
-        tileAvalTextureCoords[1]=yd+yscal;
-        tileAvalTextureCoords[2]=xd+xscal;
-        tileAvalTextureCoords[3]=yd+yscal;
-        tileAvalTextureCoords[4]=xd;
-        tileAvalTextureCoords[5]=yd;
-        tileAvalTextureCoords[6]=xd+xscal;
-        tileAvalTextureCoords[7]=yd;*/
-
-        //xscal=1.0f/(float)totx;
-        //yscal=1.0f/(float)toty;
-        //xd=xscal*(float)x;
-        //yd=yscal;//*(float)y;
-        /*tileVidTextureCoords[0]=yd;
-        tileVidTextureCoords[1]=xd;
-        tileVidTextureCoords[2]=yd;
-        tileVidTextureCoords[3]=xd+xscal;
-        tileVidTextureCoords[6]=yd+yscal;
-        tileVidTextureCoords[7]=xd+xscal;
-        tileVidTextureCoords[4]=yd+yscal;
-        tileVidTextureCoords[5]=xd;*/
-
-        //int texCords=8
 
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);

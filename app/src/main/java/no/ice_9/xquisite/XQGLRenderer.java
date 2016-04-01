@@ -36,8 +36,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private float infoTop=0.0f;
 
 
+    private int activeLine=0;
 
 
+    private float mRatio=1f;
 
 
 
@@ -51,7 +53,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private TextLine[] mTextLine;
     private ButtonTile mContinueButton;
 
-    public int[] textures = new int[3];
+    public int[] textures = new int[4];
     public Context actContext;
     public boolean upAval;
     public boolean upVid;
@@ -93,6 +95,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         int sx=asciicols;
         int sy=asciirows;
 
+        mRatio=(float)sx/(float)sy;
+
         mMesTime= Calendar.getInstance().getTimeInMillis();
         Log.d("TIME","  GLREND TX2 INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
@@ -103,7 +107,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mTextLine=new TextLine[sy];
 
-        mContinueButton = new ButtonTile(0.0f,-0.95f,1.0f,0.1f);
+        mContinueButton = new ButtonTile(0.85f,-0.8f,0.1f,0.1f*mRatio,textures[3]);
 
 
 
@@ -161,10 +165,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, -2f);
         Matrix.setIdentityM(mTranslationMatrix, 0);
         scratch2=mTranslationMatrix.clone();
-        Matrix.translateM(mTranslationMatrix, 0, 0f, infoTop, 0f);
         scratch=mTranslationMatrix.clone();
+        Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
 
-        Matrix.scaleM(mTranslationMatrix, 0, 1.0f, infoHeight, 1.0f);
+
+        Matrix.scaleM(mTranslationMatrix, 0, mInfoTile.sizx, mInfoTile.sizy, 1.0f);
 
         //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
 
@@ -184,7 +189,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }*/
 
         mInfoTile.draw(mTranslationMatrix);
-
+        Matrix.translateM(scratch,0,0.0f,0.05f*activeLine-1.8f,0.0f);
         for(int j=0;j<sy;j++)
         {
             if(!mTextLine[j].isEmpty())
@@ -205,6 +210,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
 
         float ratio = (float) width / height;
+        mRatio=ratio;
+
+
 
         // this projection matrix is applied to object coordinates
         // in the onDrawFrame() method
@@ -257,13 +265,17 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             switch(infoTarget)
             {
                 case 1:
+                    mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
+                    mInfoTile.midy+=(-0.8f-mInfoTile.midy)/10.0f;
+                    mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
+                    mInfoTile.sizy+=(0.2f-mInfoTile.sizy)/10.0f;
                     infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
                     infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
-                    mContinueButton.midx+=(0.95f-mContinueButton.midx)/10.0f;
-                    mContinueButton.midy+=(-0.85f-mContinueButton.midy)/10.0f;
-                    mContinueButton.sizx+=(0.2f-mContinueButton.sizx)/10.0f;
-                    mContinueButton.sizy+=(0.3f-mContinueButton.sizy)/10.0f;
+                    //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
+                    //mContinueButton.midy+=(-0.8f-mContinueButton.midy)/10.0f;
+                    //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
+                    //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
 
                     if(infoHeight==0.3f){infoStatus=infoTarget;}
                     break;
@@ -374,6 +386,23 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         });
 
         int videoTex=textures[2];
+
+        //TEXTURE 3
+        mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+
+        int butMaskTex=loadTexture(actContext,R.drawable.continuebutfull);
+        textures[3]=butMaskTex;
+
+
+
+
+
+
+
+
+
+
     }
 
     public static int loadTexture(Context context,final int resourceId)
@@ -439,6 +468,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void putString(String str, int row, int pos)
     {
         mTextLine[row].set(str);
+        activeLine=row;
         if(row<asciirows &&/* pos+str.length()<asciicols &&*/ view.mReady)
         {
 

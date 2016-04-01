@@ -45,6 +45,8 @@ import javax.microedition.khronos.opengles.GL10;
 @SuppressWarnings("serial")
 public class ASCIIscreen implements Serializable{
 
+    int activeLine=0;
+
     //DEBUG TIME MEASURE
     long mMesTime=0;
     long mLasTime=0;
@@ -57,7 +59,7 @@ public class ASCIIscreen implements Serializable{
     XQGLSurfaceView mGLView;
 
     //STATIC LINE NUMBER
-    static private int lineCount=70;
+    static private int lineCount=100;
     private float lineHeight;
 
 

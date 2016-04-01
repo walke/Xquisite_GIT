@@ -19,10 +19,16 @@ public class ButtonTile {
     public float sizx;
     public float sizy;
 
+    private int textureRef = -1;
+    private int fsTexture;
+
     private final String vertexInfoTileShaderCode =
-            "uniform mat4 uMVPMatrix;" +
+                    "attribute vec2 TexCoordIn;" +
+                    "varying vec2 TexCoordOut;" +
+                    "uniform mat4 uMVPMatrix;" +
                     "attribute vec4 vPosition;" +
                     "void main() {" +
+                    "  TexCoordOut = TexCoordIn;" +
                     "  gl_Position = uMVPMatrix*vPosition;" +
                     "}";
 
@@ -30,14 +36,19 @@ public class ButtonTile {
 
             "precision mediump float;" +
                     "uniform vec4 vColor;" +
+                    "uniform sampler2D Texture;" +
+                    "varying lowp vec2 TexCoordOut;" +
                     "void main() {" +
-                    "  gl_FragColor =  vColor ;" +
+                    "   vec4 col = texture2D(Texture, TexCoordOut);"+//
+                    //"   col.a=col.r;"+
+                    "   gl_FragColor =  ( vColor * col);" +
                     "}";
 
     private final int mProgram;
 
     private FloatBuffer vertexBuffer;
     private ShortBuffer indexBuffer;
+    private FloatBuffer textureBuffer;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
@@ -48,17 +59,27 @@ public class ButtonTile {
             1.0f,  1.0f, 0.1f  // bottom right
     };
 
+    static final int COORDS_PER_TEXTURE = 2;
+    float TextureCoords[] = {   // in counterclockwise order:
+            0f, 0f,  // top
+            0f, 1f,  // bottom left
+            1f, 0f,  // bottom left
+            1f, 1f  // bottom right
+    };
+
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 0.4f, 0.5f, 0.3f, 1.0f };
+    float color[] = { 0.8f, 0.5f, 0.3f, 1.0f };
 
-    public ButtonTile(float mx,float my, float sx, float sy)
+    public ButtonTile(float mx,float my, float sx, float sy, int texture)
     {
         midx=mx;
         midy=my;
         sizx=sx;
         sizy=sy;
+
+        textureRef = texture;
 
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);
@@ -88,16 +109,23 @@ public class ButtonTile {
         indexBuffer = byteBuffer.asShortBuffer();
         indexBuffer.put(drawOrder);
         indexBuffer.position(0);
+        byteBuffer = ByteBuffer.allocateDirect(TextureCoords.length*4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        textureBuffer = byteBuffer.asFloatBuffer();
+        textureBuffer.put(TextureCoords);
+        textureBuffer.position(0);
     }
 
     /*DRAW*/
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private final int textureStride = COORDS_PER_TEXTURE * 4; // 4 bytes per vertex
 
     //handles
     private int mPositionHandle;
     private int mColorHandle;
     private int mMVPMatrixHandle;
+    private int mTextureHandle;
 
     public void draw(float[] mvpMatrix)
     {
@@ -108,6 +136,14 @@ public class ButtonTile {
 
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+
+        //get handle to texture coordinate variable
+        mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoordIn");
+        //if (mTextureHandle == -1) Log.e("ASCII", "TexCoordIn not found");
+
+        //get handle to shape's texture reference
+        fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
+        //if (fsTexture == -1) Log.e("ASCII", "Texture not found");
 
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
@@ -128,19 +164,34 @@ public class ButtonTile {
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
 
+        GLES20.glVertexAttribPointer(mTextureHandle, COORDS_PER_TEXTURE,
+                GLES20.GL_FLOAT, false,
+                textureStride, textureBuffer);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
+        GLES20.glUniform1i(fsTexture, 3);
+
         GLES20.glEnableVertexAttribArray(mPositionHandle);
+        GLES20.glEnableVertexAttribArray(mTextureHandle);
+
+        GLES20.glEnable(GLES20.GL_BLEND);
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
         //Draw the shape
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
 
+        GLES20.glDisable(GLES20.GL_BLEND);
+
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mTextureHandle);
     }
 
     public void setDown()
     {
         isDown=true;
-        color[0]= 0.5f;
+        color[0]= 1.0f;
         color[1]= 0.6f;
         color[2]= 0.4f;
 
@@ -150,7 +201,7 @@ public class ButtonTile {
     public void setUp()
     {
         isDown=false;
-        color[0]= 0.4f;
+        color[0]= 0.8f;
         color[1]= 0.5f;
         color[2]= 0.3f;
 

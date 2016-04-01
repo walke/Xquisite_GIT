@@ -95,7 +95,6 @@ public class TextLine {
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(mProgram);
 
-
         mSelfNr=lineNr;
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
