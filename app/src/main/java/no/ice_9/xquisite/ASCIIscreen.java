@@ -404,11 +404,13 @@ class XQGLSurfaceView extends GLSurfaceView{
 
     public final XQGLRenderer mRenderer;
     private final Activity actContext;
+    DisplayMetrics mMetrics;
 
     public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount,ASCIIscreen asciiscreen)
     {
         super(context);
 
+        mMetrics=metrics;
         mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;
 
@@ -442,14 +444,23 @@ class XQGLSurfaceView extends GLSurfaceView{
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
 
-        float x = e.getX();
-        float y = e.getY();
+        float x = (e.getX()/mMetrics.widthPixels*2)-1.0f;
+        float y = 1.0f-(e.getY()/mMetrics.heightPixels*2);
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                actContext.onTouchEvent(e);
+                //actContext.onTouchEvent(e);
+                break;
             case MotionEvent.ACTION_DOWN:
-                actContext.onTouchEvent(e);
+                mRenderer.setClick(x,y);
+                //actContext.onTouchEvent(e);
+                break;
+            case MotionEvent.ACTION_UP:
+                if(mRenderer.getClick(x,y))
+                {
+                    actContext.onTouchEvent(e);
+                }
+                break;
         }
 
         mPreviousX = x;

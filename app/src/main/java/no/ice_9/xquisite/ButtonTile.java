@@ -12,6 +12,13 @@ import java.nio.ShortBuffer;
  */
 public class ButtonTile {
 
+    public  boolean isDown=false;
+
+    public float midx;
+    public float midy;
+    public float sizx;
+    public float sizy;
+
     private final String vertexInfoTileShaderCode =
             "uniform mat4 uMVPMatrix;" +
                     "attribute vec4 vPosition;" +
@@ -44,10 +51,15 @@ public class ButtonTile {
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    float color[] = { 0.4f, 0.5f, 0.3f, 1.0f };
 
-    public ButtonTile()
+    public ButtonTile(float mx,float my, float sx, float sy)
     {
+        midx=mx;
+        midy=my;
+        sizx=sx;
+        sizy=sy;
+
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);
         int fragmentInfoShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
@@ -123,5 +135,26 @@ public class ButtonTile {
 
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+    }
+
+    public void setDown()
+    {
+        isDown=true;
+        color[0]= 0.5f;
+        color[1]= 0.6f;
+        color[2]= 0.4f;
+
+
+
+    }
+    public void setUp()
+    {
+        isDown=false;
+        color[0]= 0.4f;
+        color[1]= 0.5f;
+        color[2]= 0.3f;
+
+
+
     }
 }

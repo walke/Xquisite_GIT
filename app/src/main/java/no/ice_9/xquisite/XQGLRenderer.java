@@ -38,6 +38,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
 
+
+
+
     //DEBUG TIME MEASURE
     long mMesTime=0;
     long mLasTime=0;
@@ -100,7 +103,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mTextLine=new TextLine[sy];
 
-        mContinueButton = new ButtonTile();
+        mContinueButton = new ButtonTile(0.0f,-0.95f,1.0f,0.1f);
 
 
 
@@ -131,6 +134,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Random rnd=new Random();
         view.mReady=true;
         float[] scratch = new float[16];
+        float[] scratch2 = new float[16];
 
 
 
@@ -155,9 +159,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         //Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, -2f);
-        Matrix.setIdentityM(mTranslationMatrix,0);
+        Matrix.setIdentityM(mTranslationMatrix, 0);
+        scratch2=mTranslationMatrix.clone();
         Matrix.translateM(mTranslationMatrix, 0, 0f, infoTop, 0f);
         scratch=mTranslationMatrix.clone();
+
         Matrix.scaleM(mTranslationMatrix, 0, 1.0f, infoHeight, 1.0f);
 
         //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
@@ -188,6 +194,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             }
 
         }
+
+        Matrix.translateM(scratch2,0,mContinueButton.midx,mContinueButton.midy,1.0f);
+        Matrix.scaleM(scratch2,0,mContinueButton.sizx,mContinueButton.sizy,0.0f);
+
+        mContinueButton.draw(scratch2);
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
@@ -248,6 +259,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 case 1:
                     infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
                     infoTop=infoTop+(-0.85f-infoTop)/10.0f;
+
+                    mContinueButton.midx+=(0.95f-mContinueButton.midx)/10.0f;
+                    mContinueButton.midy+=(-0.85f-mContinueButton.midy)/10.0f;
+                    mContinueButton.sizx+=(0.2f-mContinueButton.sizx)/10.0f;
+                    mContinueButton.sizy+=(0.3f-mContinueButton.sizy)/10.0f;
+
                     if(infoHeight==0.3f){infoStatus=infoTarget;}
                     break;
 
@@ -498,6 +515,36 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void maximizeInfo()
     {
         infoTarget=2;
+    }
+
+    public void setClick(float x, float y)
+    {
+
+        if (x>mContinueButton.midx-(mContinueButton.sizx/1.0f) &&
+                x<mContinueButton.midx+(mContinueButton.sizx/1.0f) &&
+                y>mContinueButton.midy-(mContinueButton.sizy/1.0f) &&
+                y<mContinueButton.midy+(mContinueButton.sizy/1.0f))
+        {
+            mContinueButton.setDown();
+        }
+
+    }
+
+    public boolean getClick(float x, float y)
+    {
+        if(mContinueButton.isDown)
+        {
+            if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
+                    x < mContinueButton.midx + (mContinueButton.sizx / 1.0f) &&
+                    y > mContinueButton.midy - (mContinueButton.sizy / 1.0f) &&
+                    y < mContinueButton.midy + (mContinueButton.sizy / 1.0f))
+            {
+                mContinueButton.setUp();
+                return true;
+            }
+            mContinueButton.setUp();
+        }
+        return false;
     }
 
 
