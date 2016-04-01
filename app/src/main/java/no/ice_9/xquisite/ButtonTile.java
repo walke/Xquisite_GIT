@@ -1,7 +1,6 @@
 package no.ice_9.xquisite;
 
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,9 +8,9 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * Created by human on 31.03.16.
+ * Created by human on 01.04.16.
  */
-public class InfoTile {
+public class ButtonTile {
 
     private final String vertexInfoTileShaderCode =
             "uniform mat4 uMVPMatrix;" +
@@ -38,8 +37,8 @@ public class InfoTile {
     float tileCoords[] = {   // in counterclockwise order:
             -1.0f, -1.0f, 0.1f, // top
             -1.0f,  1.0f, 0.1f, // bottom left
-             1.0f, -1.0f, 0.1f, // bottom left
-             1.0f,  1.0f, 0.1f  // bottom right
+            1.0f, -1.0f, 0.1f, // bottom left
+            1.0f,  1.0f, 0.1f  // bottom right
     };
 
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
@@ -47,7 +46,7 @@ public class InfoTile {
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-    public InfoTile()
+    public ButtonTile()
     {
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);
@@ -125,5 +124,4 @@ public class InfoTile {
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
     }
-
 }

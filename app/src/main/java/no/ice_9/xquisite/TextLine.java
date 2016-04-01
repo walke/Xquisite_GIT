@@ -12,6 +12,29 @@ import java.nio.ShortBuffer;
  */
 public class TextLine {
 
+    /*TEXT LINE SHADERS*/
+    private final String vertexTextTileShaderCode =
+            "uniform mat4 uMVPMatrix;" +
+                    "attribute vec2 TexCoordIn;" +
+                    "varying vec2 TexCoordOut;" +
+                    "attribute vec4 vPosition;" +
+                    "void main() {" +
+                    "  TexCoordOut = TexCoordIn;" +
+                    "  gl_Position = uMVPMatrix*vPosition;" +
+                    "}";
+
+    private final String fragmentTextTileShaderCode =
+
+            "precision mediump float;" +
+                    "uniform vec4 vColor;" +
+                    "uniform sampler2D Texture;" +
+                    "varying lowp vec2 TexCoordOut;" +
+                    "void main() {" +
+                    "vec4 col = texture2D(Texture, TexCoordOut);"+//
+                    "col.a=col.r;"+
+                    "  gl_FragColor =  ( vColor * col);" +
+                    "}";
+
     private int textureRef = -1;
     private int fsTexture;
 
@@ -53,9 +76,26 @@ public class TextLine {
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-    public TextLine(int lineNr,int texture,int program)
+    public TextLine(int lineNr,int texture)
     {
-        mProgram=program;
+        /*TEXT LINE INIT*/
+        int vertexTextShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+                vertexTextTileShaderCode);
+        int fragmentTextShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                fragmentTextTileShaderCode);
+
+        mProgram = GLES20.glCreateProgram();
+
+        // add the vertex shader to program
+        GLES20.glAttachShader(mProgram, vertexTextShader);
+
+        // add the fragment shader to program
+        GLES20.glAttachShader(mProgram, fragmentTextShader);
+
+        // creates OpenGL ES program executables
+        GLES20.glLinkProgram(mProgram);
+
+
         mSelfNr=lineNr;
 
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);

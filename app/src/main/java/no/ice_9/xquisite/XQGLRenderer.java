@@ -35,187 +35,18 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private float infoHeight=1.0f;
     private float infoTop=0.0f;
 
-    //ASCI TILES SHADERS
-    private final String vertexTileShaderCode =
-            //"#extension GL_OES_EGL_image_external : require \n"+
-            "attribute vec4 vPosition;" +
-                    "attribute vec2 TexCoordIn;" +
-                    "varying vec2 TexCoordOut;" +
-                    "attribute vec2 AvalTexCoordIn;" +
-                    "varying vec2 AvalTexCoordOut;" +
-                    "attribute vec2 VidTexCoordIn;" +
-                    "varying vec2 VidTexCoordOut;" +
-                    "void main() {" +
-                    //the matrix must be included as a modifier of gl_Position
-                    "  gl_Position = vPosition;" +
-                    "  TexCoordOut = TexCoordIn;" +
-                    "  AvalTexCoordOut = AvalTexCoordIn;" +
-                    "  VidTexCoordOut = VidTexCoordIn;" +
-                    "}";
 
-    private final String fragmentTileShaderCode =
-            "#extension GL_OES_EGL_image_external : require \n"+
-                    "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "uniform sampler2D Texture;" +
-                    "varying lowp vec2 TexCoordOut;" +
-                    "uniform sampler2D AvalTexture;" +
-                    "varying lowp vec2 AvalTexCoordOut;" +
-                    "uniform samplerExternalOES VidTexture;" +
-                    //"uniform sampler2D VidTexture;" +
-                    "varying lowp vec2 VidTexCoordOut;" +
-                    "void main() {" +
 
-                    "int si = int(VidTexCoordOut.s * 100.0);"+
-                    "int sj = int(VidTexCoordOut.t * 100.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 100.0, float(sj) / 100.0);"+
-                    "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
-
-                    "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
-                    "float i1=(floor((col2.b+col2.r+col2.g)/6.0));"+
-                    //"if(i1>=256.0){i1=512.0-i1;}"+
-
-                    "float vidcol=floor(col2.b+col2.r+col2.g)/768.0;"+
-                    "if(col1.b>=0.01){"+
-                    "vidcol=1.0;"+
-                    "i1=floor(col1.b);}"+
-                    "float i2=col1.g;"+
-                    "float i3=col1.r;"+
-                    "float i4=col1.a;"+
-                    "vec4 AvalData=vec4(i1,0.0,0.0,1.0);"+
-                    //"i1=i1/8.0;"+
-                    "float avalRow = (1.0/8.0)*floor(i1/32.0) + TexCoordOut.t;"+//1.0/floor(i1/32).0+
-                    "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
-                    "vec2 avalCoords=vec2(avalCol,avalRow);"+//+TexCoordOut;"+
-
-                    //"  gl_FragColor = ( vColor * (i1/256.0));" +
-                    "  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords));" +
-                    //"  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords) + texture2D(VidTexture, vidCoords));" +
-                    //"  gl_FragColor = ( vColor * texture2D(VidTexture, VidTexCoordOut));" +
-                    //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
-                    "}";
-
-    //ASCII TILE PROGRAM
-    private int mProgram;
-
-    //ASCI TILES FULL SHADERS
-    private final String vertexTileFullShaderCode =
-            //"#extension GL_OES_EGL_image_external : require \n"+
-            "attribute vec4 vPosition;" +
-                    "attribute vec2 TexCoordIn;" +
-                    "varying vec2 TexCoordOut;" +
-                    "attribute vec2 AvalTexCoordIn;" +
-                    "varying vec2 AvalTexCoordOut;" +
-                    "attribute vec2 VidTexCoordIn;" +
-                    "varying vec2 VidTexCoordOut;" +
-                    "void main() {" +
-                    //the matrix must be included as a modifier of gl_Position
-                    "  gl_Position = vPosition;" +
-                    "  TexCoordOut = TexCoordIn;" +
-                    "  AvalTexCoordOut = AvalTexCoordIn;" +
-                    "  VidTexCoordOut = VidTexCoordIn;" +
-                    "}";
-
-    private final String fragmentTileFullShaderCode =
-            "#extension GL_OES_EGL_image_external : require \n"+
-                    "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "uniform sampler2D Texture;" +
-                    "varying lowp vec2 TexCoordOut;" +
-                    "uniform sampler2D AvalTexture;" +
-                    "varying lowp vec2 AvalTexCoordOut;" +
-                    "uniform samplerExternalOES VidTexture;" +
-                    //"uniform sampler2D VidTexture;" +
-                    "varying lowp vec2 VidTexCoordOut;" +
-                    "void main() {" +
-
-                    "int si = int(VidTexCoordOut.s * 100.0);"+
-                    "int sj = int(VidTexCoordOut.t * 100.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 100.0, float(sj) / 100.0);"+
-                    "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
-
-                    "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
-                    "float i1=(floor((col2.b+col2.r+col2.g)/6.0));"+
-                    //"if(i1>=256.0){i1=512.0-i1;}"+
-
-                    "float vidcol=floor(col2.b+col2.r+col2.g)/768.0*3.0;"+
-                    "if(col1.b>=0.01){"+
-                    "vidcol=1.0;"+
-                    "i1=floor(col1.b);}"+
-                    "float i2=col1.g;"+
-                    "float i3=col1.r;"+
-                    "float i4=col1.a;"+
-                    "vec4 AvalData=vec4(i1,0.0,0.0,1.0);"+
-                    //"i1=i1/8.0;"+
-                    "float avalRow = (1.0/8.0)*floor(i1/32.0) + TexCoordOut.t;"+//1.0/floor(i1/32).0+
-                    "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
-                    "vec2 avalCoords=vec2(avalCol,avalRow);"+//+TexCoordOut;"+
-
-                   // "  gl_FragColor = ( vColor * texture2D(Texture, TexCoordOut));" +
-                    //"  gl_FragColor =  vColor ;" +
-                    //"  gl_FragColor = ( vColor * (i1/256.0));" +
-                    "  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords));" +
-                    //"  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords) + texture2D(VidTexture, vidCoords));" +
-                    //"  gl_FragColor = ( vColor * texture2D(VidTexture, VidTexCoordOut));" +
-                    //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
-                    "}";
-
-    //ASCII TILE FULL PROGRAM
-    private int mAsciiProgram;
-
-    /*INFO TILES SHADERS*/
-    private final String vertexInfoTileShaderCode =
-            "uniform mat4 uMVPMatrix;" +
-            "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    "  gl_Position = uMVPMatrix*vPosition;" +
-                    "}";
-
-    private final String fragmentInfoTileShaderCode =
-
-                    "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor =  vColor ;" +
-                    "}";
-
-    //INFO  TILE PROGRAM
-    private int mInfoProgram;
-
-    /*TEXT LINE SHADERS*/
-    private final String vertexTextTileShaderCode =
-            "uniform mat4 uMVPMatrix;" +
-            "attribute vec2 TexCoordIn;" +
-            "varying vec2 TexCoordOut;" +
-            "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    "  TexCoordOut = TexCoordIn;" +
-                    "  gl_Position = uMVPMatrix*vPosition;" +
-                    "}";
-
-    private final String fragmentTextTileShaderCode =
-
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "uniform sampler2D Texture;" +
-                    "varying lowp vec2 TexCoordOut;" +
-                    "void main() {" +
-                    "vec4 col = texture2D(Texture, TexCoordOut);"+//
-                    "col.a=col.r;"+
-                    "  gl_FragColor =  ( vColor * col);" +
-                    "}";
-
-    //INFO  TILE PROGRAM
-    private int mTextProgram;
 
     //DEBUG TIME MEASURE
     long mMesTime=0;
     long mLasTime=0;
 
-    private Tile[] mTile;
+
     private AsciiTiles mAsciiTiles;
     private InfoTile mInfoTile;
     private TextLine[] mTextLine;
+    private ButtonTile mContinueButton;
 
     public int[] textures = new int[3];
     public Context actContext;
@@ -248,213 +79,50 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;
 
-        /*TEXT LINE INIT*/
-        int vertexTextShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-                vertexTextTileShaderCode);
-        int fragmentTextShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentTextTileShaderCode);
 
-        mTextProgram = GLES20.glCreateProgram();
-
-        // add the vertex shader to program
-        GLES20.glAttachShader(mTextProgram, vertexTextShader);
-
-        // add the fragment shader to program
-        GLES20.glAttachShader(mTextProgram, fragmentTextShader);
-
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mTextProgram);
-
-        /*INFO TILE INIT*/
-        int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-                vertexInfoTileShaderCode);
-        int fragmentInfoShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentInfoTileShaderCode);
-
-        mInfoProgram = GLES20.glCreateProgram();
-
-        // add the vertex shader to program
-        GLES20.glAttachShader(mInfoProgram, vertexInfoShader);
-
-        // add the fragment shader to program
-        GLES20.glAttachShader(mInfoProgram, fragmentInfoShader);
-
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mInfoProgram);
-
-        /*ASCII TILES INIT*/
-        int vertexShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-                vertexTileShaderCode);
-        int fragmentShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentTileShaderCode);
-
-        // create empty OpenGL ES Program
-        mProgram = GLES20.glCreateProgram();
-
-        // add the vertex shader to program
-        GLES20.glAttachShader(mProgram, vertexShader);
-
-        // add the fragment shader to program
-        GLES20.glAttachShader(mProgram, fragmentShader);
-
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mProgram);
-
-        /*ASCII TILES FULL INIT*/
-        int vertexFullShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-                vertexTileFullShaderCode);
-        int fragmentFullShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                fragmentTileFullShaderCode);
-
-        // create empty OpenGL ES Program
-        mAsciiProgram = GLES20.glCreateProgram();
-
-        // add the vertex shader to program
-        GLES20.glAttachShader(mAsciiProgram, vertexFullShader);
-
-        // add the fragment shader to program
-        GLES20.glAttachShader(mAsciiProgram, fragmentFullShader);
-
-        // creates OpenGL ES program executables
-        GLES20.glLinkProgram(mAsciiProgram);
 
         /*RENDER INIT*/
         GLES20.glClearColor(0.0f, 0.3f, 0.0f, 0.5f);
 
         /*TEXTURES INIT*/
-        upAval=true;
-        upAval=false;
-        mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+        initTextures();
 
-
-        int textGridTex=loadTexture(actContext,R.drawable.textgrid);
-        textures[0]=textGridTex;
-
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","  GLREND TX0 INIT "+(mMesTime-mLasTime)+"ms");
-        mLasTime=mMesTime;
-
-        Log.d("ASCII", "tex" + textGridTex);
         int sx=asciicols;
         int sy=asciirows;
-
-
-        //GLES20.glGenTextures(1, textures, 1);
-        //mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
-
-        //GLES20.glGenTextures(2, textures, 2);
-
-        Random r= new Random();
-
-        for(int i=0;i<asciicols;i++)
-        {
-            for(int j=0;j<asciirows;j++)
-            {
-                //mBitmap.setPixel(i,j, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
-                mBitmap.setPixel(i, j, Color.argb(0, 0, 0, 0));
-                //Log.d("GL","PX:"+mBitmap.getPixel(i,j));
-            }
-        }
-
-
-
-
-        GLES20.glGenTextures(1, textures, 1);
-
-
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
-        // Set filtering
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-        // Load the bitmap into the bound texture.
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
-
-        //bitmap.recycle();
-
-        int screenTileValue=textures[1];
-
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME", "  GLREND TX1 INIT " + (mMesTime - mLasTime) + "ms");
-        mLasTime=mMesTime;
-
-        GLES20.glGenTextures(1, textures, 2);
-        //mSurface.setUseExternalTextureID();
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[2]);
-
-        // Set filtering
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
-                GLES20.GL_TEXTURE_MAG_FILTER,
-                GLES20.GL_LINEAR);
-        //GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-
-
-
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
-                GLES20.GL_REPEAT);
-        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
-                GLES20.GL_REPEAT);
-
-
-
-        mSurface = new SurfaceTexture(textures[2]);
-        mSurface.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
-            @Override
-            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-                //surfaceTexture.updateTexImage();
-
-
-                upVid = true;
-            }
-        });
-
-        int videoTex=textures[2];
 
         mMesTime= Calendar.getInstance().getTimeInMillis();
         Log.d("TIME","  GLREND TX2 INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
 
         /*ASCII TILE BUILD*/
-        mTile=new Tile[sx*sy];
-        mAsciiTiles = new AsciiTiles(sx,sy,textGridTex,screenTileValue,videoTex,mAsciiProgram);
+
+        mAsciiTiles = new AsciiTiles(sx,sy,textures[0],textures[1],textures[2]);
 
         mTextLine=new TextLine[sy];
 
+        mContinueButton = new ButtonTile();
 
-        int k=0;
+
+
 
         for(int j=0;j<sy;j++)
         {
-            for(int i=0;i<sx;i++)
-            {
-                mTile[k] =new Tile(i,j,sx,sy,textGridTex,screenTileValue,videoTex,mProgram);
-                k++;
-            }
 
-            mTextLine[j] = new TextLine(j,textGridTex,mTextProgram);
+
+            mTextLine[j] = new TextLine(j,textures[0]);
         }
 
 
 
         /*INFO TILE BUILD*/
-        mInfoTile=new InfoTile(mInfoProgram);
+        mInfoTile=new InfoTile();
 
 
 
-/*
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","  GLREND TILE INIT "+(mMesTime-mLasTime)+"ms");
-        mLasTime=mMesTime;
-*/
+
 
     }
 
-    /*public void onSurfaceCreated(GL10 unused, EGLConfig config) {
-        // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    }*/
 
 
 
@@ -600,6 +268,97 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         return shader;
     }
 
+    private void initTextures()
+    {
+        upAval=true;
+        upAval=false;
+
+        //TEXTURE 0
+        mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+
+        int textGridTex=loadTexture(actContext,R.drawable.textgrid);
+        textures[0]=textGridTex;
+
+        mMesTime= Calendar.getInstance().getTimeInMillis();
+        Log.d("TIME","  GLREND TX0 INIT "+(mMesTime-mLasTime)+"ms");
+        mLasTime=mMesTime;
+
+        Log.d("ASCII", "tex" + textGridTex);
+
+
+
+        //GLES20.glGenTextures(1, textures, 1);
+        //mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+        //GLES20.glGenTextures(2, textures, 2);
+
+        Random r= new Random();
+
+        for(int i=0;i<asciicols;i++)
+        {
+            for(int j=0;j<asciirows;j++)
+            {
+                //mBitmap.setPixel(i,j, Color.argb(r.nextInt(256), r.nextInt(256),r.nextInt(256),r.nextInt(256)));
+                mBitmap.setPixel(i, j, Color.argb(0, 0, 0, 0));
+                //Log.d("GL","PX:"+mBitmap.getPixel(i,j));
+            }
+        }
+
+
+
+        //TEXTURE 1
+        GLES20.glGenTextures(1, textures, 1);
+
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
+        // Set filtering
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+        // Load the bitmap into the bound texture.
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, mBitmap, 0);
+
+        //bitmap.recycle();
+
+        int screenTileValue=textures[1];
+
+       //TEXTURE 2
+        GLES20.glGenTextures(1, textures, 2);
+        //mSurface.setUseExternalTextureID();
+        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[2]);
+
+        // Set filtering
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
+                GLES20.GL_TEXTURE_MAG_FILTER,
+                GLES20.GL_LINEAR);
+        //GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+
+
+
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_S,
+                GLES20.GL_REPEAT);
+        GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T,
+                GLES20.GL_REPEAT);
+
+
+
+        mSurface = new SurfaceTexture(textures[2]);
+        mSurface.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+            @Override
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                //surfaceTexture.updateTexImage();
+
+
+                upVid = true;
+            }
+        });
+
+        int videoTex=textures[2];
+    }
+
     public static int loadTexture(Context context,final int resourceId)
     {
         final int[] textureHandle = new int[1];
@@ -677,9 +436,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 int ndx = ((asciicols*(row))+(pos))+i;
                 //Log.d("ASCII","CC"+ndx+ ":"+mTile.length);
 
-                if(ndx>=mTile.length || ndx<0){continue;}
 
-                if(mTile[ndx]!=null && ndx>0 && ((pos+i)%asciicols)>=0)
+
+                if(ndx>0 && ((pos+i)%asciicols)>=0)
                 {
 
                     mBitmap.setPixel((pos+i)%asciicols, row, Color.argb(str.charAt(i), 0, 0, 255));
