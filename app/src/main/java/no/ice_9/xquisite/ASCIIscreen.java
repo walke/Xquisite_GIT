@@ -57,7 +57,7 @@ public class ASCIIscreen implements Serializable{
     XQGLSurfaceView mGLView;
 
     //STATIC LINE NUMBER
-    static private int lineCount=60;
+    static private int lineCount=70;
     private float lineHeight;
 
 
