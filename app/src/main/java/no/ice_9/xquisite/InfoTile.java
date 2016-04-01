@@ -23,10 +23,10 @@ public class InfoTile {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     float tileCoords[] = {   // in counterclockwise order:
-            -0.9f, -0.9f, 0.1f, // top
-            -0.9f,  0.9f, 0.1f, // bottom left
-             0.9f, -0.9f, 0.1f, // bottom left
-             0.9f,  0.9f, 0.1f  // bottom right
+            -1.0f, -1.0f, 0.1f, // top
+            -1.0f,  1.0f, 0.1f, // bottom left
+             1.0f, -1.0f, 0.1f, // bottom left
+             1.0f,  1.0f, 0.1f  // bottom right
     };
 
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices

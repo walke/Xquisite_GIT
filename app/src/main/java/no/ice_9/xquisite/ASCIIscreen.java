@@ -270,6 +270,16 @@ public class ASCIIscreen implements Serializable{
 
     }
 
+    public void minimizeInfo()
+    {
+        mGLView.mRenderer.minimizeInfo();
+    }
+
+    public void maximizeInfo()
+    {
+        mGLView.mRenderer.maximizeInfo();
+    }
+
     public void putImage()
     {
         mGLView.putImage(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888));

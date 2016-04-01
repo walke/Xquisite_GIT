@@ -51,7 +51,7 @@ public class TextLine {
 
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
     public TextLine(int lineNr,int texture,int program)
     {

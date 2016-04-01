@@ -98,6 +98,7 @@ public class MainActivity extends Activity {
         {
             case 0:
                 result=initClass.action();
+                mAscii.minimizeInfo();
                 break;
             case 1:
                 result=playerClass.action();

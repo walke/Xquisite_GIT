@@ -30,6 +30,11 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
+    private int infoStatus=2;
+    private int infoTarget=2;
+    private float infoHeight=1.0f;
+    private float infoTop=0.0f;
+
     //ASCI TILES SHADERS
     private final String vertexTileShaderCode =
             //"#extension GL_OES_EGL_image_external : require \n"+
@@ -131,7 +136,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     "varying lowp vec2 TexCoordOut;" +
                     "void main() {" +
                     "vec4 col = texture2D(Texture, TexCoordOut);"+//
-                    "col.a=0.1;"+
+                    "col.a=col.r;"+
                     "  gl_FragColor =  ( vColor * col);" +
                     "}";
 
@@ -389,21 +394,25 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mAngle+=0.01f;
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         updateAval();
+        animInfo();
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(mViewMatrix, 0, 0, 1, -1f - mAngle, 0f, -1f, 0f, 0f, 1f, 0f);
+        //Matrix.setLookAtM(mViewMatrix, 0, 0, 1, -1f - mAngle, 0f, -1f, 0f, 0f, 1f, 0f);
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
+        //Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         //Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, -2f);
         Matrix.setIdentityM(mTranslationMatrix,0);
-        Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, 0f);
-        Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
+        Matrix.translateM(mTranslationMatrix, 0, 0f, infoTop, 0f);
+        scratch=mTranslationMatrix.clone();
+        Matrix.scaleM(mTranslationMatrix, 0, 1.0f, infoHeight, 1.0f);
+
+        //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
 
         int sx=asciicols;
         int sy=asciirows;
         int k=0;
-        for(int j=0;j<sy;j++)
+        /*for(int j=0;j<sy;j++)
 
         {
             for(int i=0;i<sx;i++)
@@ -411,16 +420,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 mTile[k].draw();
                 k++;
             }
-        }
+        }*/
 
-        //mInfoTile.draw(mTranslationMatrix);
+        mInfoTile.draw(mTranslationMatrix);
 
         for(int j=0;j<sy;j++)
         {
             if(!mTextLine[j].isEmpty())
             {
-                Matrix.translateM(mTranslationMatrix, 0, 0f, -0.05f, 0f);
-                mTextLine[j].draw(mTranslationMatrix);
+                Matrix.translateM(scratch, 0, 0f, -0.05f, 0f);
+                mTextLine[j].draw(scratch);
             }
 
         }
@@ -472,6 +481,22 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
             upAval=false;
+        }
+    }
+
+    private void animInfo()
+    {
+        if(infoTarget!=infoStatus)
+        {
+            switch(infoTarget)
+            {
+                case 1:
+                    infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
+                    infoTop=infoTop+(-0.85f-infoTop)/10.0f;
+                    if(infoHeight==0.3f){infoStatus=infoTarget;}
+                    break;
+
+            }
         }
     }
 
@@ -615,8 +640,18 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
             }
         };
-        new Timer().scheduleAtFixedRate(clearTrhead,0,5);
+        new Timer().scheduleAtFixedRate(clearTrhead, 0, 5);
 
+    }
+
+    public void minimizeInfo()
+    {
+        infoTarget=1;
+    }
+
+    public void maximizeInfo()
+    {
+        infoTarget=2;
     }
 
 
