@@ -33,6 +33,7 @@ public class RecorderClass {
     public static final int QTIME = 10;//30;//20
 
     public static final int NPARTS= 2;
+    public static final int TOT_TIME=FTIME+(NPARTS-1)*QTIME;
 
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
@@ -49,7 +50,8 @@ public class RecorderClass {
 
     static String[] mQuestion;
     static int mQuestionTime;
-    int mTimeLeft;
+    int mTimeLeft=0;
+    int mTimeElapsed;
 
     boolean mWorking;
     StoryPart[] mVideoPart;
@@ -184,7 +186,7 @@ public class RecorderClass {
                 //Log.d("PLAYER","::"+mVideoView.isActivated()+","+mVideoView);
                 if(mAscii.mReady)
                 {
-
+                    mAscii.mGLView.mRenderer.setProgress((float)mTimeElapsed/(float)TOT_TIME);
 
 
                 }
@@ -274,6 +276,7 @@ public class RecorderClass {
                                 //mRecorderTimeText.setText(""+mTimeLeft);
                                 mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
+                                    mTimeElapsed=0;
                                     forceStartCapture();
                                 }//TODO: yes that is target entry point of the crash
                             }
@@ -333,8 +336,7 @@ public class RecorderClass {
     }
 
     //RELEASE PREVIEW
-    private void releasePreview()
-    {
+    private void releasePreview() {
 
         if (mPreview != null) {
             Log.d("RECORDER", "releasing preview ");
@@ -451,6 +453,7 @@ public class RecorderClass {
                             }
                         });
                         mTimeLeft--;
+                        mTimeElapsed++;
                     }
                 } else {
                     this.cancel();//TODO: or make destroying sequence if user panics

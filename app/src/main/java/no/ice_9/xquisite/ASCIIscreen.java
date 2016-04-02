@@ -208,7 +208,7 @@ public class ASCIIscreen implements Serializable{
     public void mAsciiStopUpdater(int delay)
     {
         mStopTime=delay;
-        //mUpdater.cancel();
+        mUpdater.cancel();
         mRequestStop=true;
         mUpdating=false;
     }

@@ -227,7 +227,7 @@ public class Server {
             Log.d("SERVER", "resp:" +new String(bbuf,"ASCII")+" code:"+a);
 
             result=new String(bbuf,"ASCII");
-
+            out.flush();
             sck.close();
             Log.d("SERVER","closed socket");
 
@@ -403,7 +403,7 @@ public class Server {
             bytesRead = fileInputStream.read(buffer, 0, bufferSize);
             int tot=0;
             tot+=bytesRead;
-            Log.d("SERVER","ch2 "+bytesRead+","+maxBufferSize);
+            Log.d("SERVER", "ch2 " + bytesRead + "," + maxBufferSize);
             while (bytesRead > 0) {
                 Log.d("SERVER", "ch3 ");
                 out.write(buffer, 0, bytesRead);
@@ -419,7 +419,7 @@ public class Server {
 
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
 
-            Log.d("SERVER","SENT TOTAL "+tot+" bytes");
+            Log.d("SERVER", "SENT TOTAL " + tot + " bytes");
 
             byte[] bbuf=new byte[4];
             input.read(bbuf, 0, 4);
@@ -432,13 +432,13 @@ public class Server {
 
             bbuf=new byte[size];
 
-            input.read(bbuf,0,size);
+            input.read(bbuf, 0, size);
             Log.d("SERVER", "resp:" +new String(bbuf,"ASCII"));
 
             result=new String(bbuf,"ASCII");
-
+            out.flush();
             sck.close();
-            Log.d("SERVER","closed socket");
+            Log.d("SERVER", "closed socket");
 
 
 
@@ -451,6 +451,7 @@ public class Server {
             Log.d("SERVER","FIN FCLOSE");
             if(sck!=null)
             {
+
                 try {
                     sck.close();
                 } catch (IOException e) {
@@ -626,7 +627,7 @@ public class Server {
         partB[3]=(byte)(part%256);
 
         if (destenationFile.isFile()) {
-            Log.e("SERVER", "DESTINATION File exist :part"+part);
+            Log.d("SERVER", "DESTINATION File exist :part"+part);
 
             destenationFile.delete();
             //return "-1";

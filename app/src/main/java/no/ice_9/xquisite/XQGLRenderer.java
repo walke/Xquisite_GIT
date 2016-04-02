@@ -39,6 +39,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private float activeLine=0;
     private float activeLineTarget=0;
 
+    private float progress=0.0f;
+    private float progressTarget=0.0f;
+
 
     private float mRatio=1f;
 
@@ -54,6 +57,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private TextLine[] mTextLine;
     private ButtonTile mContinueButton;
     private AudioTile mAudioTile;
+    private ProgressTile mProgressTile;
 
     public int[] textures = new int[4];
     public Context actContext;
@@ -113,6 +117,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mAudioTile =        new AudioTile();
 
+        mProgressTile =     new ProgressTile();
+
 
         for(int j=0;j<sy;j++)
         {
@@ -142,6 +148,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         float[] scratch = new float[16];
         float[] scratch2 = new float[16];
         float[] scratch3 = new float[16];
+        float[] scratch4 = new float[16];
 
 
 
@@ -170,6 +177,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         scratch2=mTranslationMatrix.clone();
         scratch3=mTranslationMatrix.clone();
         scratch=mTranslationMatrix.clone();
+        scratch4=mTranslationMatrix.clone();
         Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
 
 
@@ -193,6 +201,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }*/
 
         mInfoTile.draw(mTranslationMatrix);
+
+        Matrix.translateM(scratch4, 0, mProgressTile.midx, mProgressTile.midy, 1.0f);
+        Matrix.scaleM(scratch4, 0, mProgressTile.sizx+progress*2f, mProgressTile.sizy, 0.0f);
+
+        mProgressTile.draw(scratch4);
+
         float hoffset=0.0f;
         float tothoffset=0.0f;
         for(int j=0;j<activeLine+1.0f;j++)
@@ -300,6 +314,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         if (activeLine!=activeLineTarget)
         {
             activeLine+=(activeLineTarget-activeLine)/10.0f;
+        }
+
+        if (progress!=progressTarget)
+        {
+            progress+=(progressTarget-progress)/10.0f;
         }
     }
 
@@ -614,6 +633,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mAudioTile.color[0]=flValue;
         mAudioTile.color[1]=1.0f-flValue;
 
+    }
+
+    public void setProgress(float value)
+    {
+        progressTarget=value;
     }
 
 }

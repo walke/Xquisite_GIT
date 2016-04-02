@@ -181,14 +181,20 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d("MAIN","paused");
+        Log.d("MAIN", "paused");
         mAscii.mAsciiStopUpdater(1);
         mTimerLoop.cancel();
         mTimer.cancel();
         mTimer.purge();
-        //mTimerLoop=null;
+
         mAscii.mGLView.onPause();
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mTimerLoop=null;
     }
 
     @Override

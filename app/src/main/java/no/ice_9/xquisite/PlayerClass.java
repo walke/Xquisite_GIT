@@ -168,6 +168,15 @@ public class PlayerClass {
                             mTime++;
                         }
                     }
+                    if(mVideoView!=null && mTime>1)
+                    {
+                        if(mVideoView.isPlaying() )
+                        {
+                            int pos=mVideoView.getCurrentPosition();
+                            int dur=mVideoView.getDuration();
+                            mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur);
+                        }
+                    }
 
                     /*if(mVideoView!=null)
                     {
@@ -448,6 +457,8 @@ public class PlayerClass {
     {
         if(mVideoView!=null)
         {
+            mAscii.mGLView.mRenderer.setProgress(0.0f);
+            mTime=-1;
             mVideoView.release();
             mVideoView=null;
         }
