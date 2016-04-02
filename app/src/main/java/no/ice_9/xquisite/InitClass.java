@@ -3,6 +3,8 @@ package no.ice_9.xquisite;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.util.TimerTask;
@@ -67,10 +69,16 @@ public class InitClass {
                     if(mTime==75){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_14)).getBitmap());}
                     if(mTime==80){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_15)).getBitmap());}
                     if(mTime==85){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_16)).getBitmap());}*/
-                    if(mTime==20){mAscii.setRage(false);mAscii.clear();mTime++;}
+                    if(mTime==20)
+                    {
+                        mAscii.setRage(false);
+                        //mAscii.clear();
+                        mTime++;
+                    }
                     if(mTime==21 && !mAscii.isRage())
                     {
                         mLoadingDialog.dismiss();
+                        mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(),R.drawable.logogsm));
                         mAscii.pushLine("########################");
                         mAscii.pushLine("#scienceFuture xquisite#");
                         mAscii.pushLine("########################");
@@ -99,7 +107,7 @@ public class InitClass {
                     {
                         mAscii.pushLine("Connection succesed");
                         mAscii.pushLine("");
-                        mAscii.pushLine("!TAP THE SCREEN TO CONTINUE!");
+                        mAscii.pushLine("!PRESS THE ORANGE BUTTON TO CONTINUE!");
                         mInitDone=true;
 
                         //this.cancel();
@@ -140,7 +148,7 @@ public class InitClass {
                         mServerConnection=0;
                         mScreenSaver=true;
                         mAscii.fillTrash();
-                        mAscii.putImage();
+                        //mAscii.putImage();
                         mInitDone=false;
                     }
                     Log.d("MAIN","conn"+mServerConnection);

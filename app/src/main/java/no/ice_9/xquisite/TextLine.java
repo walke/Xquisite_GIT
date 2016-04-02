@@ -40,6 +40,7 @@ public class TextLine {
 
     boolean empty=true;
     int mSelfNr;
+    public int mLineCount=0;
 
     private final int mProgram;
 
@@ -210,21 +211,22 @@ public class TextLine {
         float dx=1.0f/32.0f;
         float dy=1.0f/8.0f;
 
-
+        mLineCount=0;
+        int charpos=0;
         for(int i=0;i<str.length();i++)
         {
 
-            tileCoords[(i*12)]=sx+(i*0.05f);
-            tileCoords[(i*12)+1]=sy;
+            tileCoords[(i*12)]=sx+(charpos*0.03f);
+            tileCoords[(i*12)+1]=sy-sh*mLineCount;
             tileCoords[(i*12)+2]=0.1f;
-            tileCoords[(i*12)+3]=sx+(i*0.05f);
-            tileCoords[(i*12)+4]=sy-sh;
+            tileCoords[(i*12)+3]=sx+(charpos*0.03f);
+            tileCoords[(i*12)+4]=sy-sh-sh*mLineCount;
             tileCoords[(i*12)+5]=0.1f;
-            tileCoords[(i*12)+6]=sx+(i*0.05f)+sw;
-            tileCoords[(i*12)+7]=sy;
+            tileCoords[(i*12)+6]=sx+(charpos*0.03f)+sw;
+            tileCoords[(i*12)+7]=sy-sh*mLineCount;
             tileCoords[(i*12)+8]=0.1f;
-            tileCoords[(i*12)+9]=sx+(i*0.05f)+sw;
-            tileCoords[(i*12)+10]=sy-sh;
+            tileCoords[(i*12)+9]=sx+(charpos*0.03f)+sw;
+            tileCoords[(i*12)+10]=sy-sh-sh*mLineCount;
             tileCoords[(i*12)+11]=0.1f;
 
             drawOrder[(i*6)]=(short)(i*4);
@@ -245,6 +247,13 @@ public class TextLine {
             tileTextureCoords[(i*8)+5]=py;
             tileTextureCoords[(i*8)+6]=px+dx;
             tileTextureCoords[(i*8)+7]=py+dy;
+
+            charpos++;
+            if (charpos>40)
+            {
+                mLineCount++;
+                charpos=0;
+            }
         }
 
 

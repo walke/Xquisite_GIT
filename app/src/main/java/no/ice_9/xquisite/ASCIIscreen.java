@@ -59,7 +59,7 @@ public class ASCIIscreen implements Serializable{
     XQGLSurfaceView mGLView;
 
     //STATIC LINE NUMBER
-    static private int lineCount=100;
+    static private int lineCount=120;
     private float lineHeight;
 
 
@@ -225,7 +225,8 @@ public class ASCIIscreen implements Serializable{
         int i;
         if(mLinePointer<lineCount)
         {
-            mGLView.putString(line,mLinePointer,0);
+            mGLView.mRenderer.putMsgString(line, mLinePointer);
+            //mGLView.putString(line,mLinePointer,0);
             mLine[mLinePointer]=line;
             mLinePointer++;
         }
@@ -233,17 +234,20 @@ public class ASCIIscreen implements Serializable{
         {
             for(i=0;i<lineCount-1;i++)
             {
-               mGLView.putString(mLine[i+1],i,0);
-               //mLine[i]=mLine[i+1];
+                mGLView.mRenderer.putMsgString(line, mLinePointer);
+                //mGLView.putString(mLine[i+1],i,0);
+                //mLine[i]=mLine[i+1];
             }
             mLine[i]=line;
-            mGLView.putString(line,i,0);
+            mGLView.mRenderer.putMsgString(line, mLinePointer);
+            //mGLView.putString(line,i,0);
         }
 
     }
 
     public void modLine(String line, int ndx,int pos) {
-        mGLView.putString(line,ndx,pos);
+        mGLView.mRenderer.putMsgString(line, ndx);
+        //mGLView.putString(line,ndx,pos);
         //Log.d("ASCII","mll"+mLine[ndx].length());
         /*if(ndx<mLine.length )
         {
@@ -282,9 +286,11 @@ public class ASCIIscreen implements Serializable{
         mGLView.mRenderer.maximizeInfo();
     }
 
-    public void putImage()
+    public void putImage(Bitmap btm)
     {
-        mGLView.putImage(Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888));
+
+
+        mGLView.putImage(btm);
 
         /*Uri uri=Uri.parse("/mnt/sdcard/tmp/tmp.jpg");
         Bitmap btm=BitmapFactory.decodeFile("/mnt/sdcard/tmp/tmp.jpg");
@@ -385,7 +391,7 @@ public class ASCIIscreen implements Serializable{
 
         Log.d("ASCII","CLEAR");
         mGLView.mRenderer.clearAscii();
-
+        mGLView.putImage(Bitmap.createBitmap(mGLView.mRenderer.asciicols, mGLView.mRenderer.asciirows, Bitmap.Config.ARGB_8888));
 
 
         mReady=true;
@@ -473,12 +479,37 @@ class XQGLSurfaceView extends GLSurfaceView{
     public void putString(String str,int row,int pos)
     {
         Log.d("ASCII","line:"+str);
-        mRenderer.putString(str,row,pos);
+        mRenderer.putString(str, row, pos);
     }
 
     public void putImage(Bitmap bitmap)
     {
-        mRenderer.putImage(bitmap);
+        int h=bitmap.getHeight();
+        int w=bitmap.getWidth();
+
+        float rb=(float)w/(float)h;
+        float ra=(float)mRenderer.asciicols/(float)mRenderer.asciirows;
+        int nw=1;
+        int nh=1;
+        if(rb>ra)
+        {
+            nw=mRenderer.asciicols;
+            nh=(int)((float)nw/rb);
+        }
+        else
+        {
+            nh=mRenderer.asciirows;
+            nw=(int)(rb*(float)nh);
+        }
+        Log.d("ASCII",mRenderer.asciirows+","+nw+","+nh+","+rb);
+
+        /*double y = Math.sqrt(
+                / (((double) w) / h));
+        double x = (y / h) * w;*/
+
+
+        mRenderer.putImage(Bitmap.createScaledBitmap(bitmap, nw,nh,true));
+        bitmap.recycle();
     }
 
     public void setText()

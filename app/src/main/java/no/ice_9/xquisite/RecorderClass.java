@@ -381,7 +381,10 @@ public class RecorderClass {
                         @Override
                         public void run()
                         {
-                            //mAscii.modLine(Integer.toString(mRecorder.getMaxAmplitude()),10,0);
+                            if(mRecorder!=null && mAscii.mReady)
+                            {
+                                mAscii.mGLView.mRenderer.setAudio(mRecorder.getMaxAmplitude());
+                            }
                         }
                     });
 
@@ -389,7 +392,7 @@ public class RecorderClass {
 
 
             }
-        },0,100);
+        },0,50);
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -431,7 +434,8 @@ public class RecorderClass {
                             public void run() {
                                 //mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 0, -1);
+                                mAscii.modLine("RECORDING", 0, -1);
+                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 1, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 if (mCurrentPart >= 0) {
@@ -579,7 +583,7 @@ public class RecorderClass {
                 mCurrentPart++;
             }
             mAscii.modLine("***************", 2, -1);
-            mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+            mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
 
 
             //mPreview.setAlpha(0.0f);

@@ -46,7 +46,7 @@ public class AsciiTiles
 
                     "int si = int(VidTexCoordOut.s * 150.0);"+
                     "int sj = int(VidTexCoordOut.t * 150.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 150.0, float(sj) / 150.0);"+
+                    "vec2 vidCoords=vec2(float(si) / 150.0, 1.0-(float(sj) / 150.0));"+
                     "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
 
                     "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//

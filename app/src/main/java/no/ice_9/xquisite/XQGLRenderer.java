@@ -36,7 +36,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private float infoTop=0.0f;
 
 
-    private int activeLine=0;
+    private float activeLine=0;
+    private float activeLineTarget=0;
 
 
     private float mRatio=1f;
@@ -52,6 +53,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private InfoTile mInfoTile;
     private TextLine[] mTextLine;
     private ButtonTile mContinueButton;
+    private AudioTile mAudioTile;
 
     public int[] textures = new int[4];
     public Context actContext;
@@ -103,13 +105,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         /*ASCII TILE BUILD*/
 
-        mAsciiTiles = new AsciiTiles(sx,sy,textures[0],textures[1],textures[2]);
+        mAsciiTiles =       new AsciiTiles(sx,sy,textures[0],textures[1],textures[2]);
 
-        mTextLine=new TextLine[sy];
+        mTextLine=          new TextLine[sy];
 
-        mContinueButton = new ButtonTile(0.85f,-0.8f,0.1f,0.1f*mRatio,textures[3]);
+        mContinueButton =   new ButtonTile(0.85f,-0.6f,0.1f,0.1f*mRatio,textures[3]);
 
-
+        mAudioTile =        new AudioTile();
 
 
         for(int j=0;j<sy;j++)
@@ -139,6 +141,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         view.mReady=true;
         float[] scratch = new float[16];
         float[] scratch2 = new float[16];
+        float[] scratch3 = new float[16];
 
 
 
@@ -165,6 +168,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, -2f);
         Matrix.setIdentityM(mTranslationMatrix, 0);
         scratch2=mTranslationMatrix.clone();
+        scratch3=mTranslationMatrix.clone();
         scratch=mTranslationMatrix.clone();
         Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
 
@@ -189,21 +193,31 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }*/
 
         mInfoTile.draw(mTranslationMatrix);
-        Matrix.translateM(scratch,0,0.0f,0.05f*activeLine-1.8f,0.0f);
+        float hoffset=0.0f;
+        float tothoffset=0.0f;
+        for(int j=0;j<activeLine+1.0f;j++)
+        {tothoffset+=mTextLine[j].mLineCount*0.05f;}
+        Matrix.translateM(scratch,0,0.0f,tothoffset+0.05f*activeLine-1.8f,0.0f);
         for(int j=0;j<sy;j++)
         {
             if(!mTextLine[j].isEmpty())
             {
-                Matrix.translateM(scratch, 0, 0f, -0.05f, 0f);
+                Matrix.translateM(scratch, 0, 0f, -0.05f-hoffset*0.05f, 0f);
                 mTextLine[j].draw(scratch);
+                hoffset=mTextLine[j].mLineCount;
             }
 
         }
 
-        Matrix.translateM(scratch2,0,mContinueButton.midx,mContinueButton.midy,1.0f);
-        Matrix.scaleM(scratch2,0,mContinueButton.sizx,mContinueButton.sizy,0.0f);
+        Matrix.translateM(scratch2, 0, mContinueButton.midx, mContinueButton.midy, 1.0f);
+        Matrix.scaleM(scratch2, 0, mContinueButton.sizx, mContinueButton.sizy, 0.0f);
 
         mContinueButton.draw(scratch2);
+
+        Matrix.translateM(scratch3, 0, mAudioTile.midx, mAudioTile.midy, 1.0f);
+        Matrix.scaleM(scratch3, 0, mAudioTile.sizx, mAudioTile.sizy, 0.0f);
+
+        mAudioTile.draw(scratch3);
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
@@ -269,8 +283,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     mInfoTile.midy+=(-0.8f-mInfoTile.midy)/10.0f;
                     mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
                     mInfoTile.sizy+=(0.2f-mInfoTile.sizy)/10.0f;
-                    infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
-                    infoTop=infoTop+(-0.85f-infoTop)/10.0f;
+                   // infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
+                    //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
                     //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
                     //mContinueButton.midy+=(-0.8f-mContinueButton.midy)/10.0f;
@@ -281,6 +295,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     break;
 
             }
+        }
+
+        if (activeLine!=activeLineTarget)
+        {
+            activeLine+=(activeLineTarget-activeLine)/10.0f;
         }
     }
 
@@ -454,10 +473,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         Random r = new Random();
         for(int i=0;i<asciicols;i++)
         {
-            for(int j=0;j<asciirows;j++)
+            if(i<bitmap.getWidth())
             {
-                //mBitmap.setPixel(i, j, Color.argb(r.nextInt(), 0, 0, 255));
-                mBitmap.setPixel(i, j, bitmap.getPixel(i, j));
+                for (int j = 0; j < asciirows; j++)
+                {
+                    if(j<bitmap.getHeight())
+                    {
+                        //mBitmap.setPixel(i, j, Color.argb(r.nextInt(), 0, 0, 255));
+                        mBitmap.setPixel(i, j, bitmap.getPixel(i, j));
+                    }
+                }
             }
         }
         //mBitmap=bitmap.copy(Bitmap.Config.ARGB_8888,true);
@@ -465,10 +490,15 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         upAval=true;
     }
 
-    public void putString(String str, int row, int pos)
+    public void putMsgString(String str, int row)
     {
         mTextLine[row].set(str);
-        activeLine=row;
+        activeLineTarget=(float)row;
+    }
+
+    public void putString(String str, int row, int pos)
+    {
+
         if(row<asciirows &&/* pos+str.length()<asciicols &&*/ view.mReady)
         {
 
@@ -525,7 +555,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     {
                         int px=mBitmap.getPixel(i,j);
                         if (px>0){clearDone=false;}
-                        mBitmap.setPixel(i,j,px/2);
+                        mBitmap.setPixel(i,j,0);
                     }
                 }
                 if(clearDone){this.cancel();}
@@ -577,5 +607,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         return false;
     }
 
+    public void setAudio(int value)
+    {
+        float flValue=(float)value/10000.0f;
+        mAudioTile.sizy=flValue/10;
+        mAudioTile.color[0]=flValue;
+        mAudioTile.color[1]=1.0f-flValue;
+
+    }
 
 }

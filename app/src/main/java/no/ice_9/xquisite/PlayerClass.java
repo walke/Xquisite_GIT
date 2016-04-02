@@ -147,6 +147,7 @@ public class PlayerClass {
                 {
                     if(mTime==0)
                     {
+                        mAscii.clear();
                         mAscii.pushLine("loading video..");
 
                         mAscii.pushLine("");
@@ -155,6 +156,17 @@ public class PlayerClass {
                         mAscii.pushLine("The person before you made up part of her story. You are invited to continue her story");
                         mAscii.pushLine("");
                         mTime++;
+                    }
+
+                    if(mVideoView!=null && mTime==1)
+                    {
+                        if(mVideoView.isPlaying() )
+                        {
+                            mAscii.modLine("",0,0);
+                            mAscii.modLine("PLAYING..",1,0);
+                            mAscii.modLine("",2,0);
+                            mTime++;
+                        }
                     }
 
                     /*if(mVideoView!=null)
@@ -227,7 +239,7 @@ public class PlayerClass {
 
                 }
             }).start();
-            Log.d("PLAYER", "empt"+mCurrentPart);
+            Log.d("PLAYER", "empt" + mCurrentPart);
 
             while(mVideoPart[mCurrentPart].isEmpty())
             {
@@ -302,7 +314,7 @@ public class PlayerClass {
             public void onPrepared(MediaPlayer player) {
                 Log.d("PLAYER", "PLAY");
                 //tAct.setContentView(mAscii.mGLView);
-                mAscii.pushLine("123");
+                //mAscii.pushLine("123");
                 playVideo();
             }
         });
@@ -333,6 +345,8 @@ public class PlayerClass {
         mPlayerMessage.setAlpha(0.0f);
         mPlayerMessage.setVisibility(View.GONE);
         mPlayButton.setAlpha(0.0f);*/
+
+
 
         mVideoView.start();
         Log.d("PLAYER","VIDEO LINE");
@@ -407,7 +421,7 @@ public class PlayerClass {
     public void playNext()
     {
 
-        mAscii.pushLine("loading another part..");
+        //mAscii.pushLine("loading another part..");
         while(mVideoPart[mCurrentPart].isEmpty())
         {
 
@@ -415,12 +429,14 @@ public class PlayerClass {
         Log.d("PLAYER","loaded");
         if(mVideoPart[mCurrentPart].isLast())
         {
+            mAscii.pushLine("PRESS THE BUTTON TO START RECORDING..");
             Log.d("PLAYER","LAST");
             mCurrentPart=16;
             mError=true;
             //finishVideo();
             return;
         }
+
 
         mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
 
@@ -433,6 +449,7 @@ public class PlayerClass {
         if(mVideoView!=null)
         {
             mVideoView.release();
+            mVideoView=null;
         }
 
 
