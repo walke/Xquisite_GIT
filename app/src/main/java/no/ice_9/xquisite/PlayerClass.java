@@ -28,7 +28,7 @@ import java.util.TimerTask;
 /**
  * Created by human on 23.03.16.
  */
-public class PlayerClass {
+public class PlayerClass extends SubAct{
 
     ASCIIscreen mAscii;
     Server mServer;
@@ -52,6 +52,7 @@ public class PlayerClass {
 
 
     private StoryPart[] mVideoPart;
+    private int mStoryParts;
 
 
     public PlayerClass(Activity activity,ASCIIscreen ascii,Server server)
@@ -115,11 +116,13 @@ public class PlayerClass {
 
     }
 
+    @Override
     public int action()
     {
 
         if(mError)
         {
+            Log.d("PLAYER","EXIT");
             return finishVideo();
             //return -1;
         }
@@ -133,9 +136,10 @@ public class PlayerClass {
             mAscii.pushLine("You look a bit impatient");
         }
         Log.d("PLAYER","ACTION");
-        return 0;
+        return -1;
     }
 
+    @Override
     public TimerTask getTimerTask()
     {
         return new TimerTask() {
@@ -215,10 +219,13 @@ public class PlayerClass {
     }
 
     //LOAD STORY DATA
-    public boolean loadStoryData()
+    private boolean loadStoryData()
     {
-        int storyindx = mServer.getLastStoryNdx();
+        int res[] = mServer.getLastStoryNdx();
+        int storyindx = res[0];
+        int storyParts= res[1];
         mParent=storyindx;
+        mStoryParts=storyParts;
 
         if(storyindx==0)
         {
@@ -254,11 +261,11 @@ public class PlayerClass {
             {
                 //Log.d("PLAYER","prtpth "+mCurrentPart);
             }
-            Log.d("PLAYER","prtpth "+mVideoPart[1].getFilePath());
+            //Log.d("PLAYER","prtpth "+mVideoPart[1].getFilePath());
 
 
             mAscii.pushLine("seems like it is ready");
-            Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart].getFilePath());
+            //Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart].getFilePath());
 
 
 
@@ -273,7 +280,7 @@ public class PlayerClass {
         return true;
     }
 
-    public void preparePlayer() {
+    private void preparePlayer() {
         Log.d("PLAYER", "URI" + mVideoUri);
         //surfaceView=new Surface(mAscii.mGLView);//TODO: GET TEXTURE
 
@@ -339,7 +346,7 @@ public class PlayerClass {
                     playNext();
                 } else {
                     //mVideoView.release();
-                    mError=true;
+                    mError = true;
                     mAscii.pushLine("START RECORDING");
                     //finishVideo();
                 }
@@ -348,7 +355,7 @@ public class PlayerClass {
         });
     }
 
-    public void startVideo()
+    private void startVideo()
     {
         /*mPlayButton.setVisibility(View.GONE);
         mPlayerMessage.setAlpha(0.0f);
@@ -365,11 +372,11 @@ public class PlayerClass {
 
 
 
-    //LOAD PARTS
-    public void loadParts()
+    //LOAD PARTSif(mCurrentPart>=mStartPart)
+    private void loadParts()
     {
         Log.d("PLAYER", "LOADING PARTS");
-        for(int i=0;i<16;i++)
+        for(int i=0;i<mStoryParts;i++)
         {
 
             Log.d("PLAYER","part:"+i);
@@ -379,7 +386,7 @@ public class PlayerClass {
     }
 
     //PLAY VIDEO
-    public void playVideo()
+    private void playVideo()
     {
 
 
@@ -427,16 +434,17 @@ public class PlayerClass {
 
     }
 
-    public void playNext()
+    private void playNext()
     {
 
         //mAscii.pushLine("loading another part..");
         while(mVideoPart[mCurrentPart].isEmpty())
         {
-
+            if(mCurrentPart>=mStartPart){break;}
         }
         Log.d("PLAYER","loaded");
-        if(mVideoPart[mCurrentPart].isLast())
+        if(mCurrentPart>=mStartPart)
+        //if(mVideoPart[mCurrentPart].isLast())
         {
             mAscii.pushLine("PRESS THE BUTTON TO START RECORDING..");
             Log.d("PLAYER","LAST");
@@ -453,7 +461,7 @@ public class PlayerClass {
 
     }
 
-    public int finishVideo()
+    private int finishVideo()
     {
         if(mVideoView!=null)
         {
@@ -463,7 +471,7 @@ public class PlayerClass {
             mVideoView=null;
         }
 
-
+        Log.d("PLAYER","parent"+mParent);
         return mParent;
         //tAct.mParent=mParent;
         //Intent intent = new Intent(this, RecorderActivity.class);
@@ -474,6 +482,12 @@ public class PlayerClass {
         //GO DIRECTLY TO RECORDING
         /*mNextButton.setAlpha(1.0f);
         mNextButton.setVisibility(View.VISIBLE);*/
+    }
+
+    @Override
+    public void destroy()
+    {
+
     }
 
 

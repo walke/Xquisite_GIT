@@ -504,6 +504,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
+        bitmap.recycle();
         //mBitmap=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
         upAval=true;

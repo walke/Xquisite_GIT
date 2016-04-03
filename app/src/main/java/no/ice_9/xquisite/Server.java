@@ -172,17 +172,28 @@ public class Server {
         return response;
     }
 
-    public int getLastStoryNdx()
+    public int[] getLastStoryNdx()
     {
         String response=postToServer(CODE_GET_LST_STRY_NDX, "0000".getBytes());
 
         //TODO: get correct unsigned!!
-        int result;
-        result=response.getBytes()[3];
-        result+=response.getBytes()[2]*256;
-        result+=response.getBytes()[1]*256*256;
-        result+=response.getBytes()[0]*256*256*256;
-        Log.d("SERVER","responseLI"+result+";");
+        int result[]=new int[2];
+
+        result[0] = ((0xFF & response.getBytes()[0]) << 24) |
+                ((0xFF & response.getBytes()[1]) << 16) |
+                ((0xFF & response.getBytes()[2]) << 8) |
+                (0xFF & response.getBytes()[3]);
+
+        /*result[0]=response.getBytes()[3];
+        result[0]+=response.getBytes()[2]*256;
+        result[0]+=response.getBytes()[1]*256*256;
+        result[0]+=response.getBytes()[0]*256*256*256;*/
+
+        result[1]=response.getBytes()[7];
+        result[1]+=response.getBytes()[6]*256;
+        result[1]+=response.getBytes()[5]*256*256;
+        result[1]+=response.getBytes()[4]*256*256*256;
+        Log.d("SERVER","responseLI "+result[0]+";");
 
 
         return result;
@@ -191,7 +202,7 @@ public class Server {
     private String postToServer(String code,byte[] data) {
         String result="-1";
         Socket sck=null;
-
+        Log.d("SERVER","CODE:"+code+",  DATA:"+data[0]+""+data[1]+""+data[2]+""+data[3]);
         try
         {
             InetAddress serverAdrr = InetAddress.getByName(adress);
@@ -202,15 +213,15 @@ public class Server {
             DataOutputStream out = new DataOutputStream(sck.getOutputStream());
             InputStream input =  new BufferedInputStream(sck.getInputStream());
 
-            Log.d("SERVER","#PIN");
+            //Log.d("SERVER","#PIN");
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_PINC), 4, CODE_SERVER_PIN));
-            Log.d("SERVER", "#CODE");
+            //Log.d("SERVER", "#CODE");
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_TASK), 4, code));
-            Log.d("SERVER", "#DATA");
+            //Log.d("SERVER", "#DATA");
             out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_TSKD), 4, data));
-            Log.d("SERVER", "#DONE");
+            //Log.d("SERVER", "#DONE");
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
-            Log.d("SERVER", "#ALL SENT");
+            //Log.d("SERVER", "#ALL SENT");
 
             byte[] bbuf=new byte[4];
             int a=input.read(bbuf, 0, 4);
@@ -218,7 +229,7 @@ public class Server {
             int size =
                     (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
                             ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
-                            ((0x00 << 24 | bbuf[2] & 0xff) * 256)+
+                            ((0x00 << 24 | bbuf[2] & 0xff) * 256) +
                             (0x00 << 24 | bbuf[3] & 0xff));
 
             bbuf=new byte[size];
@@ -427,7 +438,7 @@ public class Server {
             int size =
                     (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
                             ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
-                            ((0x00 << 24 | bbuf[2] & 0xff) * 256)+
+                            ((0x00 << 24 | bbuf[2] & 0xff) * 256) +
                             (0x00 << 24 | bbuf[3] & 0xff));
 
             bbuf=new byte[size];
@@ -751,7 +762,7 @@ public class Server {
 
     private byte[] createPacketChr(int id,int size, String cont)
     {
-        Log.d("SERVER", "CHAECK2");
+        Log.d("DBG", "CHAECK2");
         int totsize=5+size;
         byte[] result=new byte[totsize];
 
@@ -775,7 +786,7 @@ public class Server {
 
     private byte[] createPacketBin(int id,int size, byte[] cont)
     {
-        Log.d("SERVER", "CHAECK2");
+        Log.d("DBG", "CHAECK2");
         int totsize=5+size;
         byte[] result=new byte[totsize];
 
@@ -809,7 +820,7 @@ public class Server {
 
     private byte[] createFileStartPacket(int id,int size)
     {
-        Log.d("SERVER", "CHAECK8");
+        Log.d("DBG", "CHAECK8");
         int totsize=5;
         byte[] result=new byte[totsize];
 

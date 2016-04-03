@@ -23,13 +23,13 @@ import java.util.TimerTask;
 /**
  * Created by human on 25.03.16.
  */
-public class RecorderClass {
+public class RecorderClass extends SubAct{
 
     //ENUMS
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int FTIME = 30;//90;//60
+    public static final int FTIME = 10;//90;//60
     public static final int QTIME = 10;//30;//20
 
     public static final int NPARTS= 2;
@@ -42,6 +42,8 @@ public class RecorderClass {
     ASCIIscreen mAscii;
     Server mServer;
     Activity tAct;
+
+    Thread recThread;
 
     boolean isRecording;
     boolean mUserReady;
@@ -95,7 +97,7 @@ public class RecorderClass {
         //mCurrentParent = Integer.parseInt(intent.getStringExtra(PlayerActivity.EXTRA_MESSAGE2));
         mMainDone=false;
 
-        new Thread(new Runnable() {
+        recThread=new Thread(new Runnable() {
             @Override
             public void run() {
                 mServerReserved=mServer.reserveNdx(mCurrentParent);
@@ -129,13 +131,14 @@ public class RecorderClass {
                         mServer.completeNdx(mServerReserved);
                         done=true;
                         Log.d("RECORDER to SERVER", "all done completing ");
+
                     }
                 }
 
             }
-        }).start();
+        });
 
-
+        recThread.start();
 
 
         initQuestions();
@@ -160,7 +163,7 @@ public class RecorderClass {
     }
 
 
-
+    @Override
     public int action()
     {
         if(!isRecording)
@@ -174,9 +177,10 @@ public class RecorderClass {
             return 1;
         }
 
-        return 0;
+        return -1;
     }
 
+    @Override
     public TimerTask getTimerTask()
     {
         return new TimerTask() {
@@ -297,7 +301,7 @@ public class RecorderClass {
     }
 
     /** A safe way to get an instance of the Camera object. */
-    public static Camera getCameraInstance(int camId){
+    private static Camera getCameraInstance(int camId){
         Camera c = null;
         try {
             c = Camera.open(camId); // attempt to get a Camera instance
@@ -358,7 +362,7 @@ public class RecorderClass {
     }
 
     //FORCE TO START CAPTURING
-    public void forceStartCapture()
+    private void forceStartCapture()
     {
         mUserReady=true;
         //mCurrentPart++;
@@ -517,7 +521,7 @@ public class RecorderClass {
     }
 
     //WHEN TIME IS OUT
-    public void forceStopCapture()
+    private void forceStopCapture()
     {
         Log.d("RECORDER", "vpart:" + mVideoPart[mCurrentPart]);
 
@@ -663,5 +667,12 @@ public class RecorderClass {
         //finish();
 
         return true;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        recThread.interrupt();
     }
 }

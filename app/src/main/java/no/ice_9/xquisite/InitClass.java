@@ -12,7 +12,7 @@ import java.util.TimerTask;
 /**
  * Created by human on 23.03.16.
  */
-public class InitClass {
+public class InitClass extends SubAct{
 
     ASCIIscreen mAscii;
     Server mServer;
@@ -24,6 +24,7 @@ public class InitClass {
     public boolean mInitDone=false;
     Dialog mLoadingDialog;
 
+    //@Override
     public InitClass(Activity activity,ASCIIscreen ascii,Server server)
     {
         mLoadingDialog = ProgressDialog.show(activity, "",
@@ -32,13 +33,17 @@ public class InitClass {
         mServer=server;
         mAscii = ascii;
         mTime=0;
+
     }
 
+    @Override
     public int action()
     {
-        return -1;
+        if(mInitDone)return 1;
+        else return -1;
     }
 
+    @Override
     public TimerTask getTimerTask()
     {
         return new TimerTask() {
@@ -157,6 +162,12 @@ public class InitClass {
 
             }
         };
+    }
+
+    @Override
+    public void destroy()
+    {
+
     }
 
 }

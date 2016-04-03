@@ -30,6 +30,8 @@ public class MainActivity extends Activity {
     long mMesTime=0;
     long mLasTime=0;
 
+    SubAct currentSubActivity;
+
     InitClass initClass;
     PlayerClass playerClass;
     RecorderClass recorderClass;
@@ -97,32 +99,52 @@ public class MainActivity extends Activity {
         switch(mCurrentAction)
         {
             case 0:
-                result=initClass.action();
+                result=currentSubActivity.action();
                 mAscii.minimizeInfo();
                 break;
             case 1:
-                result=playerClass.action();
+                result=currentSubActivity.action();
                 mParent=result;
                 break;
             case 2:
-                result=recorderClass.action();
-                if (result==1){mCurrentAction=0;}
+                result=currentSubActivity.action();
+                //if (result==1){mCurrentAction++;}
+                break;
+
+            case 3:
+                result=currentSubActivity.action();
+                mCurrentAction=-1;
                 break;
         }
 
-        if(result!=0)
+        Log.d("MAIN","RESULT"+result+","+mCurrentAction);
+        if(result!=-1)
         {
+
             mAscii.mAsciiStopUpdater(1);
+            while(mAscii.mUpdating);
             mTimerLoop.cancel();
+
             mTimer.cancel();
+            mTimer.purge();
+
+            //mTimerLoop=null;
+            //mTimer=null;
+
+            currentSubActivity.destroy();
+            currentSubActivity=null;
 
             mCurrentAction++;
             createTimerTask();
 
+
             mTimer=new Timer();
             mInitDone=false;
+            //mAscii.mGLView.onPause();
             mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
+            //mAscii.mGLView.onResume();
             mTime=0;
+
         }
     }
 
@@ -131,20 +153,27 @@ public class MainActivity extends Activity {
         switch(mCurrentAction)
         {
             case 0:
-                initClass=new InitClass(this,mAscii,mServer);
-                mTimerLoop=initClass.getTimerTask();
+                currentSubActivity=new InitClass(this,mAscii,mServer);
+                //currentSubActivity.Create(this,mAscii,mServer);
+                //initClass=new InitClass(this,mAscii,mServer);
+                mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 1:
-
-                playerClass=new PlayerClass(this,mAscii,mServer);
-                mTimerLoop=playerClass.getTimerTask();
+                currentSubActivity=new PlayerClass(this,mAscii,mServer);
+                //playerClass=new PlayerClass(this,mAscii,mServer);
+                mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 2:
-
-                recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
-                mTimerLoop=recorderClass.getTimerTask();
+                currentSubActivity=new RecorderClass(this,mAscii,mServer,mParent);
+                //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
+                mTimerLoop=currentSubActivity.getTimerTask();
+                break;
+            case 3:
+                currentSubActivity=new FinalizeClass(this,mAscii,mServer);
+                //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
+                mTimerLoop=currentSubActivity.getTimerTask();
                 break;
         }
 
@@ -255,6 +284,21 @@ public class MainActivity extends Activity {
         //MAIN TREAD
         mTimer=new Timer();
 
+        TimerTask auto= new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        glTouch();
+                    }
+                });
+
+            }};
+
+        new Timer().scheduleAtFixedRate(auto, 0, 2000);
+
+
         mMesTime= Calendar.getInstance().getTimeInMillis();
         Log.d("TIME","TIMER INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
@@ -284,4 +328,29 @@ public class MainActivity extends Activity {
     }
 
 
+}
+
+class SubAct
+{
+
+
+    public TimerTask getTimerTask()
+    {
+        return new TimerTask() {
+            @Override
+            public void run() {
+
+            }
+        };
+    }
+
+    public int action()
+    {
+        return 0;
+    }
+
+    public void destroy()
+    {
+
+    }
 }

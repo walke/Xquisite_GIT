@@ -66,7 +66,8 @@ public class PlayerActivity extends Activity {
     //LOAD STORY DATA
     public boolean loadStoryData()
     {
-        int storyindx = mServer.getLastStoryNdx();
+        int res[]=mServer.getLastStoryNdx();
+        int storyindx = res[0];
         mParent=storyindx;
 
         if(storyindx==0)
@@ -125,7 +126,8 @@ public class PlayerActivity extends Activity {
     //LOAD VIDEO
     public boolean loadVideo()
     {
-        int storyindx = mServer.getLastStoryNdx();
+        int res[]=mServer.getLastStoryNdx();
+        int storyindx = res[0];
         //int storyindx=0;
         //storyindx=-1;
         //ParentNdx=storyindx;
