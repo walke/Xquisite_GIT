@@ -128,6 +128,7 @@ public class PlayerClass extends SubAct{
         }
         else if(mVideoReady)
         {
+            mAscii.minimizeInfo();
             mAscii.clear();
             startVideo();
         }
@@ -152,14 +153,34 @@ public class PlayerClass extends SubAct{
                     if(mTime==0)
                     {
                         mAscii.clear();
-                        mAscii.pushLine("loading video..");
+                        mAscii.maximizeInfo();
+                        //mAscii.pushLine("loading video..");
 
                         mAscii.pushLine("");
-                        mAscii.pushLine("This is a story game about XX chromosome human born in 2045");
-                        mAscii.pushLine("Her name is X");
-                        mAscii.pushLine("The person before you made up part of her story. You are invited to continue her story");
+                        mAscii.pushLine("Xquisite is a story game that is part of scienceFUTURE,");
+                        mAscii.pushLine("a project where scientists, artists, and young people will collectively");
+                        mAscii.pushLine("imagine the many potential dramas in the life of one woman");
+                        mAscii.pushLine("born in 2045 (29 years in the future).");
+                        mAscii.pushLine("");
+
+                        mAscii.pushLine("scienceFUTURE is a space to dream freely about what life might be like in the future.");
+                        mAscii.pushLine("We encourage you to be funny, provocative, and dramatic.");
+                        mAscii.pushLine("Be wild. The more you fun it is for you, the more fun it is for everyone.");
+                        mAscii.pushLine("(Xquisite is a fiction game, and your contribution comes from you as a private person,");
+                        mAscii.pushLine("and is not a professional statement or prediction.)");
+                        mAscii.pushLine("");
+
+                        mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
+                        mAscii.pushLine("Before you play, we’d like to do a 3-minute interview which helps us develop the project further.");
+                        mAscii.pushLine("The camera will record your answers.");
+                        mAscii.pushLine("Try and center your face in the window,");
+                        mAscii.pushLine("and speak directly into the device.");
                         mAscii.pushLine("");
                         mTime++;
+
+
+
+
                     }
 
                     if(mVideoView!=null && mTime==1)
@@ -167,8 +188,10 @@ public class PlayerClass extends SubAct{
                         if(mVideoView.isPlaying() )
                         {
                             mAscii.modLine("",0,0);
-                            mAscii.modLine("PLAYING..",1,0);
                             mAscii.modLine("",2,0);
+                            mAscii.modLine("",3,0);
+                            mAscii.modLine("PLAYING..",1,0);
+
                             mTime++;
                         }
                     }
@@ -232,7 +255,7 @@ public class PlayerClass extends SubAct{
             Log.d("PLAYER", "no video ");
             mAscii.pushLine("no video found");
             mAscii.pushLine("****************************************");
-            mAscii.pushLine("TAP THE SCREEN TO RECORD THE FIRST VIDEO");
+            mAscii.pushLine("PUSH THE BUTTON TO RECORD THE FIRST VIDEO");
             Log.d("PLAYER", "no video1 ");
 
             mError=true;
@@ -289,7 +312,7 @@ public class PlayerClass extends SubAct{
         if(mVideoView==null)
         {
             mAscii.pushLine("ERROR OCCURED WHILE LOADING VIDEO");
-            mAscii.pushLine("TAP TO RECORD NEW ONE");
+            mAscii.pushLine("PUSH THE BUTTON RECORD NEW ONE");
             mError=true;
             return;
         }
@@ -423,7 +446,7 @@ public class PlayerClass extends SubAct{
 
 
         mAscii.pushLine("#########################");
-        mAscii.pushLine("TAP THE SCREEN TO PLAY IT");
+        mAscii.pushLine("PUSH THE BUTTON TO PLAY IT");
 
         if(mCurrentPart>mStartPart)
         {

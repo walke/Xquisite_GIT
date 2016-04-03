@@ -278,11 +278,13 @@ public class ASCIIscreen implements Serializable{
 
     public void minimizeInfo()
     {
+        Log.d("ASCII","MINIMIZING");
         mGLView.mRenderer.minimizeInfo();
     }
 
     public void maximizeInfo()
     {
+        Log.d("ASCII","MAXIMIZING");
         mGLView.mRenderer.maximizeInfo();
     }
 

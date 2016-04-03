@@ -30,8 +30,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
-    private int infoStatus=2;
-    private int infoTarget=2;
+    private float infoStatus=0.2f;
+    private float infoTarget=0.2f;
     private float infoHeight=1.0f;
     private float infoTop=0.0f;
 
@@ -288,16 +288,23 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private void animInfo()
     {
-        if(infoTarget!=infoStatus)
+        if(infoStatus!=infoTarget)
+        //if(infoStatus<(infoTarget-0.0001f) || infoStatus>(infoTarget+0.0001f))
+        //if(infoTarget!=infoStatus)
         {
-            switch(infoTarget)
-            {
-                case 1:
-                    mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
-                    mInfoTile.midy+=(-0.8f-mInfoTile.midy)/10.0f;
+            //Log.d("ASCII","H"+mInfoTile.sizy);
+
+                    infoStatus+=(infoTarget-infoStatus)/10.0f;
+                    mInfoTile.midx=0.0f;
+                    mInfoTile.midy=(infoStatus-0.2f)-0.8f;
+                    mInfoTile.sizx=1.0f;
+                    mInfoTile.sizy=infoTarget;
+                    /*mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
+                    mInfoTile.midy+=(((infoStatus-0.2f)-0.8f)-mInfoTile.midy)/10.0f;
                     mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
-                    mInfoTile.sizy+=(0.2f-mInfoTile.sizy)/10.0f;
-                   // infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
+                    mInfoTile.sizy+=(infoTarget-mInfoTile.sizy)/10.0f;*/
+
+                    //infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
                     //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
                     //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
@@ -305,10 +312,22 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
                     //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
 
-                    if(infoHeight==0.3f){infoStatus=infoTarget;}
-                    break;
+                    //if(mInfoTile.sizy>0.2f-0.01f || mInfoTile.sizy<0.2f+0.01f){infoStatus=infoTarget;}
 
-            }
+
+
+
+                   /* mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
+                    mInfoTile.midy+=(-0.0f-mInfoTile.midy)/10.0f;
+                    mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
+                    mInfoTile.sizy+=(1.0f-mInfoTile.sizy)/10.0f;
+                    infoHeight=infoHeight+(1.0f-infoHeight)/10.0f;*/
+
+                    //if(mInfoTile.sizy>1.0f-0.01f || mInfoTile.sizy<1.0f+0.01f){infoStatus=infoTarget;}
+
+
+
+
         }
 
         if (activeLine!=activeLineTarget)
@@ -589,12 +608,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void minimizeInfo()
     {
-        infoTarget=1;
+        infoTarget=0.2f;
     }
 
     public void maximizeInfo()
     {
-        infoTarget=2;
+        infoTarget=1.0f;
     }
 
     public void setClick(float x, float y)
