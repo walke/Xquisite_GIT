@@ -127,7 +127,7 @@ public class InfoTile {
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
 
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        //GLES20.glEnableVertexAttribArray(mPositionHandle);
 
         //Draw the shape
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);

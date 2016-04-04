@@ -172,7 +172,7 @@ public class ButtonTile {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
         GLES20.glUniform1i(fsTexture, 3);
 
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        //GLES20.glEnableVertexAttribArray(mPositionHandle);
         GLES20.glEnableVertexAttribArray(mTextureHandle);
 
         GLES20.glEnable(GLES20.GL_BLEND);

@@ -1,17 +1,12 @@
 package no.ice_9.xquisite;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.hardware.Camera;
-import android.hardware.camera2.CameraManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +16,23 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by human on 25.03.16.
+ * Created by human on 04.04.16.
  */
-public class RecorderClass extends SubAct{
+public class PreRecorderClass extends SubAct{
+
+    class Question
+    {
+        public String question;
+        public int time;
+
+        public Question(String q,int t)
+        {
+            question=q;
+            time=t;
+        }
+
+
+    }
 
     //ENUMS
     public static final int MEDIA_TYPE_IMAGE = 1;
@@ -32,8 +41,8 @@ public class RecorderClass extends SubAct{
     public static final int FTIME = 10;//90;//60
     public static final int QTIME = 10;//30;//20
 
-    public static final int NPARTS= 2;
-    public static final int TOT_TIME=FTIME+(NPARTS-1)*QTIME;
+    public static final int NPARTS= 12;
+
 
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
@@ -45,12 +54,14 @@ public class RecorderClass extends SubAct{
 
     Thread recThread;
 
+    int mTotalTime=0;
+
     boolean isRecording;
     boolean mUserReady;
     boolean mMainDone;
     int mCurrentPart;
 
-    static String[] mQuestion;
+    static Question[] mQuestion;
     static int mQuestionTime;
     int mTimeLeft=0;
     int mTimeElapsed;
@@ -61,18 +72,20 @@ public class RecorderClass extends SubAct{
 
     //VARS USED TO UPLOAD FILE TO SERVER
     int mCurrentNdx;
-    int mCurrentParent;
+    int mCurrentParent=-2;
     int mCurrentUser;
+    int mParentStoryParts;
 
     int mServerReserved;
-    int mPartOffset;
 
     static String fileToUpload;
     static String mFilePath;
 
+    int mTime=0;
+
     private boolean[] mPartDone;
 
-    public RecorderClass(Activity activity,ASCIIscreen ascii,Server server,int parent, int reserved, int offset)
+    public PreRecorderClass(Activity activity,ASCIIscreen ascii,Server server)
     {
         mAscii=ascii;
         mServer=server;
@@ -82,6 +95,26 @@ public class RecorderClass extends SubAct{
         mWorking=true;
         mVideoPart = new StoryPart[NPARTS];
         mPartReady=new int[NPARTS];
+
+        mCurrentParent=-2;
+        Thread mTask = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                //Looper.prepare();
+                int res[] = mServer.getLastStoryNdx();
+                int storyindx = res[0];
+                int storyParts= res[1];
+                mCurrentParent=storyindx;
+                mParentStoryParts=storyParts;
+
+            }
+        });
+
+        mTask.start();
+
+
+
         for(int i=0;i<NPARTS;i++)
         {
             mVideoPart[i]=new StoryPart();
@@ -93,16 +126,18 @@ public class RecorderClass extends SubAct{
         mCurrentUser=-1;
         mCurrentNdx=-1;
 
-        mCurrentParent=parent;
+
+
+
         //Intent intent = getIntent();
         //mCurrentParent = Integer.parseInt(intent.getStringExtra(PlayerActivity.EXTRA_MESSAGE2));
         mMainDone=false;
-        mServerReserved=reserved;
-        mPartOffset=offset;
+
         recThread=new Thread(new Runnable() {
             @Override
             public void run() {
-                //mServerReserved=mServer.reserveNdx(mCurrentParent);
+                while(mCurrentParent==-2);
+                mServerReserved=mServer.reserveNdx(mCurrentParent);
                 boolean done=false;
                 int allDone=0;
                 while(!done)
@@ -112,9 +147,9 @@ public class RecorderClass extends SubAct{
                     {
                         if(mPartReady[i]==1)
                         {
-                            mServer.uploadPart(mVideoPart[i], mCurrentPart+mPartOffset, mServerReserved, mCurrentParent, mCurrentUser);
+                            mServer.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
                             mPartReady[i]=2;
-                            Log.d("RECORDER to SERVER", "uploaded part "+i);
+                            Log.d("RECORDER to SERVER", "uploaded part " + i);
                         }
                     }
                     allDone=0;
@@ -130,7 +165,7 @@ public class RecorderClass extends SubAct{
                     }
                     if(allDone>=NPARTS)
                     {
-                        mServer.completeNdx(mServerReserved);
+                        //mServer.completeNdx(mServerReserved);
                         done=true;
                         Log.d("RECORDER to SERVER", "all done completing ");
 
@@ -168,18 +203,32 @@ public class RecorderClass extends SubAct{
     @Override
     public int[] action()
     {
-        int[] result=new int[1];
+        int[] result=new int[4];
         result[0]=-1;
         if(!isRecording)
         {
             mAscii.fillTrash();
             mUserReady=true;
+            result[0]=-1;
+        }
+        if(mTime==1)
+        {
+            mTime++;
+        }
+        if(mTime==3)
+        {
+            mTime++;
+            mTimeLeft=0;
         }
         if(mMainDone)
         {
             finishRecording();
-            result[0]=1;
 
+            result[0]=mCurrentParent;
+            result[1]=mParentStoryParts;
+            result[2]=mServerReserved;
+            result[3]=mCurrentPart;
+            //return result;
         }
 
         return result;
@@ -195,7 +244,59 @@ public class RecorderClass extends SubAct{
                 //Log.d("PLAYER","::"+mVideoView.isActivated()+","+mVideoView);
                 if(mAscii.mReady)
                 {
-                    mAscii.mGLView.mRenderer.setProgress((float)mTimeElapsed/(float)TOT_TIME);
+                    if(mTime==0)
+                    {
+                        mAscii.clear();
+                        mAscii.maximizeInfo();
+                        //mAscii.pushLine("loading video..");
+
+                        mAscii.pushLine("");
+                        mAscii.pushLine("Xquisite is a story game that is part of scienceFUTURE,");
+                        mAscii.pushLine("a project where scientists, artists, and young people will collectively");
+                        mAscii.pushLine("imagine the many potential dramas in the life of one woman");
+                        mAscii.pushLine("born in 2045 (29 years in the future).");
+                        mAscii.pushLine("");
+
+                        mAscii.pushLine("scienceFUTURE is a space to dream freely about what life might be like in the future.");
+                        mAscii.pushLine("We encourage you to be funny, provocative, and dramatic.");
+                        mAscii.pushLine("Be wild. The more you fun it is for you, the more fun it is for everyone.");
+                        mAscii.pushLine("(Xquisite is a fiction game, and your contribution comes from you as a private person,");
+                        mAscii.pushLine("and is not a professional statement or prediction.)");
+                        mAscii.pushLine("");
+
+                        mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
+                        mAscii.pushLine("Before you play, we’d like to do a 3-minute interview which helps us develop the project further.");
+                        mAscii.pushLine("The camera will record your answers.");
+                        mAscii.pushLine("Try and center your face in the window,");
+                        mAscii.pushLine("and speak directly into the device.");
+                        mAscii.pushLine("");
+                        mAscii.pushLine("PUSH THE BUTTON TO START");
+                        mTime++;
+
+
+
+
+                    }
+
+                    if(mTime==1)
+                    {
+
+
+                    }
+
+                    if(mTime==2)
+                    {
+                        mAscii.minimizeInfo();
+                        mAscii.modLine("", 2, 0);
+                        mAscii.modLine("",1,0);
+
+                        mTime++;
+                    }
+
+                    if(mTime>2)
+                    {
+                        mAscii.mGLView.mRenderer.setProgress((float) mTimeElapsed / (float) mTotalTime);
+                    }
 
 
                 }
@@ -206,8 +307,35 @@ public class RecorderClass extends SubAct{
 
     private void initQuestions()
     {
+
+
         mQuestionTime=QTIME;
-        mQuestion=new String[]
+
+        mQuestion=new Question[NPARTS];
+        mQuestion[0]=new Question("What is your name?",5);
+        mQuestion[1]=new Question("What is your email(spell if needed)?",12);
+        mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",3);
+        mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",3);
+        mQuestion[4]=new Question("Where did you grow up?",5);
+        mQuestion[5]=new Question("Would your closest friends call you an optimist or pessimist about the future?",3);
+        mQuestion[6]=new Question("If you like science fiction, give us one or two of your favourite films, shows or books. (If you don’t like science fiction, give the titles of any favorite story).",12);
+        mQuestion[7]=new Question("Briefly describe your work and your research themes.",20);
+        mQuestion[8]=new Question("What is the most exciting element of your research? ",12);
+        mQuestion[9]=new Question("What is the most challenging element of your work?",12);
+        mQuestion[10]=new Question("What is the most challenging element of your work?",20);
+        mQuestion[11]=new Question("How might this change affect human lives?",5);
+
+        for (int i=0;i<mQuestion.length;i++)
+        {
+            mTotalTime+=mQuestion[i].time;
+        }
+
+
+
+
+
+
+        /*mQuestion=new String[]
                 {
                         "ENJOY FREEDOM",
                         "SOMEBODY IS WATCHING YOU!"//,
@@ -216,8 +344,7 @@ public class RecorderClass extends SubAct{
                         //"What is she feeling??",
                         //"What is she thinking??",
                         // "What is her biggest challenge??"
-                };
-        mAscii.minimizeInfo();
+                };*/
 
 
         //there are as many parts as questions +1 free part;
@@ -274,19 +401,25 @@ public class RecorderClass extends SubAct{
                 @Override
                 public void run() {
                     Log.d("RECORDER", "TIMER: cdown" + mWorking + " " + mTimeLeft);
-                    mTimeLeft--;
+                    //if(mTime>2)mTimeLeft--;
                     if (mTimeLeft <= 0 || !mWorking) {
                         this.cancel();
                     }
-                    if (tAct != null) {
+                    if (tAct != null && mTime>2) {
                         tAct.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
 
                                 //mRecorderTimeText.setText(""+mTimeLeft);
-                                mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
+                                mAscii.modLine("Question:" + mQuestion[mCurrentPart].question, 0, -1);
+                                mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+
+                                mAscii.modLine("***************", 2, -1);
+                                mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                                //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
+                                    //forceStopCapture();
                                     forceStartCapture();
                                 }//TODO: yes that is target entry point of the crash
                             }
@@ -427,12 +560,14 @@ public class RecorderClass extends SubAct{
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        if (mCurrentPart == 0) {
+                        mTimeLeft=mQuestion[mCurrentPart].time;
+                        //forceStopCapture();
+                        /*if (mCurrentPart == 0) {
                             mTimeLeft = FTIME;//FREE TIME
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
-                        }
+                        }*/
                         if (mCurrentPart > mQuestion.length) {
                             Log.d("RECORDER", "finising");
                             finishRecording();
@@ -446,7 +581,8 @@ public class RecorderClass extends SubAct{
                             public void run() {
                                 //mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                                mAscii.modLine("RECORDING", 0, -1);
+                                mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
+                                mAscii.modLine("RECORDING", 1, -1);
                                 mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 1, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
@@ -555,23 +691,26 @@ public class RecorderClass extends SubAct{
             {
 
 
-                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart], fileToUpload);
+                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload);
                 Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
                 Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
 
-                mAscii.modLine("Question:" + mQuestion[mCurrentPart], 0, -1);
-                mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                if((mCurrentPart+1)<mQuestion.length)
+                {
+                    mAscii.modLine("Question:" + mQuestion[mCurrentPart+1].question, 0, -1);
+                    mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
-                mAscii.modLine("***************", 2, -1);
-                mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                    mAscii.modLine("***************", 2, -1);
+                    mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                }
 
-                new Thread(new Runnable() {
+                /*new Thread(new Runnable() {
                     @Override
                     public void run() {
                         //mServer.uploadPart(mVideoPart[mCurrentPart],mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
 
                     }
-                }).start();
+                }).start();*/
                 Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
                 mPartReady[mCurrentPart]=1;
                 Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);

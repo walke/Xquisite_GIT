@@ -531,8 +531,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void putMsgString(String str, int row)
     {
-        mTextLine[row].set(str);
-        activeLineTarget=(float)row;
+        if(row<mTextLine.length)
+        {
+            mTextLine[row].set(str);
+            activeLineTarget=(float)row;
+        }
+
     }
 
     public void putString(String str, int row, int pos)
@@ -583,7 +587,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void clearAscii()
     {
-        clearDone=false;
+        /*clearDone=false;
         TimerTask clearTrhead=new TimerTask() {
             @Override
             public void run() {
@@ -602,7 +606,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
             }
         };
-        new Timer().scheduleAtFixedRate(clearTrhead, 0, 5);
+        new Timer().scheduleAtFixedRate(clearTrhead, 0, 5);*/
 
     }
 

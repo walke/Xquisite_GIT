@@ -194,6 +194,7 @@ public class ASCIIscreen implements Serializable{
 
     public void mAsciiStartUpdater(int rate)
     {
+        Log.d("ASCII","CREATING UPDATER");
         if(!mUpdating)
         {
 
@@ -207,6 +208,7 @@ public class ASCIIscreen implements Serializable{
 
     public void mAsciiStopUpdater(int delay)
     {
+        Log.d("ASCII","STOPPING UPDATER");
         mStopTime=delay;
         mUpdater.cancel();
         mRequestStop=true;

@@ -55,7 +55,7 @@ public class PlayerClass extends SubAct{
     private int mStoryParts;
 
 
-    public PlayerClass(Activity activity,ASCIIscreen ascii,Server server)
+    public PlayerClass(Activity activity,ASCIIscreen ascii,Server server, int parent, int parentParts)
     {
         tAct=activity;
         mServer=server;
@@ -63,8 +63,9 @@ public class PlayerClass extends SubAct{
 
         //mVideoView = new VideoView(tAct);
         //mFrame=new FrameLayout(tAct);
-
-
+        Log.d("PLAYER","par:"+parent+" prts:"+parentParts);
+        mParent=parent;
+        mStoryParts=parentParts;
 
         mError=false;
 
@@ -117,13 +118,14 @@ public class PlayerClass extends SubAct{
     }
 
     @Override
-    public int action()
+    public int[] action()
     {
-
+        int[] result=new int[1];
+        result[0]=-1;
         if(mError)
         {
             Log.d("PLAYER","EXIT");
-            return finishVideo();
+            result[0]=finishVideo();
             //return -1;
         }
         else if(mVideoReady)
@@ -137,7 +139,7 @@ public class PlayerClass extends SubAct{
             mAscii.pushLine("You look a bit impatient");
         }
         Log.d("PLAYER","ACTION");
-        return -1;
+        return result;
     }
 
     @Override
@@ -157,26 +159,20 @@ public class PlayerClass extends SubAct{
                         //mAscii.pushLine("loading video..");
 
                         mAscii.pushLine("");
-                        mAscii.pushLine("Xquisite is a story game that is part of scienceFUTURE,");
-                        mAscii.pushLine("a project where scientists, artists, and young people will collectively");
-                        mAscii.pushLine("imagine the many potential dramas in the life of one woman");
-                        mAscii.pushLine("born in 2045 (29 years in the future).");
-                        mAscii.pushLine("");
+                        mAscii.pushLine("Thanks. Get ready to play!");
+                        mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
+                        mAscii.pushLine("Listen to where we are in her story…");
 
-                        mAscii.pushLine("scienceFUTURE is a space to dream freely about what life might be like in the future.");
-                        mAscii.pushLine("We encourage you to be funny, provocative, and dramatic.");
-                        mAscii.pushLine("Be wild. The more you fun it is for you, the more fun it is for everyone.");
-                        mAscii.pushLine("(Xquisite is a fiction game, and your contribution comes from you as a private person,");
-                        mAscii.pushLine("and is not a professional statement or prediction.)");
-                        mAscii.pushLine("");
+                        mAscii.pushLine("PRESS THE BUTTON TO PLAY");
 
-                        mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
-                        mAscii.pushLine("Before you play, we’d like to do a 3-minute interview which helps us develop the project further.");
-                        mAscii.pushLine("The camera will record your answers.");
-                        mAscii.pushLine("Try and center your face in the window,");
-                        mAscii.pushLine("and speak directly into the device.");
+
                         mAscii.pushLine("");
                         mTime++;
+
+
+
+
+
 
 
 
@@ -244,13 +240,13 @@ public class PlayerClass extends SubAct{
     //LOAD STORY DATA
     private boolean loadStoryData()
     {
-        int res[] = mServer.getLastStoryNdx();
+        /*int res[] = mServer.getLastStoryNdx();
         int storyindx = res[0];
         int storyParts= res[1];
         mParent=storyindx;
-        mStoryParts=storyParts;
+        mStoryParts=storyParts;*/
 
-        if(storyindx==0)
+        if(mParent==0)
         {
             Log.d("PLAYER", "no video ");
             mAscii.pushLine("no video found");

@@ -60,6 +60,10 @@ public class MainActivity extends Activity {
     private Server mServer;
 
     public int mParent=-1;
+    public int mParentParts=-1;
+    public int mReservedStory=-1;
+    public int mPartOffset=-1;
+
 
     //Start new activity for creating new part of a story.
     /*public void CreateNewStory()
@@ -95,30 +99,46 @@ public class MainActivity extends Activity {
     {
         Log.d("GL","TOUCH");
         //CreateNewStory();
-        int result=-1;
+        int[] result;
+        int res=-1;
         switch(mCurrentAction)
         {
             case 0:
                 result=currentSubActivity.action();
+                res=result[0];
                 mAscii.minimizeInfo();
                 break;
             case 1:
                 result=currentSubActivity.action();
-                mParent=result;
-                break;
-            case 2:
-                result=currentSubActivity.action();
+                res=result[0];
+                mParent=result[0];
+                mParentParts=result[1];
+                mReservedStory=result[2];
+                mPartOffset=result[3];
                 //if (result==1){mCurrentAction++;}
                 break;
 
+            case 2:
+                result=currentSubActivity.action();
+                res=result[0];
+                //mParent=result;
+                break;
             case 3:
                 result=currentSubActivity.action();
+                res=result[0];
+                //if (result==1){mCurrentAction++;}
+                break;
+
+            case 4:
+                result=currentSubActivity.action();
+                res=result[0];
                 mCurrentAction=-1;
                 break;
         }
 
-        Log.d("MAIN","RESULT"+result+","+mCurrentAction);
-        if(result!=-1)
+        //Log.d("MAIN","RESULT"+result[0]+","+mCurrentAction);
+
+        if(res!=-1)
         {
 
             mAscii.mAsciiStopUpdater(1);
@@ -160,17 +180,23 @@ public class MainActivity extends Activity {
                 break;
 
             case 1:
-                currentSubActivity=new PlayerClass(this,mAscii,mServer);
-                //playerClass=new PlayerClass(this,mAscii,mServer);
+                currentSubActivity=new PreRecorderClass(this,mAscii,mServer);
+                //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 2:
-                currentSubActivity=new RecorderClass(this,mAscii,mServer,mParent);
+                currentSubActivity=new PlayerClass(this,mAscii,mServer,mParent,mParentParts);
+                //playerClass=new PlayerClass(this,mAscii,mServer);
+                mTimerLoop=currentSubActivity.getTimerTask();
+                break;
+
+            case 3:
+                currentSubActivity=new RecorderClass(this,mAscii,mServer,mParent,mReservedStory,mPartOffset);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
-            case 3:
+            case 4:
                 currentSubActivity=new FinalizeClass(this,mAscii,mServer);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
@@ -344,9 +370,10 @@ class SubAct
         };
     }
 
-    public int action()
+    public int[] action()
     {
-        return 0;
+        int[] result=new int[1];
+        return result;
     }
 
     public void destroy()

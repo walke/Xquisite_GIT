@@ -36,6 +36,7 @@ public class ProgressTile {
 
     private FloatBuffer vertexBuffer;
     private ShortBuffer indexBuffer;
+    private FloatBuffer colorBuffer;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
@@ -49,7 +50,11 @@ public class ProgressTile {
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 0.0f, 1.0f, 0.0f, 1.0f };
+    static final int COORDS_PER_COLOR = 4;
+    float color[] = { 0.0f, 1.0f, 0.0f, 1.0f ,
+            0.0f, 1.0f, 1.0f, 1.0f,
+            0.0f, 1.0f, 1.0f, 1.0f,
+            0.0f, 1.0f, 1.0f, 1.0f};
 
     public ProgressTile()
     {
@@ -86,11 +91,17 @@ public class ProgressTile {
         indexBuffer = byteBuffer.asShortBuffer();
         indexBuffer.put(drawOrder);
         indexBuffer.position(0);
+        byteBuffer = ByteBuffer.allocateDirect(color.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        colorBuffer = byteBuffer.asFloatBuffer();
+        colorBuffer.put(color);
+        colorBuffer.position(0);
     }
 
     /*DRAW*/
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+    private final int colorStride = COORDS_PER_COLOR * 4; // 4 bytes per color
 
     //handles
     private int mPositionHandle;
@@ -110,6 +121,7 @@ public class ProgressTile {
         // Set color for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
+
         // get handle to shape's transformation matrix
         mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
         //XQGLRenderer.checkGlError("glGetUniformLocation");
@@ -126,12 +138,19 @@ public class ProgressTile {
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
 
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        //GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+        GLES20.glEnableVertexAttribArray(mColorHandle); // NEW LINE ADDED.
+        // Point out the where the color buffer is.
+        GLES20.glVertexAttribPointer(mColorHandle, COORDS_PER_COLOR,
+                GLES20.GL_FLOAT,false,colorStride, colorBuffer); // NEW LINE ADDED.
+
 
         //Draw the shape
         GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
 
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mColorHandle);
     }
 }

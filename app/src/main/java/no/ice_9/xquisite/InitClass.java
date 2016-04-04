@@ -37,10 +37,13 @@ public class InitClass extends SubAct{
     }
 
     @Override
-    public int action()
+    public int[] action()
     {
-        if(mInitDone)return 1;
-        else return -1;
+        int[]result=new int[1];
+        result[0]=-1;
+        if(mInitDone)result[0]=1;
+
+        return result;
     }
 
     @Override
