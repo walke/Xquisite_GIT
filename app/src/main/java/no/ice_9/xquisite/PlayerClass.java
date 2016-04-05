@@ -46,13 +46,14 @@ public class PlayerClass extends SubAct{
     private Uri mVideoUri;
     private int mParent;
     private int mCurrentPart;
-    private static int mStartPart=1;
+    private static int mStartPart=12;
 
     static String[] mQuestion;
 
 
     private StoryPart[] mVideoPart;
     private int mStoryParts;
+
 
 
     public PlayerClass(Activity activity,ASCIIscreen ascii,Server server, int parent, int parentParts)
@@ -64,8 +65,13 @@ public class PlayerClass extends SubAct{
         //mVideoView = new VideoView(tAct);
         //mFrame=new FrameLayout(tAct);
         Log.d("PLAYER","par:"+parent+" prts:"+parentParts);
+
+
         mParent=parent;
         mStoryParts=parentParts;
+
+
+
 
         mError=false;
 
@@ -86,6 +92,13 @@ public class PlayerClass extends SubAct{
             public void run() {
                 Log.d("PLAYER", "getting list ");
                 Looper.prepare();
+
+                //TODO:TMP
+                int res[] = mServer.getLastStoryNdx();
+                int storyindx = res[0];
+                int storyParts= res[1];
+                mParent=storyindx;
+                mStoryParts=storyParts;
 
                 //boolean result=loadVideo();
                 boolean result=loadStoryData();

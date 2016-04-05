@@ -42,7 +42,7 @@ public class Server {
     static String CODE_UPLOAD_STORY_PRT="0005";//upload part of the story
     static String CODE_RESRV_NDX_ON_SRV="0006";//reserve ndx for recording story
     static String CODE_COMPL_NDX_ON_SRV="0007";//complete reserved ndx
-    static String CODE_LOAD_STORY_PARTS="0008";//upload part of the story
+    static String CODE_LOAD_STORY_PARTS="0008";//load story parts
 
     String adress;
     int serverResponseCode = 0;
@@ -93,7 +93,7 @@ public class Server {
         result+=response.getBytes()[2]*256;
         result+=response.getBytes()[1]*256*256;
         result+=response.getBytes()[0]*256*256*256;
-        Log.d("SERVER","responseLI"+result+";");
+        Log.d("SERVER","responseResStory:"+result+";");
 
 
         return result;
@@ -193,7 +193,7 @@ public class Server {
         result[1]+=response.getBytes()[6]*256;
         result[1]+=response.getBytes()[5]*256*256;
         result[1]+=response.getBytes()[4]*256*256*256;
-        Log.d("SERVER","responseLI "+result[0]+";");
+        Log.d("SERVER","responseLastNdx: "+result[0]+"; prts "+result[1]);
 
 
         return result;
