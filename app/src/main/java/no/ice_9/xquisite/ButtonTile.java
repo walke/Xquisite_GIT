@@ -12,6 +12,10 @@ import java.nio.ShortBuffer;
  */
 public class ButtonTile {
 
+    public boolean isRecording=false;
+    private float recBlink=0.0f;
+    private boolean recBlinkUp=true;
+
     public  boolean isDown=false;
 
     public float midx;
@@ -40,8 +44,11 @@ public class ButtonTile {
                     "varying lowp vec2 TexCoordOut;" +
                     "void main() {" +
                     "   vec4 col = texture2D(Texture, TexCoordOut);"+//
-                    //"   col.a=col.r;"+
-                    "   gl_FragColor =  ( vColor * col);" +
+                    "   col.a=(vColor.r*col.r)+((1.0-vColor.r)*col.b);"+
+                    "   col.r=vColor.g;"+
+                    "   col.b=0.1;"+
+                    "   col.g=0.1;"+
+                    "   gl_FragColor =  col;" +
                     "}";
 
     private final int mProgram;
@@ -70,7 +77,7 @@ public class ButtonTile {
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 0.8f, 0.5f, 0.3f, 1.0f };
+    float color[] = { 0.8f, 0.8f, 0.0f, 1.0f };
 
     public ButtonTile(float mx,float my, float sx, float sy, int texture)
     {
@@ -129,6 +136,36 @@ public class ButtonTile {
 
     public void draw(float[] mvpMatrix)
     {
+        if(isRecording)
+        {
+
+            if(recBlinkUp)
+            {
+                recBlink+=0.01f;
+                if(recBlink>=0.5f)
+                {
+                    recBlinkUp=false;
+                }
+            }
+            else
+            {
+                recBlink -= 0.05f;
+                if (recBlink <= 0.0f) {
+                    recBlinkUp = true;
+                }
+            }
+
+
+        }
+        else
+        {
+            if(recBlink<1.0)
+            recBlink+=0.02f;
+        }
+        color[0]= recBlink;
+        color[1]=1.0f-recBlink/5;
+        color[2]=1.0f-recBlink/5;
+
         GLES20.glUseProgram(mProgram);
 
         // get handle to vertex shader's vPosition member
@@ -191,9 +228,10 @@ public class ButtonTile {
     public void setDown()
     {
         isDown=true;
-        color[0]= 1.0f;
-        color[1]= 0.6f;
-        color[2]= 0.4f;
+
+        recBlink=0.0f;
+        color[1]= 1.0f;
+
 
 
 
@@ -201,9 +239,9 @@ public class ButtonTile {
     public void setUp()
     {
         isDown=false;
-        color[0]= 0.8f;
-        color[1]= 0.5f;
-        color[2]= 0.3f;
+
+        color[1]= 0.8f;
+
 
 
 

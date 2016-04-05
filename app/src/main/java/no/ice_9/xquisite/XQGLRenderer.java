@@ -113,7 +113,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mTextLine=          new TextLine[sy];
 
-        mContinueButton =   new ButtonTile(0.85f,-0.6f,0.1f,0.1f*mRatio,textures[3]);
+        mContinueButton =   new ButtonTile(0.0f,-0.50f,0.2f,0.2f*mRatio,textures[3]);
 
         mAudioTile =        new AudioTile();
 
@@ -145,10 +145,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         // Redraw background color
         //Random rnd=new Random();
         view.mReady=true;
-        float[] scratch = new float[16];
-        float[] scratch2 = new float[16];
-        float[] scratch3 = new float[16];
-        float[] scratch4 = new float[16];
+        float[] scratch;// = new float[16];
+        float[] scratch2;// = new float[16];
+        float[] scratch3;// = new float[16];
+        float[] scratch4;// = new float[16];
 
 
 
@@ -162,7 +162,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 l++;
             }
         }*/
-        mAngle+=0.01f;
+        //mAngle+=0.01f;
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
         updateAval();
         animInfo();
@@ -200,6 +200,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             }
         }*/
 
+
+
         mInfoTile.draw(mTranslationMatrix);
 
         Matrix.translateM(scratch4, 0, mProgressTile.midx, mProgressTile.midy, 1.0f);
@@ -211,7 +213,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         float tothoffset=0.0f;
         for(int j=0;j<activeLine+1.0f;j++)
         {tothoffset+=mTextLine[j].mLineCount*0.05f;}
-        Matrix.translateM(scratch,0,0.0f,tothoffset+0.05f*activeLine-1.8f,0.0f);
+        Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 1.8f, 0.0f);
         for(int j=0;j<sy;j++)
         {
             if(!mTextLine[j].isEmpty())
@@ -266,7 +268,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 1);
 
             //Log.d("GL","bpup"+mBitmap.getPixel(0,0));
-            Log.d("GL", "upval");
+            //Log.d("GL", "upval");
             //GLES20.glGenTextures(1, textures, 1);
 
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[1]);
@@ -295,9 +297,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //Log.d("ASCII","H"+mInfoTile.sizy);
 
                     infoStatus+=(infoTarget-infoStatus)/10.0f;
-                    mInfoTile.midx=0.0f;
+                    //mInfoTile.midx=0.0f;
                     mInfoTile.midy=(infoStatus-0.2f)-0.8f;
-                    mInfoTile.sizx=1.0f;
+                    //mInfoTile.sizx=1.0f;
                     mInfoTile.sizy=infoTarget;
                     /*mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
                     mInfoTile.midy+=(((infoStatus-0.2f)-0.8f)-mInfoTile.midy)/10.0f;
@@ -308,7 +310,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
                     //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
-                    //mContinueButton.midy+=(-0.8f-mContinueButton.midy)/10.0f;
+                    float icalc=((infoStatus-0.2f)*(1f/0.8f));
+                    mContinueButton.midy=icalc*0.8f+(1.0f-icalc)*-0.5f;
                     //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
                     //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
 
@@ -654,14 +657,33 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     {
         float flValue=(float)value/10000.0f;
         mAudioTile.sizy=flValue/10;
-        mAudioTile.color[0]=flValue;
-        mAudioTile.color[1]=1.0f-flValue;
+        //mAudioTile.color[0]=flValue;
+        //mAudioTile.color[1]=1.0f-flValue;
 
     }
 
-    public void setProgress(float value)
+    public void setProgress(float value,int state)
     {
-        progressTarget=value;
+
+        if(state==0)
+        {
+            //mProgressTile.color[0]=0.0f;
+            //mProgressTile.color[1]=1.0f;
+        }
+        else
+        {
+            progressTarget=value;
+            //mProgressTile.color[0]=1.0f;
+            //mProgressTile.color[1]=0.0f;
+        }
+
     }
+
+    public void setRecording(boolean isRec)
+    {
+        mContinueButton.isRecording=isRec;
+    }
+
+
 
 }

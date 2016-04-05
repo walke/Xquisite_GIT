@@ -65,6 +65,7 @@ public class PreRecorderClass extends SubAct{
     static int mQuestionTime;
     int mTimeLeft=0;
     int mTimeElapsed;
+    int mTimeElapsedPq=0;
 
     boolean mWorking;
     StoryPart[] mVideoPart;
@@ -181,7 +182,7 @@ public class PreRecorderClass extends SubAct{
         initQuestions();
 
         //ASCII INIT
-        //mText=(TextView)findViewById(R.id.text_recorder);
+        //mText=(TextView)findViewById(R.id.text_remTimeElapsedPqcorder);
         //mAscii=new ASCIIscreen(this,mText,"RECORDER");
         mAscii.mAsciiStartUpdater(100);
         mAscii.clear();
@@ -265,7 +266,7 @@ public class PreRecorderClass extends SubAct{
                         mAscii.pushLine("");
 
                         mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
-                        mAscii.pushLine("Before you play, we’d like to do a 3-minute interview which helps us develop the project further.");
+                        mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
                         mAscii.pushLine("The camera will record your answers.");
                         mAscii.pushLine("Try and center your face in the window,");
                         mAscii.pushLine("and speak directly into the device.");
@@ -293,9 +294,10 @@ public class PreRecorderClass extends SubAct{
                         mTime++;
                     }
 
-                    if(mTime>2)
+                    if(mTime>2 && isRecording)
                     {
-                        mAscii.mGLView.mRenderer.setProgress((float) mTimeElapsed / (float) mTotalTime);
+                        mAscii.mGLView.mRenderer.setProgress((float) (mTimeElapsedPq+1) / (float) mQuestion[mCurrentPart].time,1);
+                        mAscii.mGLView.mRenderer.setRecording(true);
                     }
 
 
@@ -312,17 +314,17 @@ public class PreRecorderClass extends SubAct{
         mQuestionTime=QTIME;
 
         mQuestion=new Question[NPARTS];
-        mQuestion[0]=new Question("What is your name?",5);
+        mQuestion[0]=new Question("What is your name?" ,5);
         mQuestion[1]=new Question("What is your email(spell if needed)?",12);
         mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",3);
         mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",3);
         mQuestion[4]=new Question("Where did you grow up?",5);
         mQuestion[5]=new Question("Would your closest friends call you an optimist or pessimist about the future?",3);
-        mQuestion[6]=new Question("If you like science fiction, give us one or two of your favourite films, shows or books. (If you don’t like science fiction, give the titles of any favorite story).",12);
+        mQuestion[6]=new Question("If you like science fiction, give us one or two of your favourite films, shows or books. (If you don't like science fiction, give the titles of any favorite story).",12);
         mQuestion[7]=new Question("Briefly describe your work and your research themes.",20);
         mQuestion[8]=new Question("What is the most exciting element of your research? ",12);
         mQuestion[9]=new Question("What is the most challenging element of your work?",12);
-        mQuestion[10]=new Question("What is the most challenging element of your work?",20);
+        mQuestion[10]=new Question("Think 70 to 100 years in the future. What are the most important changes that might happen within your field of research (ie- species hybridization, sea ice cover)",20);
         mQuestion[11]=new Question("How might this change affect human lives?",5);
 
         for (int i=0;i<mQuestion.length;i++)
@@ -412,13 +414,15 @@ public class PreRecorderClass extends SubAct{
 
                                 //mRecorderTimeText.setText(""+mTimeLeft);
                                 mAscii.modLine("Question:" + mQuestion[mCurrentPart].question, 0, -1);
-                                mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                                //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                                mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
 
                                 mAscii.modLine("***************", 2, -1);
-                                mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                                mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
                                 //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
+                                    mTimeElapsedPq=0;
                                     //forceStopCapture();
                                     forceStartCapture();
                                 }//TODO: yes that is target entry point of the crash
@@ -600,6 +604,7 @@ public class PreRecorderClass extends SubAct{
                         });
                         mTimeLeft--;
                         mTimeElapsed++;
+                        mTimeElapsedPq++;
                     }
                 } else {
                     this.cancel();//TODO: or make destroying sequence if user panics
@@ -671,6 +676,9 @@ public class PreRecorderClass extends SubAct{
 
         if (isRecording) {//<-MAYBE UNNECCESARY TODO: check that
 
+            mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+            mAscii.mGLView.mRenderer.setRecording(false);
+            mAscii.mGLView.mRenderer.setAudio(0);
             isRecording = false;
             // stop recording and release camera
             mRecorder.stop();  // stop the recording
@@ -698,7 +706,8 @@ public class PreRecorderClass extends SubAct{
                 if((mCurrentPart+1)<mQuestion.length)
                 {
                     mAscii.modLine("Question:" + mQuestion[mCurrentPart+1].question, 0, -1);
-                    mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
+                    mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
+                    //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
                     mAscii.modLine("***************", 2, -1);
                     mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
@@ -715,14 +724,15 @@ public class PreRecorderClass extends SubAct{
                 mPartReady[mCurrentPart]=1;
                 Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
                 mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
+                mTimeElapsedPq=0;
 
             }
             if(mCurrentPart>=mQuestion.length)
             {
                 mMainDone=true;
-                mAscii.modLine("DONE!", 0, -1);
+                mAscii.modLine("Thanks! The interview is finished.", 0, -1);
 
-                new Thread(new Runnable() {
+                /*new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Log.d("RECORDER","up part"+mCurrentPart);
@@ -731,7 +741,7 @@ public class PreRecorderClass extends SubAct{
 
 
                     }
-                }).start();
+                }).start();*/
                 mCurrentPart++;
             }
             mAscii.modLine("***************", 2, -1);

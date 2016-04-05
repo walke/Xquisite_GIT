@@ -187,7 +187,7 @@ public class MainActivity extends Activity {
 
             case 2:
                 currentSubActivity=new PlayerClass(this,mAscii,mServer,mParent,mParentParts);
-                //currentSubActivity=new PlayerClass(this,mAscii,mServer,1,2);
+                //currentSubActivity=new PlayerClass(this,mAscii,mServer,1,14);
                 //playerClass=new PlayerClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
@@ -313,7 +313,7 @@ public class MainActivity extends Activity {
 
 
         //AUTOBOT
-        TimerTask auto= new TimerTask() {
+        /*TimerTask auto= new TimerTask() {
             @Override
             public void run() {
                 runOnUiThread(new Runnable() {
@@ -325,7 +325,7 @@ public class MainActivity extends Activity {
 
             }};
 
-        new Timer().scheduleAtFixedRate(auto, 0, 2000);
+        new Timer().scheduleAtFixedRate(auto, 0, 4000);*/
 
 
         mMesTime= Calendar.getInstance().getTimeInMillis();

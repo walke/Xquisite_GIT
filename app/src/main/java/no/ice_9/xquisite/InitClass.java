@@ -115,7 +115,7 @@ public class InitClass extends SubAct{
                     {
                         mAscii.pushLine("Connection succesed");
                         mAscii.pushLine("");
-                        mAscii.pushLine("!PRESS THE ORANGE BUTTON TO CONTINUE!");
+                        mAscii.pushLine("!PRESS THE RED BUTTON TO CONTINUE!");
                         mInitDone=true;
 
                         //this.cancel();

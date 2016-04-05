@@ -25,6 +25,20 @@ import java.util.TimerTask;
  */
 public class RecorderClass extends SubAct{
 
+    class Question
+    {
+        public String question;
+        public int time;
+
+        public Question(String q,int t)
+        {
+            question=q;
+            time=t;
+        }
+
+
+    }
+
     //ENUMS
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -32,8 +46,8 @@ public class RecorderClass extends SubAct{
     public static final int FTIME = 10;//90;//60
     public static final int QTIME = 10;//30;//20
 
-    public static final int NPARTS= 2;
-    public static final int TOT_TIME=FTIME+(NPARTS-1)*QTIME;
+    public static final int NPARTS= 3;
+    //public static final int TOT_TIME=FTIME+(NPARTS-1)*QTIME;
 
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
@@ -50,10 +64,11 @@ public class RecorderClass extends SubAct{
     boolean mMainDone;
     int mCurrentPart;
 
-    static String[] mQuestion;
+    static Question[] mQuestion;
     static int mQuestionTime;
     int mTimeLeft=0;
     int mTimeElapsed;
+    int mTimeElapsedPq=0;
 
     boolean mWorking;
     StoryPart[] mVideoPart;
@@ -69,6 +84,8 @@ public class RecorderClass extends SubAct{
 
     static String fileToUpload;
     static String mFilePath;
+
+    int mTime=0;
 
     private boolean[] mPartDone;
 
@@ -175,6 +192,16 @@ public class RecorderClass extends SubAct{
             mAscii.fillTrash();
             mUserReady=true;
         }
+        if(mTime==1)
+        {
+            mTime++;
+
+        }
+        if(mTime==2)
+        {
+            mTime++;
+            mTimeLeft=0;
+        }
         if(mMainDone)
         {
             finishRecording();
@@ -195,8 +222,20 @@ public class RecorderClass extends SubAct{
                 //Log.d("PLAYER","::"+mVideoView.isActivated()+","+mVideoView);
                 if(mAscii.mReady)
                 {
-                    mAscii.mGLView.mRenderer.setProgress((float)mTimeElapsed/(float)TOT_TIME);
+                    if(mTime==0)
+                    {
+                        mTime++;
+                    }
+                    if(mTime==1)
+                    {
+                        mTime++;
 
+                    }
+                    if(mTime>2 && isRecording)
+                    {
+                        mAscii.mGLView.mRenderer.setProgress((float) (mTimeElapsedPq+1) / (float) mQuestion[mCurrentPart].time,1);
+                        mAscii.mGLView.mRenderer.setRecording(true);
+                    }
 
                 }
 
@@ -207,7 +246,7 @@ public class RecorderClass extends SubAct{
     private void initQuestions()
     {
         mQuestionTime=QTIME;
-        mQuestion=new String[]
+        /*mQuestion=new String[]
                 {
                         "ENJOY FREEDOM",
                         "SOMEBODY IS WATCHING YOU!"//,
@@ -217,7 +256,17 @@ public class RecorderClass extends SubAct{
                         //"What is she thinking??",
                         // "What is her biggest challenge??"
                 };
-        mAscii.minimizeInfo();
+        mAscii.minimizeInfo();*/
+
+        mQuestion=new Question[NPARTS];
+        mQuestion[0]=new Question("Close your eyes for a moment and think about what you just heard. What were the key elements? " ,10);
+        mQuestion[1]=new Question("Think of what X might do next. Put yourself in her shoes, and challenge yourself to be dramatic. ",120);
+        mQuestion[2]=new Question("You now have one more minute to add to your story, or summarise for the next player. ",60);
+
+        /*for (int i=0;i<mQuestion.length;i++)
+        {
+            mTotalTime+=mQuestion[i].time;
+        }*/
 
 
         //there are as many parts as questions +1 free part;
@@ -274,7 +323,7 @@ public class RecorderClass extends SubAct{
                 @Override
                 public void run() {
                     Log.d("RECORDER", "TIMER: cdown" + mWorking + " " + mTimeLeft);
-                    mTimeLeft--;
+                    //mTimeLeft--;
                     if (mTimeLeft <= 0 || !mWorking) {
                         this.cancel();
                     }
@@ -284,9 +333,16 @@ public class RecorderClass extends SubAct{
                             public void run() {
 
                                 //mRecorderTimeText.setText(""+mTimeLeft);
-                                mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
+                                mAscii.modLine("Question:" + mQuestion[mCurrentPart].question, 0, -1);
+                                //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                                mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
+
+                                mAscii.modLine("***************", 2, -1);
+                                mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
+                                //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
+                                    mTimeElapsedPq=0;
                                     forceStartCapture();
                                 }//TODO: yes that is target entry point of the crash
                             }
@@ -427,12 +483,14 @@ public class RecorderClass extends SubAct{
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        if (mCurrentPart == 0) {
+                        mTimeLeft=mQuestion[mCurrentPart].time;
+
+                        /*if (mCurrentPart == 0) {
                             mTimeLeft = FTIME;//FREE TIME
                         }
                         if (mCurrentPart > 0) {
                             mTimeLeft = mQuestionTime;
-                        }
+                        }*/
                         if (mCurrentPart > mQuestion.length) {
                             Log.d("RECORDER", "finising");
                             finishRecording();
@@ -446,7 +504,8 @@ public class RecorderClass extends SubAct{
                             public void run() {
                                 //mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                                mAscii.modLine("RECORDING", 0, -1);
+                                mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
+                                mAscii.modLine("RECORDING", 1, -1);
                                 mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 1, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
@@ -464,6 +523,7 @@ public class RecorderClass extends SubAct{
                         });
                         mTimeLeft--;
                         mTimeElapsed++;
+                        mTimeElapsedPq++;
                     }
                 } else {
                     this.cancel();//TODO: or make destroying sequence if user panics
@@ -535,6 +595,9 @@ public class RecorderClass extends SubAct{
 
         if (isRecording) {//<-MAYBE UNNECCESARY TODO: check that
 
+            mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+            mAscii.mGLView.mRenderer.setRecording(false);
+            mAscii.mGLView.mRenderer.setAudio(0);
             isRecording = false;
             // stop recording and release camera
             mRecorder.stop();  // stop the recording
@@ -555,27 +618,32 @@ public class RecorderClass extends SubAct{
             {
 
 
-                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart], fileToUpload);
+                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload);
                 Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
                 Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
 
-                mAscii.modLine("Question:" + mQuestion[mCurrentPart], 0, -1);
-                mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                if((mCurrentPart+1)<mQuestion.length)
+                {
+                    mAscii.modLine("Question:" + mQuestion[mCurrentPart+1].question, 0, -1);
+                    mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
+                    //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
-                mAscii.modLine("***************", 2, -1);
-                mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                    mAscii.modLine("***************", 2, -1);
+                    mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                }
 
-                new Thread(new Runnable() {
+                /*new Thread(new Runnable() {
                     @Override
                     public void run() {
                         //mServer.uploadPart(mVideoPart[mCurrentPart],mCurrentPart,mServerReserved,mCurrentParent,mCurrentUser);
 
                     }
-                }).start();
+                }).start();*/
                 Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
                 mPartReady[mCurrentPart]=1;
                 Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
                 mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
+                mTimeElapsedPq=0;
 
             }
             if(mCurrentPart>=mQuestion.length)
@@ -583,7 +651,7 @@ public class RecorderClass extends SubAct{
                 mMainDone=true;
                 mAscii.modLine("DONE!", 0, -1);
 
-                new Thread(new Runnable() {
+                /*new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Log.d("RECORDER","up part"+mCurrentPart);
@@ -592,7 +660,7 @@ public class RecorderClass extends SubAct{
 
 
                     }
-                }).start();
+                }).start();*/
                 mCurrentPart++;
             }
             mAscii.modLine("***************", 2, -1);

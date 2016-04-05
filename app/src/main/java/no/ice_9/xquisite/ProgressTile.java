@@ -59,9 +59,9 @@ public class ProgressTile {
     public ProgressTile()
     {
         midx=-1.0f;
-        midy=-0.8f;
+        midy=-0.59f;
         sizx=0.0f;
-        sizy=0.2f;
+        sizy=0.01f;
 
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);

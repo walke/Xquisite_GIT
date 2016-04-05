@@ -56,8 +56,9 @@ public class FinalizeClass extends SubAct{
                 if(mAscii.mReady)
                 {
 
-                    mAscii.mGLView.mRenderer.setProgress(0.0f);
-                    mAscii.modLine("ALL FINISHED PUSH BUTTON TO RESTART",0,0);
+                    mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+                    mAscii.mGLView.mRenderer.setProgress(0.0f,0);
+                    mAscii.modLine("THANK YOU!",0,0);
                 }
 
             }

@@ -46,7 +46,7 @@ public class PlayerClass extends SubAct{
     private Uri mVideoUri;
     private int mParent;
     private int mCurrentPart;
-    private static int mStartPart=12;
+    private static int mStartPart=13;
 
     static String[] mQuestion;
 
@@ -70,6 +70,7 @@ public class PlayerClass extends SubAct{
         mParent=parent;
         mStoryParts=parentParts;
 
+        mStartPart=mStoryParts-1;
 
 
 
@@ -147,6 +148,10 @@ public class PlayerClass extends SubAct{
             mAscii.clear();
             startVideo();
         }
+       /* else if(mCurrentPart<mStoryParts)
+        {
+            playNext();
+        }*/
         else
         {
             mAscii.pushLine("You look a bit impatient");
@@ -172,11 +177,11 @@ public class PlayerClass extends SubAct{
                         //mAscii.pushLine("loading video..");
 
                         mAscii.pushLine("");
-                        mAscii.pushLine("Thanks. Get ready to play!");
+                        mAscii.pushLine("Get ready to play!");
                         mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
-                        mAscii.pushLine("Listen to where we are in her story…");
+                        mAscii.pushLine("Listen to where we are in her story...");
 
-                        mAscii.pushLine("PRESS THE BUTTON TO PLAY");
+                        //mAscii.pushLine("PRESS THE BUTTON TO PLAY");
 
 
                         mAscii.pushLine("");
@@ -210,7 +215,7 @@ public class PlayerClass extends SubAct{
                         {
                             int pos=mVideoView.getCurrentPosition();
                             int dur=mVideoView.getDuration();
-                            mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur);
+                            mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur,1);
                         }
                     }
 
@@ -272,7 +277,7 @@ public class PlayerClass extends SubAct{
         }
         else
         {
-            mAscii.pushLine("we found some cluster of a story for you");
+            mAscii.pushLine("");
             mAscii.pushLine("we will now try to get it ready for you");
 
 
@@ -360,6 +365,7 @@ public class PlayerClass extends SubAct{
         mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
             public void onPrepared(MediaPlayer player) {
+                //mAscii.pushLine("ready");
                 Log.d("PLAYER", "PLAY");
                 //tAct.setContentView(mAscii.mGLView);
                 //mAscii.pushLine("123");
@@ -369,7 +375,7 @@ public class PlayerClass extends SubAct{
 
         mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer player) {
-
+                mAscii.mGLView.mRenderer.setProgress(0.0f,0);
                 if (mCurrentPart < 16) {
 
                     mVideoReady = false;
@@ -408,7 +414,7 @@ public class PlayerClass extends SubAct{
     private void loadParts()
     {
         Log.d("PLAYER", "LOADING PARTS");
-        for(int i=0;i<mStoryParts;i++)
+        for(int i=mStartPart;i<mStoryParts;i++)
         {
 
             Log.d("PLAYER","part:"+i);
@@ -459,6 +465,7 @@ public class PlayerClass extends SubAct{
 
         if(mCurrentPart>mStartPart)
         {
+
             mAscii.clear();
             startVideo();
         }
@@ -470,12 +477,14 @@ public class PlayerClass extends SubAct{
     {
 
         //mAscii.pushLine("loading another part..");
+        //mAscii.pushLine("Close your eyes for a moment and think about what you just heard. What were the key elements? ");
         while(mVideoPart[mCurrentPart].isEmpty())
         {
-            if(mCurrentPart>=mStartPart){break;}
+            if(mCurrentPart>mStartPart){break;}
         }
+        mAscii.pushLine("");
         Log.d("PLAYER","loaded");
-        if(mCurrentPart>=mStartPart)
+        if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
         {
             mAscii.pushLine("PRESS THE BUTTON TO START RECORDING..");
@@ -488,7 +497,7 @@ public class PlayerClass extends SubAct{
 
 
         mVideoUri=Uri.fromFile(new File(mVideoPart[mCurrentPart].getFilePath()));
-
+        //mVideoReady=true;
         preparePlayer();
 
     }
@@ -497,7 +506,8 @@ public class PlayerClass extends SubAct{
     {
         if(mVideoView!=null)
         {
-            mAscii.mGLView.mRenderer.setProgress(0.0f);
+            mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+            mAscii.mGLView.mRenderer.setProgress(0.0f,0);
             mTime=-1;
             mVideoView.release();
             mVideoView=null;

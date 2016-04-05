@@ -12,6 +12,8 @@ import java.nio.ShortBuffer;
  */
 public class TextLine {
 
+    boolean mReady=true;
+
     /*TEXT LINE SHADERS*/
     private final String vertexTextTileShaderCode =
             "uniform mat4 uMVPMatrix;" +
@@ -131,71 +133,74 @@ public class TextLine {
 
     public void draw(float[] mvpMatrix)
     {
-        GLES20.glUseProgram(mProgram);
+        if(mReady) {
+            GLES20.glUseProgram(mProgram);
 
-        // get handle to vertex shader's vPosition member
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+            // get handle to vertex shader's vPosition member
+            mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 
-        // get handle to fragment shader's vColor member
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-
-
-        //get handle to texture coordinate variable
-        mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoordIn");
-        //if (mTextureHandle == -1) Log.e("ASCII", "TexCoordIn not found");
-
-        //get handle to shape's texture reference
-        fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
-        //if (fsTexture == -1) Log.e("ASCII", "Texture not found");
-
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
-
-        // get handle to shape's transformation matrix
-        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-        //XQGLRenderer.checkGlError("glGetUniformLocation");
-
-        // Apply the projection and view transformation
-        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
-        //MyGLRenderer.checkGlError("glUniformMatrix4fv");
-
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT, false,
-                vertexStride, vertexBuffer);
-
-        GLES20.glVertexAttribPointer(mTextureHandle, COORDS_PER_TEXTURE,
-                GLES20.GL_FLOAT, false,
-                textureStride, textureBuffer);
-
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
-        GLES20.glUniform1i(fsTexture, 0);
-
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-        GLES20.glEnableVertexAttribArray(mTextureHandle);
-
-        GLES20.glEnable(GLES20.GL_BLEND);
-        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+            // get handle to fragment shader's vColor member
+            mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
 
 
-        //Draw the shape
-        GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
+            //get handle to texture coordinate variable
+            mTextureHandle = GLES20.glGetAttribLocation(mProgram, "TexCoordIn");
+            //if (mTextureHandle == -1) Log.e("ASCII", "TexCoordIn not found");
 
-        GLES20.glDisable(GLES20.GL_BLEND);
+            //get handle to shape's texture reference
+            fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
+            //if (fsTexture == -1) Log.e("ASCII", "Texture not found");
 
-        //Disable vertex array
-        GLES20.glDisableVertexAttribArray(mTextureHandle);
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+            // Set color for drawing the triangle
+            GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+
+            // get handle to shape's transformation matrix
+            mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+            //XQGLRenderer.checkGlError("glGetUniformLocation");
+
+            // Apply the projection and view transformation
+            GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+            //MyGLRenderer.checkGlError("glUniformMatrix4fv");
+
+            // Enable a handle to the triangle vertices
+            //GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+            // Prepare the triangle coordinate data
+            GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
+                    GLES20.GL_FLOAT, false,
+                    vertexStride, vertexBuffer);
+
+            GLES20.glVertexAttribPointer(mTextureHandle, COORDS_PER_TEXTURE,
+                    GLES20.GL_FLOAT, false,
+                    textureStride, textureBuffer);
+
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
+            GLES20.glUniform1i(fsTexture, 0);
+
+            GLES20.glEnableVertexAttribArray(mPositionHandle);
+            GLES20.glEnableVertexAttribArray(mTextureHandle);
+
+            GLES20.glEnable(GLES20.GL_BLEND);
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+
+            //Draw the shape
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
+
+            GLES20.glDisable(GLES20.GL_BLEND);
+
+            //Disable vertex array
+            GLES20.glDisableVertexAttribArray(mTextureHandle);
+            GLES20.glDisableVertexAttribArray(mPositionHandle);
+        }
     }
 
     public void set(String str)
     {
+        mReady=false;
         empty=true;
+        boolean searchSpace=false;
 
         int vertCount=str.length()*12;
 
@@ -251,8 +256,17 @@ public class TextLine {
             charpos++;
             if (charpos>40)
             {
-                mLineCount++;
-                charpos=0;
+                searchSpace=true;
+
+            }
+            if(searchSpace)
+            {
+                if((int)str.charAt(i)==32)
+                {
+                    searchSpace=false;
+                    mLineCount++;
+                    charpos=0;
+                }
             }
         }
 
@@ -277,6 +291,8 @@ public class TextLine {
         textureBuffer.position(0);
 
         empty=false;
+
+        mReady=true;
     }
 
     public boolean isEmpty()
