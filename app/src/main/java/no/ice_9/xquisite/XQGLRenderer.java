@@ -191,7 +191,6 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mAsciiTiles.draw();
         /*for(int j=0;j<sy;j++)
-
         {
             for(int i=0;i<sx;i++)
             {
@@ -296,26 +295,26 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         {
             //Log.d("ASCII","H"+mInfoTile.sizy);
 
-                    infoStatus+=(infoTarget-infoStatus)/10.0f;
-                    //mInfoTile.midx=0.0f;
-                    mInfoTile.midy=(infoStatus-0.2f)-0.8f;
-                    //mInfoTile.sizx=1.0f;
-                    mInfoTile.sizy=infoTarget;
+            infoStatus+=(infoTarget-infoStatus)/10.0f;
+            //mInfoTile.midx=0.0f;
+            //mInfoTile.midy=(infoStatus-0.2f)-0.8f;
+            //mInfoTile.sizx=1.0f;
+            mInfoTile.sizy=infoTarget*2;
                     /*mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
                     mInfoTile.midy+=(((infoStatus-0.2f)-0.8f)-mInfoTile.midy)/10.0f;
                     mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
                     mInfoTile.sizy+=(infoTarget-mInfoTile.sizy)/10.0f;*/
 
-                    //infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
-                    //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
+            //infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
+            //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
-                    //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
-                    float icalc=((infoStatus-0.2f)*(1f/0.8f));
-                    mContinueButton.midy=icalc*0.8f+(1.0f-icalc)*-0.5f;
-                    //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
-                    //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
+            //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
+            float icalc=((infoStatus-0.2f)*(1f/0.8f));
+            mContinueButton.midy=icalc*0.8f+(1.0f-icalc)*-0.5f;
+            //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
+            //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
 
-                    //if(mInfoTile.sizy>0.2f-0.01f || mInfoTile.sizy<0.2f+0.01f){infoStatus=infoTarget;}
+            //if(mInfoTile.sizy>0.2f-0.01f || mInfoTile.sizy<0.2f+0.01f){infoStatus=infoTarget;}
 
 
 
@@ -326,7 +325,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     mInfoTile.sizy+=(1.0f-mInfoTile.sizy)/10.0f;
                     infoHeight=infoHeight+(1.0f-infoHeight)/10.0f;*/
 
-                    //if(mInfoTile.sizy>1.0f-0.01f || mInfoTile.sizy<1.0f+0.01f){infoStatus=infoTarget;}
+            //if(mInfoTile.sizy>1.0f-0.01f || mInfoTile.sizy<1.0f+0.01f){infoStatus=infoTarget;}
 
 
 
@@ -412,7 +411,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         int screenTileValue=textures[1];
 
-       //TEXTURE 2
+        //TEXTURE 2
         GLES20.glGenTextures(1, textures, 2);
         //mSurface.setUseExternalTextureID();
         GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[2]);
@@ -606,7 +605,6 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 }
                 if(clearDone){this.cancel();}
                 else{upAval=true;}
-
             }
         };
         new Timer().scheduleAtFixedRate(clearTrhead, 0, 5);*/

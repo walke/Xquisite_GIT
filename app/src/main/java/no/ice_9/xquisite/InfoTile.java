@@ -55,9 +55,9 @@ public class InfoTile {
     public InfoTile()
     {
         midx=0.0f;
-        midy=-0.8f;
+        midy=-1.0f;
         sizx=1.0f;
-        sizy=0.2f;
+        sizy=0.4f;
 
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);
