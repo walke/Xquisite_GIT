@@ -59,7 +59,8 @@ public class ASCIIscreen implements Serializable{
     XQGLSurfaceView mGLView;
 
     //STATIC LINE NUMBER
-    static private int lineCount=120;
+    static private int lineCount=120
+            ;
     private float lineHeight;
 
 
@@ -160,22 +161,22 @@ public class ASCIIscreen implements Serializable{
     private void createUpdater()
     {
         mStopTime=-1;
-        final Random Rnd=new Random();
-        mUpdater=new TimerTask() {
+        //final Random Rnd=new Random();
+        /*mUpdater=new TimerTask() {
             @Override
             public void run() {
                 mUpdater = this;
                 //if(mSymbolsPerLine!=-1 && !mReady){mReady=true;}
-                if (mRage) {
+                /*if (mRage) {
                     pushLine("&/¤(&/" + mWordList[Rnd.nextInt() % 4 + 4] + "2/(&%¤76KLJ))=/(¤");
-                }
-                mAllLines = "";
+                }*/
+                /*mAllLines = "";
                 for (int i = 0; i < lineCount; i++) {
 
                     mAllLines += mLine[i] + "\n";
-                }
+                }*/
 
-                tAct.runOnUiThread(new Runnable() {
+                /*tAct.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
@@ -183,11 +184,11 @@ public class ASCIIscreen implements Serializable{
                     }
                 });
 
-                if(mRequestStop){ mStopTime--;if(mStopTime<=0){mUpdater.cancel();}}
+                //if(mRequestStop){ mStopTime--;if(mStopTime<=0){mUpdater.cancel();}}
                 //Log.d("ASCII","RUNNING from "+ mActParent);
 
             }
-        };
+        };*/
     }
 
 
@@ -200,8 +201,8 @@ public class ASCIIscreen implements Serializable{
 
             mUpdating=true;
             mRequestStop=false;
-            createUpdater();
-            new Timer().scheduleAtFixedRate(mUpdater,0,rate);
+            //createUpdater();
+            //new Timer().scheduleAtFixedRate(mUpdater,0,rate);
         }
 
     }
@@ -210,7 +211,7 @@ public class ASCIIscreen implements Serializable{
     {
         Log.d("ASCII","STOPPING UPDATER");
         mStopTime=delay;
-        mUpdater.cancel();
+        //mUpdater.cancel();
         mRequestStop=true;
         mUpdating=false;
     }

@@ -86,16 +86,23 @@ public class InitClass extends SubAct{
                     if(mTime==21 && !mAscii.isRage())
                     {
                         mLoadingDialog.dismiss();
-                        mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(),R.drawable.logogsm));
-                        mAscii.pushLine("########################");
-                        mAscii.pushLine("#scienceFuture xquisite#");
-                        mAscii.pushLine("########################");
-                        mAscii.pushLine("Initializing sequence...");
+                        mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
+                        //mAscii.pushLine("########################");
+                        //mAscii.pushLine("#scienceFuture xquisite#");
+                        //mAscii.pushLine("########################");
+                        //mAscii.pushLine("Initializing sequence...");
+
+
+                       // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
+                        //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
+                        mAscii.pushLine("The camera will record your answers.");
+                        mAscii.pushLine("Try and center your face in the window,");
+                        mAscii.pushLine("and speak directly into the device.");
                         mTime++;
                     }
                     if(mTime==22 && !mAscii.isRage())
                     {
-                        mAscii.pushLine("Testing connection to the server...");
+                        //mAscii.pushLine("Testing connection to the server...");
                         mInitDone=false;
                         mTime++;
                     }
@@ -113,19 +120,19 @@ public class InitClass extends SubAct{
 
                     if(mServerConnection==1  && !mAscii.isRage() && !mInitDone)
                     {
-                        mAscii.pushLine("Connection succesed");
+                        //mAscii.pushLine("Connection succesed");
                         mAscii.pushLine("");
                         mAscii.pushLine("!PRESS THE RED BUTTON TO CONTINUE!");
                         mInitDone=true;
 
                         //this.cancel();
                         //mAscii.mAsciiStopUpdater();
-                        mTime++;
+                        //mTime++;
                     }
                     if(mInitDone)
                     {
 
-                        Log.d("MAIN","WAITING FOR TOUCH");mTime++;
+                        Log.d("MAIN","WAITING FOR TOUCH");//mTime++;
                     }
                     if(mServerConnection==-1  && !mAscii.isRage() && !mInitDone)
                     {
@@ -155,7 +162,7 @@ public class InitClass extends SubAct{
                     {
                         mServerConnection=0;
                         mScreenSaver=true;
-                        mAscii.fillTrash();
+                        //mAscii.fillTrash();
                         //mAscii.putImage();
                         mInitDone=false;
                     }

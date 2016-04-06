@@ -144,7 +144,7 @@ public class PlayerClass extends SubAct{
         }
         else if(mVideoReady)
         {
-            mAscii.minimizeInfo();
+            //mAscii.minimizeInfo();
             mAscii.clear();
             startVideo();
         }
@@ -173,7 +173,7 @@ public class PlayerClass extends SubAct{
                     if(mTime==0)
                     {
                         mAscii.clear();
-                        mAscii.maximizeInfo();
+                        //mAscii.maximizeInfo();
                         //mAscii.pushLine("loading video..");
 
                         mAscii.pushLine("");

@@ -51,10 +51,11 @@ public class ProgressTile {
 
     // Set color with red, green, blue and alpha (opacity) values
     static final int COORDS_PER_COLOR = 4;
-    float color[] = { 0.0f, 1.0f, 0.0f, 1.0f ,
+    float color[] = { 0.0f, 1.0f, 0.0f, 1.0f};
+    /*float color[] = { 0.0f, 1.0f, 0.0f, 1.0f ,
             0.0f, 1.0f, 1.0f, 1.0f,
             0.0f, 1.0f, 1.0f, 1.0f,
-            0.0f, 1.0f, 1.0f, 1.0f};
+            0.0f, 1.0f, 1.0f, 1.0f};*/
 
     public ProgressTile()
     {
@@ -91,17 +92,17 @@ public class ProgressTile {
         indexBuffer = byteBuffer.asShortBuffer();
         indexBuffer.put(drawOrder);
         indexBuffer.position(0);
-        byteBuffer = ByteBuffer.allocateDirect(color.length * 4);
+        /*byteBuffer = ByteBuffer.allocateDirect(color.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         colorBuffer = byteBuffer.asFloatBuffer();
         colorBuffer.put(color);
-        colorBuffer.position(0);
+        colorBuffer.position(0);*/
     }
 
     /*DRAW*/
 
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-    private final int colorStride = COORDS_PER_COLOR * 4; // 4 bytes per color
+    //private final int colorStride = COORDS_PER_COLOR * 4; // 4 bytes per color
 
     //handles
     private int mPositionHandle;
@@ -140,10 +141,10 @@ public class ProgressTile {
 
         //GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-        GLES20.glEnableVertexAttribArray(mColorHandle); // NEW LINE ADDED.
+       /* GLES20.glEnableVertexAttribArray(mColorHandle); // NEW LINE ADDED.
         // Point out the where the color buffer is.
         GLES20.glVertexAttribPointer(mColorHandle, COORDS_PER_COLOR,
-                GLES20.GL_FLOAT,false,colorStride, colorBuffer); // NEW LINE ADDED.
+                GLES20.GL_FLOAT,false,colorStride, colorBuffer); // NEW LINE ADDED.*/
 
 
         //Draw the shape
@@ -151,6 +152,6 @@ public class ProgressTile {
 
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
-        GLES20.glDisableVertexAttribArray(mColorHandle);
+        //GLES20.glDisableVertexAttribArray(mColorHandle);
     }
 }

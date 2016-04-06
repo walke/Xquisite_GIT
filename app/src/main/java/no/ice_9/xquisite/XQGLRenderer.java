@@ -30,8 +30,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
-    private float infoStatus=0.2f;
-    private float infoTarget=0.2f;
+    private float infoStatus=0.0f;
+    private float infoTarget=0.0f;
     private float infoHeight=1.0f;
     private float infoTop=0.0f;
 
@@ -44,6 +44,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
     private float mRatio=1f;
+
+
+    float[] scratch;// = new float[16];
+    float[] scratch2;// = new float[16];
+    float[] scratch3;// = new float[16];
+    float[] scratch4;// = new float[16];
+
+    float[] mtx = new float[16];
 
 
 
@@ -113,7 +121,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mTextLine=          new TextLine[sy];
 
-        mContinueButton =   new ButtonTile(0.0f,-0.50f,0.2f,0.2f*mRatio,textures[3]);
+        mContinueButton =   new ButtonTile(0.0f,-0.45f,0.2f,0.2f*mRatio,textures[3]);
 
         mAudioTile =        new AudioTile();
 
@@ -134,7 +142,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-
+        view.mReady=true;
 
     }
 
@@ -144,11 +152,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
         //Random rnd=new Random();
-        view.mReady=true;
-        float[] scratch;// = new float[16];
-        float[] scratch2;// = new float[16];
-        float[] scratch3;// = new float[16];
-        float[] scratch4;// = new float[16];
+       // view.mReady=true;
+ //
 
 
 
@@ -186,7 +191,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
 
         //int sx=asciicols;
-        int sy=asciirows;
+        //int sy=asciirows;
         //int k=0;
 
         mAsciiTiles.draw();
@@ -211,13 +216,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         float hoffset=0.0f;
         float tothoffset=0.0f;
         for(int j=0;j<activeLine+1.0f;j++)
-        {tothoffset+=mTextLine[j].mLineCount*0.05f;}
-        Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 1.8f, 0.0f);
-        for(int j=0;j<sy;j++)
+        {tothoffset+=mTextLine[j].mLineCount*0.09f;}
+        Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 1.75f, 0.0f);
+        for(int j=0;j<asciirows;j++)
         {
             if(!mTextLine[j].isEmpty())
             {
-                Matrix.translateM(scratch, 0, 0f, -0.05f-hoffset*0.05f, 0f);
+                Matrix.translateM(scratch, 0, 0f, -0.05f-hoffset*0.09f, 0f);
                 mTextLine[j].draw(scratch);
                 hoffset=mTextLine[j].mLineCount;
             }
@@ -253,7 +258,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //mSurface.updateTexImage();
         //mSurface.
         if(upVid)
-        {   float[] mtx = new float[16];
+        {
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textures[2]);
             mSurface.updateTexImage();
             mSurface.getTransformMatrix(mtx);
@@ -299,7 +304,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //mInfoTile.midx=0.0f;
             //mInfoTile.midy=(infoStatus-0.2f)-0.8f;
             //mInfoTile.sizx=1.0f;
-            mInfoTile.sizy=infoTarget*2;
+            mInfoTile.sizy=(infoStatus+0.2f)*2f;
                     /*mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
                     mInfoTile.midy+=(((infoStatus-0.2f)-0.8f)-mInfoTile.midy)/10.0f;
                     mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
@@ -309,8 +314,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
             //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
-            float icalc=((infoStatus-0.2f)*(1f/0.8f));
-            mContinueButton.midy=icalc*0.8f+(1.0f-icalc)*-0.5f;
+            //float icalc=((infoStatus-0.2f)*(1f/0.8f));
+            mContinueButton.midy=infoStatus*0.8f+(1.0f-infoStatus)*-0.5f;
             //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
             //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
 
@@ -613,7 +618,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void minimizeInfo()
     {
-        infoTarget=0.2f;
+        infoTarget=0.0f;
     }
 
     public void maximizeInfo()

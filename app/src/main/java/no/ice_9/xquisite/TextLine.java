@@ -13,6 +13,7 @@ import java.nio.ShortBuffer;
 public class TextLine {
 
     boolean mReady=true;
+    int drorder=0;
 
     /*TEXT LINE SHADERS*/
     private final String vertexTextTileShaderCode =
@@ -186,7 +187,8 @@ public class TextLine {
 
 
             //Draw the shape
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
+
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, drorder, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
 
             GLES20.glDisable(GLES20.GL_BLEND);
 
@@ -210,8 +212,8 @@ public class TextLine {
 
         float sx=-0.9f;
         float sy=0.9f;
-        float sw=0.04f;
-        float sh=0.04f;
+        float sw=0.06f;
+        float sh=0.06f;
 
         float dx=1.0f/32.0f;
         float dy=1.0f/8.0f;
@@ -221,17 +223,17 @@ public class TextLine {
         for(int i=0;i<str.length();i++)
         {
 
-            tileCoords[(i*12)]=sx+(charpos*0.03f);
-            tileCoords[(i*12)+1]=sy-sh*mLineCount;
+            tileCoords[(i*12)]=sx+(charpos*0.04f);
+            tileCoords[(i*12)+1]=sy-(sh+0.03f)*mLineCount;
             tileCoords[(i*12)+2]=0.1f;
-            tileCoords[(i*12)+3]=sx+(charpos*0.03f);
-            tileCoords[(i*12)+4]=sy-sh-sh*mLineCount;
+            tileCoords[(i*12)+3]=sx+(charpos*0.04f);
+            tileCoords[(i*12)+4]=sy-sh-(sh+0.03f)*mLineCount;
             tileCoords[(i*12)+5]=0.1f;
-            tileCoords[(i*12)+6]=sx+(charpos*0.03f)+sw;
-            tileCoords[(i*12)+7]=sy-sh*mLineCount;
+            tileCoords[(i*12)+6]=sx+(charpos*0.04f)+sw;
+            tileCoords[(i*12)+7]=sy-(sh+0.03f)*mLineCount;
             tileCoords[(i*12)+8]=0.1f;
-            tileCoords[(i*12)+9]=sx+(charpos*0.03f)+sw;
-            tileCoords[(i*12)+10]=sy-sh-sh*mLineCount;
+            tileCoords[(i*12)+9]=sx+(charpos*0.04f)+sw;
+            tileCoords[(i*12)+10]=sy-sh-(sh+0.03f)*mLineCount;
             tileCoords[(i*12)+11]=0.1f;
 
             drawOrder[(i*6)]=(short)(i*4);
@@ -254,7 +256,7 @@ public class TextLine {
             tileTextureCoords[(i*8)+7]=py+dy;
 
             charpos++;
-            if (charpos>40)
+            if (charpos>35)
             {
                 searchSpace=true;
 
@@ -270,7 +272,7 @@ public class TextLine {
             }
         }
 
-
+        drorder=drawOrder.length;
 
 
 

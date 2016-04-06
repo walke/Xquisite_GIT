@@ -338,7 +338,9 @@ public class RecorderClass extends SubAct{
                                 mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
 
                                 mAscii.modLine("***************", 2, -1);
+                                mAscii.modLine("", 4, 0);
                                 mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
+
                                 //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
@@ -629,7 +631,9 @@ public class RecorderClass extends SubAct{
                     //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
                     mAscii.modLine("***************", 2, -1);
+                    mAscii.modLine("", 4, 0);
                     mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+
                 }
 
                 /*new Thread(new Runnable() {

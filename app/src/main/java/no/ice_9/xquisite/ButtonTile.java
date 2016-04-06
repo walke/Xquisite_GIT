@@ -141,7 +141,7 @@ public class ButtonTile {
 
             if(recBlinkUp)
             {
-                recBlink+=0.01f;
+                recBlink+=0.05f;
                 if(recBlink>=0.5f)
                 {
                     recBlinkUp=false;
@@ -149,7 +149,7 @@ public class ButtonTile {
             }
             else
             {
-                recBlink -= 0.05f;
+                recBlink -= 0.09f;
                 if (recBlink <= 0.0f) {
                     recBlinkUp = true;
                 }

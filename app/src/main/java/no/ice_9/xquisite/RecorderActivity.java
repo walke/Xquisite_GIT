@@ -460,6 +460,7 @@ public class RecorderActivity extends Activity {
                     mCurrentPart++;
                 }
                 mAscii.modLine("***************", 2, -1);
+                mAscii.modLine("", 4, 0);
                 mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
 
 

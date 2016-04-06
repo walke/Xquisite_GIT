@@ -221,7 +221,7 @@ public class PreRecorderClass extends SubAct{
             mTime++;
             mTimeLeft=0;
         }
-        if(mMainDone)
+        if(mCurrentPart>=mQuestion.length)//if(mMainDone)
         {
             finishRecording();
 
@@ -248,9 +248,9 @@ public class PreRecorderClass extends SubAct{
                     if(mTime==0)
                     {
                         mAscii.clear();
-                        mAscii.maximizeInfo();
+                        //mAscii.maximizeInfo();
                         //mAscii.pushLine("loading video..");
-
+/*
                         mAscii.pushLine("");
                         mAscii.pushLine("Xquisite is a story game that is part of scienceFUTURE,");
                         mAscii.pushLine("a project where scientists, artists, and young people will collectively");
@@ -271,7 +271,7 @@ public class PreRecorderClass extends SubAct{
                         mAscii.pushLine("Try and center your face in the window,");
                         mAscii.pushLine("and speak directly into the device.");
                         mAscii.pushLine("");
-                        mAscii.pushLine("PUSH THE BUTTON TO START");
+                        mAscii.pushLine("PUSH THE BUTTON TO START");*/
                         mTime++;
 
 
@@ -281,7 +281,10 @@ public class PreRecorderClass extends SubAct{
 
                     if(mTime==1)
                     {
-
+                        mAscii.modLine("",2,0);
+                        mAscii.modLine("",1,0);
+                        mAscii.modLine("",0,0);
+                        mTime++;
 
                     }
 
@@ -325,7 +328,7 @@ public class PreRecorderClass extends SubAct{
         mQuestion[8]=new Question("What is the most exciting element of your research? ",12);
         mQuestion[9]=new Question("What is the most challenging element of your work?",12);
         mQuestion[10]=new Question("Think 70 to 100 years in the future. What are the most important changes that might happen within your field of research (ie- species hybridization, sea ice cover)",20);
-        mQuestion[11]=new Question("How might this change affect human lives?",5);
+        mQuestion[11]=new Question("How might this change affect human lives?",20);
 
         for (int i=0;i<mQuestion.length;i++)
         {
@@ -419,6 +422,7 @@ public class PreRecorderClass extends SubAct{
 
                                 mAscii.modLine("***************", 2, -1);
                                 mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
+                                mAscii.modLine("", 4, 0);
                                 //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
@@ -710,7 +714,9 @@ public class PreRecorderClass extends SubAct{
                     //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
                     mAscii.modLine("***************", 2, -1);
+                    mAscii.modLine("", 4, 0);
                     mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+
                 }
 
                 /*new Thread(new Runnable() {
@@ -730,7 +736,7 @@ public class PreRecorderClass extends SubAct{
             if(mCurrentPart>=mQuestion.length)
             {
                 mMainDone=true;
-                mAscii.modLine("Thanks! The interview is finished.", 0, -1);
+                //mAscii.modLine("Thanks! The interview is finished.", 0, -1);
 
                 /*new Thread(new Runnable() {
                     @Override

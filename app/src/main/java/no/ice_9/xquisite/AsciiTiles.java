@@ -53,14 +53,14 @@ public class AsciiTiles
                     "float i1=(floor((col2.b+col2.r+col2.g)/6.0));"+
                     //"if(i1>=256.0){i1=512.0-i1;}"+
 
-                    "float vidcol=floor(col2.b+col2.r+col2.g)/768.0*3.0;"+
+                   // "float vidcol=floor(col2.b+col2.r+col2.g)/256.0;"+
                     "if(col1.b>=0.01){"+
-                    "vidcol=1.0;"+
+                   // "vidcol=1.0;"+
                     "i1=floor(col1.b);}"+
-                    "float i2=col1.g;"+
-                    "float i3=col1.r;"+
-                    "float i4=col1.a;"+
-                    "vec4 AvalData=vec4(i1,0.0,0.0,1.0);"+
+                    //"float i2=col1.g;"+
+                    //"float i3=col1.r;"+
+                    //"float i4=col1.a;"+
+                    //"vec4 AvalData=vec4(i1,0.0,0.0,1.0);"+
                     //"i1=i1/8.0;"+
                     "float avalRow = (1.0/8.0)*floor(i1/32.0) + TexCoordOut.t;"+//1.0/floor(i1/32).0+
                     "float avalCol = (1.0/32.0)*floor(mod(i1,32.0)) + TexCoordOut.s;"+//1.0/mod(i1,32.0) +
@@ -69,7 +69,7 @@ public class AsciiTiles
                     // "  gl_FragColor = ( vColor * texture2D(Texture, TexCoordOut));" +
                     //"  gl_FragColor =  vColor ;" +
                     //"  gl_FragColor = ( vColor * (i1/256.0));" +
-                    "  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords));" +
+                    "  gl_FragColor = (  vColor * texture2D(Texture, avalCoords));" +
                     //"  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords) + texture2D(VidTexture, vidCoords));" +
                     //"  gl_FragColor = ( vColor * texture2D(VidTexture, VidTexCoordOut));" +
                     //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +

@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
             case 0:
                 result=currentSubActivity.action();
                 res=result[0];
-                mAscii.minimizeInfo();
+                //if(res==1)mAscii.maximizeInfo();
                 break;
             case 1:
                 result=currentSubActivity.action();
