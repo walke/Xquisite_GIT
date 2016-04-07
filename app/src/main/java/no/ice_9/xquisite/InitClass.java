@@ -95,9 +95,10 @@ public class InitClass extends SubAct{
 
                        // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
                         //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
-                        mAscii.pushLine("The camera will record your answers.");
-                        mAscii.pushLine("Try and center your face in the window,");
-                        mAscii.pushLine("and speak directly into the device.");
+                        mAscii.modLine("", 1, 0);
+                        mAscii.modLine("Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min. ",0,0);
+                        //mAscii.pushLine("Try and center your face in the window,");
+                        //mAscii.pushLine("and speak directly into the device.");
                         mTime++;
                     }
                     if(mTime==22 && !mAscii.isRage())
@@ -121,8 +122,9 @@ public class InitClass extends SubAct{
                     if(mServerConnection==1  && !mAscii.isRage() && !mInitDone)
                     {
                         //mAscii.pushLine("Connection succesed");
-                        mAscii.pushLine("");
-                        mAscii.pushLine("!PRESS THE RED BUTTON TO CONTINUE!");
+                        //mAscii.pushLine("");
+                        mAscii.modLine("!PRESS THE RED BUTTON TO CONTINUE!",2,0);
+                        //mAscii.pushLine("");
                         mInitDone=true;
 
                         //this.cancel();

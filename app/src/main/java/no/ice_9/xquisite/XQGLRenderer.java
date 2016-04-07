@@ -216,13 +216,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         float hoffset=0.0f;
         float tothoffset=0.0f;
         for(int j=0;j<activeLine+1.0f;j++)
-        {tothoffset+=mTextLine[j].mLineCount*0.09f;}
+        {tothoffset+=mTextLine[j].mLineCount*0.07f;}
         Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 1.75f, 0.0f);
         for(int j=0;j<asciirows;j++)
         {
             if(!mTextLine[j].isEmpty())
             {
-                Matrix.translateM(scratch, 0, 0f, -0.05f-hoffset*0.09f, 0f);
+                Matrix.translateM(scratch, 0, 0f, -0.05f-hoffset*0.07f, 0f);
                 mTextLine[j].draw(scratch);
                 hoffset=mTextLine[j].mLineCount;
             }

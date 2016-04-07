@@ -177,9 +177,10 @@ public class PlayerClass extends SubAct{
                         //mAscii.pushLine("loading video..");
 
                         mAscii.pushLine("");
-                        mAscii.pushLine("Get ready to play!");
-                        mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
-                        mAscii.pushLine("Listen to where we are in her story...");
+                        //mAscii.pushLine("Get ready to play!");
+                        //mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
+                        mAscii.modLine("Listen to where we are in X's story. You will invent the next part.",0,0);
+                        //mAscii.modLine();
 
                         //mAscii.pushLine("PRESS THE BUTTON TO PLAY");
 
@@ -277,8 +278,8 @@ public class PlayerClass extends SubAct{
         }
         else
         {
-            mAscii.pushLine("");
-            mAscii.pushLine("we will now try to get it ready for you");
+            //mAscii.pushLine("");
+            mAscii.modLine("LOADING...", 3, 0);
 
 
 
@@ -301,7 +302,8 @@ public class PlayerClass extends SubAct{
             //Log.d("PLAYER","prtpth "+mVideoPart[1].getFilePath());
 
 
-            mAscii.pushLine("seems like it is ready");
+            //mAscii.pushLine("seems like it is ready");
+            mAscii.modLine("ready", 3, 0);
             //Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart].getFilePath());
 
 
@@ -461,7 +463,7 @@ public class PlayerClass extends SubAct{
 
 
         mAscii.pushLine("#########################");
-        mAscii.pushLine("PUSH THE BUTTON TO PLAY IT");
+        mAscii.pushLine("PUSH BUTTON TO PLAY STORY");
 
         if(mCurrentPart>mStartPart)
         {
@@ -487,7 +489,9 @@ public class PlayerClass extends SubAct{
         if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
         {
-            mAscii.pushLine("PRESS THE BUTTON TO START RECORDING..");
+            mAscii.pushLine("Close your eyes for a moment and think about what you just heard.");
+            mAscii.pushLine("");
+            mAscii.pushLine("PRESS BUTTON TO CONTINUE..");
             Log.d("PLAYER","LAST");
             mCurrentPart=16;
             mError=true;

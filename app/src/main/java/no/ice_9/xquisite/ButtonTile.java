@@ -46,8 +46,8 @@ public class ButtonTile {
                     "   vec4 col = texture2D(Texture, TexCoordOut);"+//
                     "   col.a=(vColor.r*col.r)+((1.0-vColor.r)*col.b);"+
                     "   col.r=vColor.g;"+
-                    "   col.b=0.1;"+
-                    "   col.g=0.1;"+
+                    "   col.b=vColor.b;"+
+                    "   col.g=vColor.b;"+
                     "   gl_FragColor =  col;" +
                     "}";
 
@@ -141,7 +141,7 @@ public class ButtonTile {
 
             if(recBlinkUp)
             {
-                recBlink+=0.05f;
+                recBlink+=0.04f;
                 if(recBlink>=0.5f)
                 {
                     recBlinkUp=false;
@@ -149,7 +149,7 @@ public class ButtonTile {
             }
             else
             {
-                recBlink -= 0.09f;
+                recBlink -= 0.04f;
                 if (recBlink <= 0.0f) {
                     recBlinkUp = true;
                 }
@@ -159,12 +159,24 @@ public class ButtonTile {
         }
         else
         {
-            if(recBlink<1.0)
-            recBlink+=0.02f;
+            if(recBlink>0.0)
+            recBlink-=0.02f;
         }
-        color[0]= recBlink;
-        color[1]=1.0f-recBlink/5;
-        color[2]=1.0f-recBlink/5;
+        if(recBlink>0.4)
+        {
+            color[0]=1.0f;
+            color[1]=1.0f;
+            color[2]=1.0f-recBlink/5;
+        }
+        else
+        {
+            color[0]=1.0f;
+            color[1]=1.0f-recBlink/5;
+            color[2]=0.0f;
+        }
+        //color[0]= recBlink;
+        //color[1]=1.0f-recBlink/5;
+        //color[2]=1.0f-recBlink/5;
 
         GLES20.glUseProgram(mProgram);
 
@@ -229,7 +241,7 @@ public class ButtonTile {
     {
         isDown=true;
 
-        recBlink=0.0f;
+        recBlink=1.0f;
         color[1]= 1.0f;
 
 

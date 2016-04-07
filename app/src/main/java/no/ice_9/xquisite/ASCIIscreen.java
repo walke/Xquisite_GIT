@@ -506,7 +506,7 @@ class XQGLSurfaceView extends GLSurfaceView{
             nh=mRenderer.asciirows;
             nw=(int)(rb*(float)nh);
         }
-        Log.d("ASCII",mRenderer.asciirows+","+nw+","+nh+","+rb);
+        Log.d("ASCII",mRenderer.asciirows+":"+mRenderer.asciicols+","+nw+","+nh+","+rb);
 
         /*double y = Math.sqrt(
                 / (((double) w) / h));

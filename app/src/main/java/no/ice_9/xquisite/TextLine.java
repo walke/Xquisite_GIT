@@ -224,16 +224,16 @@ public class TextLine {
         {
 
             tileCoords[(i*12)]=sx+(charpos*0.04f);
-            tileCoords[(i*12)+1]=sy-(sh+0.03f)*mLineCount;
+            tileCoords[(i*12)+1]=sy-(sh+0.01f)*mLineCount;
             tileCoords[(i*12)+2]=0.1f;
             tileCoords[(i*12)+3]=sx+(charpos*0.04f);
-            tileCoords[(i*12)+4]=sy-sh-(sh+0.03f)*mLineCount;
+            tileCoords[(i*12)+4]=sy-sh-(sh+0.01f)*mLineCount;
             tileCoords[(i*12)+5]=0.1f;
             tileCoords[(i*12)+6]=sx+(charpos*0.04f)+sw;
-            tileCoords[(i*12)+7]=sy-(sh+0.03f)*mLineCount;
+            tileCoords[(i*12)+7]=sy-(sh+0.01f)*mLineCount;
             tileCoords[(i*12)+8]=0.1f;
             tileCoords[(i*12)+9]=sx+(charpos*0.04f)+sw;
-            tileCoords[(i*12)+10]=sy-sh-(sh+0.03f)*mLineCount;
+            tileCoords[(i*12)+10]=sy-sh-(sh+0.01f)*mLineCount;
             tileCoords[(i*12)+11]=0.1f;
 
             drawOrder[(i*6)]=(short)(i*4);

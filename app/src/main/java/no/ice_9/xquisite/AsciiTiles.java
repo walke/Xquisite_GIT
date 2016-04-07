@@ -44,18 +44,19 @@ public class AsciiTiles
                     "varying lowp vec2 VidTexCoordOut;" +
                     "void main() {" +
 
-                    "int si = int(VidTexCoordOut.s * 150.0);"+
-                    "int sj = int(VidTexCoordOut.t * 150.0);"+
-                    "vec2 vidCoords=vec2(float(si) / 150.0, 1.0-(float(sj) / 150.0));"+
+                    "int si = int(VidTexCoordOut.s * 120.0+0.83);"+
+                    "int sj = int(VidTexCoordOut.t * 78.0);"+
+                    "vec2 vidCoords=vec2(float(si) / 120.0 , 1.0-(float(sj) / 78.0));"+
                     "vec4 col2 = vec4(256.0,256.0,256.0,256.0)* texture2D(VidTexture, vidCoords);"+
 
                     "vec4 col1 = vec4(256.0,256.0,256.0,256.0)*texture2D(AvalTexture, AvalTexCoordOut);"+//
-                    "float i1=(floor((col2.b+col2.r+col2.g)/6.0));"+
+                    "float i1=(floor((col2.b+col2.r+col2.g)/6.0+0.0));"+
+                    "if(i1>120.0)i1*=(120.0/i1);"+
                     //"if(i1>=256.0){i1=512.0-i1;}"+
 
-                   // "float vidcol=floor(col2.b+col2.r+col2.g)/256.0;"+
+                    "float vidcol=floor(col2.b+col2.r+col2.g)/256.0;"+
                     "if(col1.b>=0.01){"+
-                   // "vidcol=1.0;"+
+                    "vidcol=1.0;"+
                     "i1=floor(col1.b);}"+
                     //"float i2=col1.g;"+
                     //"float i3=col1.r;"+
@@ -69,7 +70,7 @@ public class AsciiTiles
                     // "  gl_FragColor = ( vColor * texture2D(Texture, TexCoordOut));" +
                     //"  gl_FragColor =  vColor ;" +
                     //"  gl_FragColor = ( vColor * (i1/256.0));" +
-                    "  gl_FragColor = (  vColor * texture2D(Texture, avalCoords));" +
+                    "  gl_FragColor = (vidcol *  vColor * texture2D(Texture, avalCoords));" +
                     //"  gl_FragColor = ( vidcol * vColor * texture2D(Texture, avalCoords) + texture2D(VidTexture, vidCoords));" +
                     //"  gl_FragColor = ( vColor * texture2D(VidTexture, VidTexCoordOut));" +
                     //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +

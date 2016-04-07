@@ -259,7 +259,7 @@ public class RecorderClass extends SubAct{
         mAscii.minimizeInfo();*/
 
         mQuestion=new Question[NPARTS];
-        mQuestion[0]=new Question("Close your eyes for a moment and think about what you just heard. What were the key elements? " ,10);
+        mQuestion[0]=new Question("What are the key words from what you just heard? " ,10);
         mQuestion[1]=new Question("Think of what X might do next. Put yourself in her shoes, and challenge yourself to be dramatic. ",120);
         mQuestion[2]=new Question("You now have one more minute to add to your story, or summarise for the next player. ",60);
 
@@ -333,13 +333,18 @@ public class RecorderClass extends SubAct{
                             public void run() {
 
                                 //mRecorderTimeText.setText(""+mTimeLeft);
-                                mAscii.modLine("Question:" + mQuestion[mCurrentPart].question, 0, -1);
+                                mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1);
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
-                                mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
+                                //mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
+                                //mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
 
+                                mAscii.modLine("", 1, -1);
                                 mAscii.modLine("***************", 2, -1);
+                                mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
                                 mAscii.modLine("", 4, 0);
-                                mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
+                                //mAscii.modLine("***************", 2, -1);
+                                //mAscii.modLine("", 4, 0);
+                                //mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
 
                                 //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
@@ -507,8 +512,8 @@ public class RecorderClass extends SubAct{
                                 //mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
-                                mAscii.modLine("RECORDING", 1, -1);
-                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 1, -1);
+                                //mAscii.modLine("RECORDING", 1, -1);
+                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 3, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 if (mCurrentPart >= 0) {
@@ -626,13 +631,17 @@ public class RecorderClass extends SubAct{
 
                 if((mCurrentPart+1)<mQuestion.length)
                 {
-                    mAscii.modLine("Question:" + mQuestion[mCurrentPart+1].question, 0, -1);
-                    mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
+                    mAscii.modLine("" + mQuestion[mCurrentPart+1].question, 0, -1);
+                    //mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
                     //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
+
+                   /* mAscii.modLine("***************", 2, -1);
+                    mAscii.modLine("", 4, 0);
+                    mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);*/
 
                     mAscii.modLine("***************", 2, -1);
                     mAscii.modLine("", 4, 0);
-                    mAscii.modLine("TAP THE SCREEN TO CONTINUE", 3, -1);
+                    mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
 
                 }
 
@@ -653,7 +662,10 @@ public class RecorderClass extends SubAct{
             if(mCurrentPart>=mQuestion.length)
             {
                 mMainDone=true;
-                mAscii.modLine("DONE!", 0, -1);
+                mAscii.modLine("Thank you!", 0, -1);
+                mAscii.modLine("", 1, -1);
+                mAscii.modLine("", 2, -1);
+                mAscii.modLine("", 3, -1);
 
                 /*new Thread(new Runnable() {
                     @Override
@@ -668,7 +680,9 @@ public class RecorderClass extends SubAct{
                 mCurrentPart++;
             }
             mAscii.modLine("***************", 2, -1);
-            mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
+            if(mCurrentPart<mQuestion.length)mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
+            else{mAscii.modLine("PUSH BUTTON FINISH ", 3, -1);}
+            //mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
 
 
             //mPreview.setAlpha(0.0f);
