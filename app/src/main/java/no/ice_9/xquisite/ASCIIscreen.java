@@ -391,6 +391,7 @@ public class ASCIIscreen implements Serializable{
         {
 
             mLine[i]="";
+            mGLView.mRenderer.hideMsgString(i);
         }
         mLinePointer=0;
 

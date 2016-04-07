@@ -224,7 +224,7 @@ public class PreRecorderClass extends SubAct{
         if(mCurrentPart>=mQuestion.length)//if(mMainDone)
         {
             finishRecording();
-
+mAscii.clear();
             result[0]=mCurrentParent;
             result[1]=mParentStoryParts;
             result[2]=mServerReserved;
@@ -559,7 +559,7 @@ public class PreRecorderClass extends SubAct{
                     //IF NOT RECORDING START RECORDING CURRENT PART
                     if (!isRecording && mUserReady && !mMainDone) {
 
-                        mAscii.clear();
+                        //mAscii.clear();
                         mUserReady = false;
                         if (initMediaRecorder()) {
 

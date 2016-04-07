@@ -481,7 +481,7 @@ public class RecorderClass extends SubAct{
                     //IF NOT RECORDING START RECORDING CURRENT PART
                     if (!isRecording && mUserReady && !mMainDone) {
 
-                        mAscii.clear();
+                        //mAscii.clear();
                         mUserReady = false;
                         if (initMediaRecorder()) {
 

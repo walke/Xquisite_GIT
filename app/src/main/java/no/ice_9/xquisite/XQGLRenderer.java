@@ -546,6 +546,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+    public void hideMsgString(int row)
+    {
+        if(row<mTextLine.length)
+        {
+            mTextLine[row].set("");
+
+        }
+
+    }
+
     public void putString(String str, int row, int pos)
     {
 

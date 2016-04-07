@@ -138,6 +138,7 @@ public class PlayerClass extends SubAct{
         result[0]=-1;
         if(mError)
         {
+            mAscii.clear();
             Log.d("PLAYER","EXIT");
             result[0]=finishVideo();
             //return -1;
@@ -145,7 +146,7 @@ public class PlayerClass extends SubAct{
         else if(mVideoReady)
         {
             //mAscii.minimizeInfo();
-            mAscii.clear();
+            //mAscii.clear();
             startVideo();
         }
        /* else if(mCurrentPart<mStoryParts)
@@ -468,7 +469,7 @@ public class PlayerClass extends SubAct{
         if(mCurrentPart>mStartPart)
         {
 
-            mAscii.clear();
+            //mAscii.clear();
             startVideo();
         }
 
