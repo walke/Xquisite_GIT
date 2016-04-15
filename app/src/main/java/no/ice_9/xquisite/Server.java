@@ -38,6 +38,7 @@ public class Server {
     static String CODE_PACK_ID_DONE="124";//PACKET ID DONE
 
     static String CODE_CHECK_CONNECTION="0000";//check connection
+    static String CODE_REQUST_DEVICE_ID="0001";//load story parts
     static String CODE_GET_LST_STRY_NDX="0003";//get last story ndx
     static String CODE_UPLOAD_STORY_PRT="0005";//upload part of the story
     static String CODE_RESRV_NDX_ON_SRV="0006";//reserve ndx for recording story
@@ -71,6 +72,25 @@ public class Server {
         }
 
         return result;
+    }
+
+    public int requestDeviceId(int id)
+    {
+        byte[] bid=XQUtils.Int2ByteArr(id);
+
+        String response = postToServer(CODE_REQUST_DEVICE_ID,bid);
+
+        if(response.length()>=4)
+        {
+            return (int)XQUtils.ByteArr2Int(response.getBytes());
+        }
+        else
+        {
+            return 1;
+        }
+
+
+
     }
 
     //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
@@ -226,11 +246,11 @@ public class Server {
             byte[] bbuf=new byte[4];
             int a=input.read(bbuf, 0, 4);
 
-            int size =
-                    (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
-                            ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
+            int size = (int)XQUtils.ByteArr2Int(bbuf);/*
+                    (((0x00 << 24 | bbuf[0] & 0xff) * 256 * 256 * 256) +
+                            ((0x00 << 24 | bbuf[1] & 0xff) * 256 * 256) +
                             ((0x00 << 24 | bbuf[2] & 0xff) * 256) +
-                            (0x00 << 24 | bbuf[3] & 0xff));
+                            (0x00 << 24 | bbuf[3] & 0xff));*/
 
             bbuf=new byte[size];
 

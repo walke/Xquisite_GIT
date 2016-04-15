@@ -3,11 +3,14 @@ package no.ice_9.xquisite;
 import android.app.Activity;
 
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +20,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.TypedValue;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Random;
@@ -26,37 +32,28 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
-    //DEBUG TIME MEASURE
-    long mMesTime=0;
-    long mLasTime=0;
+
+
+
+    Data appData;
 
     SubAct currentSubActivity;
 
-    InitClass initClass;
-    PlayerClass playerClass;
-    RecorderClass recorderClass;
 
     //CURRENT ACTION
     private int mCurrentAction=0;
 
     //ACII LAYER
     public ASCIIscreen mAscii;
-    private TextView mText;
 
-    ProgressDialog mLoadingDialog;
 
     //MAIN LOOP
     public TimerTask mTimerLoop;
     public Timer mTimer;
 
-    //TIMINGS
-    private int mTime;
-    private boolean mInitDone;
-    private int mReconnectTime;
-    private boolean mScreenSaver;
+
 
     //SERVER
-    private int mServerConnection;
     private Server mServer;
 
     public int mParent=-1;
@@ -65,35 +62,7 @@ public class MainActivity extends Activity {
     public int mPartOffset=-1;
 
 
-    //Start new activity for creating new part of a story.
-    /*public void CreateNewStory()
-    {
 
-        if(mScreenSaver)
-        {
-            mTime=19;
-            mScreenSaver=false;
-        }
-        else if(initClass.mInitDone)
-        {
-            Log.d("PLAYER","IN");
-            mAscii.mAsciiStopUpdater(1);
-            mTimerLoop.cancel();
-            mTimer.cancel();
-            //Intent intent = new Intent(this, PlayerActivity.class);
-            //intent.putExtra("ascii",mAscii);
-            //startActivity(intent);
-            //view.setVisibility(View.GONE);
-            mCurrentAction++;
-            createTimerTask();
-
-            mTimer=new Timer();
-            mInitDone=false;
-            mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
-            mTime=0;
-        }
-
-    }*/
 
     public void glTouch()
     {
@@ -136,7 +105,6 @@ public class MainActivity extends Activity {
                 break;
         }
 
-        //Log.d("MAIN","RESULT"+result[0]+","+mCurrentAction);
 
         if(res!=-1)
         {
@@ -159,11 +127,11 @@ public class MainActivity extends Activity {
 
 
             mTimer=new Timer();
-            mInitDone=false;
+
             //mAscii.mGLView.onPause();
             mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
             //mAscii.mGLView.onResume();
-            mTime=0;
+
 
         }
     }
@@ -173,7 +141,7 @@ public class MainActivity extends Activity {
         switch(mCurrentAction)
         {
             case 0:
-                currentSubActivity=new InitClass(this,mAscii,mServer);
+                currentSubActivity=new InitClass(this,mAscii,mServer,appData);
                 //currentSubActivity.Create(this,mAscii,mServer);
                 //initClass=new InitClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
@@ -210,6 +178,8 @@ public class MainActivity extends Activity {
 
 
 
+
+
     //TODO: fix on touch event
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -217,7 +187,6 @@ public class MainActivity extends Activity {
         super.onTouchEvent(event);
 
         glTouch();
-        //mAscii.modLine("tatatat", 0, -1);
         Log.d("MAIN","touch");
 
         return true;
@@ -251,6 +220,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mTimerLoop=null;
+
     }
 
     @Override
@@ -259,9 +229,9 @@ public class MainActivity extends Activity {
         mAscii.mAsciiStartUpdater(50);
         createTimerTask();
         mTimer=new Timer();
-        mInitDone=false;
+
         mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
-        mTime=0;
+
         mAscii.mGLView.onResume();
     }
 
@@ -269,43 +239,33 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        mLasTime=mMesTime;
-
-
-        //setContentView(R.layout.activity_main);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","start "+(mMesTime-mLasTime)+"ms");
-        mLasTime=mMesTime;
-
-
-
-        //GET GLES
-        mTime=0;
-        mAscii=new ASCIIscreen(this,mText,"MAIN");
-        setContentView(mAscii.mGLView);
-        //mAscii.mAsciiStartUpdater(50);
-
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","GLES INIT "+(mMesTime-mLasTime)+"ms");
-        mLasTime=mMesTime;
-
-        //STAT VARS
-        mInitDone=false;
-        mReconnectTime=-1;
-        mScreenSaver=false;
-
 
 
         //SERVER
         mServer=new Server(this);
-        mServerConnection=0;
 
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","SRV INIT "+(mMesTime-mLasTime)+"ms");
-        mLasTime=mMesTime;
+        //GET DATA
+        appData=new Data(this,mServer);
+
+
+
+        /*try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // Restore interrupt status.
+            Thread.currentThread().interrupt();
+        }*/
+
+
+        //finish();
+
+        //setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+        //GET GLES
+        mAscii=new ASCIIscreen(this,"MAIN");
+        setContentView(mAscii.mGLView);
+
 
 
         //MAIN TREAD
@@ -326,11 +286,6 @@ public class MainActivity extends Activity {
             }};
 
         new Timer().scheduleAtFixedRate(auto, 0, 4000);*/
-
-
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        Log.d("TIME","TIMER INIT "+(mMesTime-mLasTime)+"ms");
-        mLasTime=mMesTime;
 
     }
 
@@ -364,6 +319,9 @@ public class MainActivity extends Activity {
     }
 
 
+
+
+
 }
 
 class SubAct
@@ -390,4 +348,141 @@ class SubAct
     {
 
     }
+}
+
+class Data
+{
+    Server mServer;
+    File mData;
+
+    int mDeviceId;
+
+    public Data(Activity act,Server server)
+    {
+        mServer=server;
+        mData=new File(act.getFilesDir(),"data");
+
+        //CHECK IF DATA FILE IS PRESENT ON THE DEVICE
+        if(!mData.exists())
+        {
+            Log.d("MAIN", "no data file");
+
+            try
+            {
+                mData.createNewFile();
+
+
+
+            }
+            catch (Exception io){Log.e("MAIN","could not create data file");}
+
+            initData();
+        }
+        else if(mData.length()<4)
+        {
+            initData();
+        }
+    }
+
+    public boolean sync()
+    {
+        getData();
+
+
+        mDeviceId=mServer.requestDeviceId(mDeviceId);
+
+
+
+        if(mDeviceId==0)return false;
+
+
+        return true;
+    }
+
+    private void getData()
+    {
+        try
+        {
+            FileInputStream fi=new FileInputStream(mData);
+
+            byte[] buf=new byte[4];
+            fi.read(buf,0,4);
+            fi.close();
+
+            mDeviceId= (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+
+            Log.d("DATA","local devId:"+ mDeviceId);
+
+        }
+        catch (Exception io)
+        {
+            Log.e("DATA","could not get data");
+        }
+
+
+    }
+
+    private void initData()
+    {
+        byte[] buf={0,0,0,0};
+
+        try
+        {
+            FileOutputStream fo=new FileOutputStream(mData);
+            fo.write(buf,0,4);
+            fo.close();
+
+        }
+        catch (Exception io)
+        {
+            Log.e("DATA","could not initialize data");
+        }
+        mDeviceId=0;
+    }
+
+   /* private void getAppData()
+    {
+
+
+        FileOutputStream fo;
+        FileInputStream fi;
+
+        if(!data.exists())
+        {
+
+            try
+            {
+                data.createNewFile();
+            }catch (Exception io)
+            {
+
+            }
+
+        }
+        if(data.exists() && data.length()==0)
+        {
+            Log.d("MAIN","data file found");
+            try
+            {
+
+                fo=new FileOutputStream(data);
+
+
+
+
+
+                fo.close();
+            }catch (Exception io)
+            {
+                Log.e("MAIN","could not read data");
+            }
+
+        }
+        else if(data.exists())
+        {
+
+        }
+
+
+    }*/
 }

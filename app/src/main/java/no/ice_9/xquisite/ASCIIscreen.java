@@ -96,7 +96,7 @@ public class ASCIIscreen implements Serializable{
 
 
 
-    public ASCIIscreen(Context context,TextView text,String actParent)
+    public ASCIIscreen(Context context,String actParent)
     {
         mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;

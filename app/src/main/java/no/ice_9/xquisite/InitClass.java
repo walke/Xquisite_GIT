@@ -19,17 +19,19 @@ public class InitClass extends SubAct{
     int mServerConnection=0;
     int mReconnectTime=-1;
     boolean mScreenSaver=false;
+    Data appData;
 
     int mTime;
     public boolean mInitDone=false;
     Dialog mLoadingDialog;
 
     //@Override
-    public InitClass(Activity activity,ASCIIscreen ascii,Server server)
+    public InitClass(Activity activity,ASCIIscreen ascii,Server server,Data data)
     {
         mLoadingDialog = ProgressDialog.show(activity, "",
                       "Loading. Please wait...", true);
 
+        appData=data;
         mServer=server;
         mAscii = ascii;
         mTime=0;
@@ -59,31 +61,15 @@ public class InitClass extends SubAct{
                 if(mAscii.mReady)
                 {
 
-                    if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*/mTime++;}
-                    // if(mTime<2000){mAscii.modLine("scienceFuture xquisite",rnd.nextInt(50),rnd.nextInt(100));}
-                    /*if(mTime==10){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_01)).getBitmap());}
-                    if(mTime==15){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_02)).getBitmap());}
-                    if(mTime==20){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_03)).getBitmap());}
-                    if(mTime==25){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_04)).getBitmap());}
-                    if(mTime==30){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_05)).getBitmap());}
-                    if(mTime==35){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_06)).getBitmap());}
-                    if(mTime==40){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_07)).getBitmap());}
-                    if(mTime==45){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_08)).getBitmap());}
-                    if(mTime==50){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_09)).getBitmap());}
-                    if(mTime==55){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_10)).getBitmap());}
-                    if(mTime==60){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_11)).getBitmap());}
-                    if(mTime==65){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_12)).getBitmap());}
-                    if(mTime==70){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_13)).getBitmap());}
-                    if(mTime==75){mAscii.putImage(((BitmapDrawable) getResources().getDrawable(R.drawable.xq_14)).getBitmap());}
-                    if(mTime==80){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_15)).getBitmap());}
-                    if(mTime==85){mAscii.putImage(((BitmapDrawable)getResources().getDrawable(R.drawable.xq_16)).getBitmap());}*/
-                    if(mTime==20)
+                    //if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*/mTime++;}
+
+                    /*if(mTime==20)
                     {
                         mAscii.setRage(false);
                         //mAscii.clear();
                         mTime++;
-                    }
-                    if(mTime==21 && !mAscii.isRage())
+                    }*/
+                    if(mTime==0 && !mAscii.isRage())
                     {
                         mLoadingDialog.dismiss();
                         mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
@@ -101,18 +87,26 @@ public class InitClass extends SubAct{
                         //mAscii.pushLine("and speak directly into the device.");
                         mTime++;
                     }
-                    if(mTime==22 && !mAscii.isRage())
+                    if(mTime==1 && !mAscii.isRage())
                     {
                         //mAscii.pushLine("Testing connection to the server...");
                         mInitDone=false;
                         mTime++;
                     }
-                    if(mTime==23 && !mAscii.isRage())
+                    if(mTime==2 && !mAscii.isRage())
                     {
 
                         if(mServer.checkConnection())
                         {
-                            mServerConnection=1;
+                            if(appData.sync())
+                            {
+                                mServerConnection=1;
+                            }
+                            else
+                            {
+                                mServerConnection=-1;
+                            }
+
                         }
                         else{mServerConnection=-1;}
                         Log.d("MAIN", "servResp" + mServerConnection);
@@ -134,7 +128,7 @@ public class InitClass extends SubAct{
                     if(mInitDone)
                     {
 
-                        Log.d("MAIN","WAITING FOR TOUCH");//mTime++;
+                        //Log.d("MAIN","WAITING FOR TOUCH");//mTime++;
                     }
                     if(mServerConnection==-1  && !mAscii.isRage() && !mInitDone)
                     {
@@ -168,8 +162,8 @@ public class InitClass extends SubAct{
                         //mAscii.putImage();
                         mInitDone=false;
                     }
-                    Log.d("MAIN","conn"+mServerConnection);
-                    Log.d("MAIN","time"+mTime);
+                    //Log.d("MAIN","conn"+mServerConnection);
+                    //Log.d("MAIN","time"+mTime);
                 }
 
             }
