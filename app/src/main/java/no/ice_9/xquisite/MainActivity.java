@@ -2,8 +2,13 @@ package no.ice_9.xquisite;
 
 import android.app.Activity;
 
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
@@ -11,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.IBinder;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,7 +68,16 @@ public class MainActivity extends Activity {
     public int mPartOffset=-1;
 
 
+    boolean mUserWait=true;
+   boolean interSkip=false;
 
+
+    public void diaBut(boolean skip)
+    {
+        mUserWait=false;
+        interSkip=skip;
+        glTouch();
+    }
 
     public void glTouch()
     {
@@ -70,11 +85,21 @@ public class MainActivity extends Activity {
         //CreateNewStory();
         int[] result;
         int res=-1;
+        if(mUserWait)
+        {
+            //mCurrentAction=-2;
+            DialogFragment dg= new InterviewSkip();
+            dg.show(getFragmentManager(),"Skip Interview");
+
+            return;
+            //while(mUserWait);
+         }
         switch(mCurrentAction)
         {
             case 0:
                 result=currentSubActivity.action();
                 res=result[0];
+                if(interSkip)mCurrentAction++;
                 //if(res==1)mAscii.maximizeInfo();
                 break;
             case 1:
@@ -318,8 +343,31 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    public static class InterviewSkip extends DialogFragment {
+        /*MainActivity acti
 
+        public InterviewSkip(MainActivity activity){}*/
 
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("If you are here for the first time, we would like you to answer few questions first, but you can skip it if you want!")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((MainActivity)getActivity()).diaBut(false);
+                        }
+                    })
+                    .setNegativeButton("skip", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                            ((MainActivity)getActivity()).diaBut(true);
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
 
 
 }
@@ -391,6 +439,9 @@ class Data
 
         mDeviceId=mServer.requestDeviceId(mDeviceId);
 
+        String data=mServer.requestDeviceData(mDeviceId);
+
+        data.toCharArray();
 
 
         if(mDeviceId==0)return false;
@@ -485,4 +536,8 @@ class Data
 
 
     }*/
+
+
 }
+
+

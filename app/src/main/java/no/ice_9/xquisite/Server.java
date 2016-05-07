@@ -93,6 +93,22 @@ public class Server {
 
     }
 
+    public String requestDeviceData(int id)
+    {
+        byte[] bid=XQUtils.Int2ByteArr(id);
+        String response = postToServer(CODE_REQUST_DEVICE_ID,bid);
+
+        if(response.length()>=4)
+        {
+
+            return response;
+        }
+        else
+        {
+            return "null";
+        }
+    }
+
     //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
     public int reserveNdx(int parent)
     {
