@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 /**
  * Created by HUMAN on 15.10.2015.
@@ -39,6 +40,7 @@ public class Server {
 
     static String CODE_CHECK_CONNECTION="0000";//check connection
     static String CODE_REQUST_DEVICE_ID="0001";//load story parts
+    static String CODE_REQUST_DEVICE_DT="0002";//request device data
     static String CODE_GET_LST_STRY_NDX="0003";//get last story ndx
     static String CODE_UPLOAD_STORY_PRT="0005";//upload part of the story
     static String CODE_RESRV_NDX_ON_SRV="0006";//reserve ndx for recording story
@@ -93,10 +95,10 @@ public class Server {
 
     }
 
-    public String requestDeviceData(int id)
+    public String requestDeviceData(byte[] buf)
     {
-        byte[] bid=XQUtils.Int2ByteArr(id);
-        String response = postToServer(CODE_REQUST_DEVICE_ID,bid);
+        //byte[] bid=XQUtils.Int2ByteArr(id);
+        String response = uploadDataToServer(CODE_REQUST_DEVICE_DT, buf);
 
         if(response.length()>=4)
         {
@@ -794,6 +796,131 @@ public class Server {
         }
 
         return retPart;
+    }
+
+    private String uploadDataToServer(String code,byte[] buf)
+    {
+
+        String result="-1";
+        if(buf==null)return result;
+        Socket sck=null;
+        int bytesRead, bytesAvailable, bufferSize;
+
+        int maxBufferSize = 1* 1024 * 1024;
+        byte[] buffer;
+
+
+
+
+        try
+        {
+
+            InetAddress serverAdrr = InetAddress.getByName(adress);
+
+            sck = new Socket(serverAdrr,237);
+            //sck.setSendBufferSize(maxBufferSize);
+
+            //sck.setKeepAlive(true);
+
+            //BufferedOutputStream out = new BufferedOutputStream(sck.getOutputStream());
+            DataOutputStream out = new DataOutputStream(sck.getOutputStream());
+            InputStream input = new BufferedInputStream(sck.getInputStream());
+
+            out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_PINC), 4, CODE_SERVER_PIN));
+            //out.flush();
+            out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_TASK), 4, code));
+            //out.flush();
+            //out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_TSKD), 4, code));
+
+
+            bytesAvailable = buf.length;
+            Log.d("SERVER", "AVAILABLE " + bytesAvailable + " bytes");
+
+            out.write(createFileStartPacket(Integer.parseInt(CODE_PACK_ID_FILE), bytesAvailable));
+            //out.flush();
+            /*
+            byte[] buf = new byte[1024*16];
+            int i;
+            for(i=0;i<100;i++)
+            {
+
+                out.write(buf,0,1024*16);
+                out.flush();
+                Log.d("SERVER","W"+i+","+(1024*16*i)+","+bytesAvailable);
+            }*/
+            //Log.d("SERVER", "CHCH" + bytesAvailable + " bytes" +1024*32*i+ "");
+
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[maxBufferSize+1];
+            Log.d("SERVER","ch1 "+bufferSize);
+
+            //bytesRead = read(buffer, 0, bufferSize);
+            ByteBuffer bbbuf=ByteBuffer.wrap(buf,0,buf.length);
+            buffer=bbbuf.array();
+            bytesRead=buffer.length;
+
+            int tot=0;
+            tot+=bytesRead;
+            Log.d("SERVER", "ch2 " + bytesRead + "," + maxBufferSize);
+            while (bytesRead > 0) {
+                Log.d("SERVER", "ch3 ");
+                out.write(buffer, 0, bytesRead);
+                //out.flush();
+                //out.write(buffer);
+                Log.d("SERVER", "SENT " + bytesRead + " bytes");
+                //bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                //bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                bytesRead=0;
+                Log.d("SERVER", "ch4 "+bytesRead);
+                tot+=bytesRead;
+            }
+
+            out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_DONE), 4, CODE_SERVER_PIN));
+
+            Log.d("SERVER", "SENT TOTAL " + tot + " bytes");
+
+            byte[] bbuf=new byte[4];
+            input.read(bbuf, 0, 4);
+
+            int size =
+                    (((0x00 << 24 | bbuf[0] & 0xff) * 256*256*256)+
+                            ((0x00 << 24 | bbuf[1] & 0xff) * 256*256)+
+                            ((0x00 << 24 | bbuf[2] & 0xff) * 256) +
+                            (0x00 << 24 | bbuf[3] & 0xff));
+
+            bbuf=new byte[size];
+
+            input.read(bbuf, 0, size);
+            Log.d("SERVER", "resp:" +new String(bbuf,"ASCII"));
+
+            result=new String(bbuf,"ASCII");
+            out.flush();
+            sck.close();
+            Log.d("SERVER", "closed socket");
+
+
+
+        } catch(IOException ex)
+        {
+            Log.d("SERVER","EXP");
+            ex.printStackTrace();
+        }
+        finally {
+            Log.d("SERVER","FIN FCLOSE");
+            if(sck!=null)
+            {
+
+                try {
+                    sck.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return result;
+
     }
 
     private byte[] createPacketChr(int id,int size, String cont)

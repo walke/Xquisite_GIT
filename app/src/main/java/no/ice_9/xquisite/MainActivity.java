@@ -402,13 +402,26 @@ class Data
 {
     Server mServer;
     File mData;
+    DevData mDevData;
 
-    int mDeviceId;
+
+    class DevData
+    {
+        public byte[] mBuffer;
+
+        public int mDeviceId;
+        public int mStatus;
+        public DevData()
+        {
+
+        }
+    }
 
     public Data(Activity act,Server server)
     {
         mServer=server;
         mData=new File(act.getFilesDir(),"data");
+        mDevData=new DevData();
 
         //CHECK IF DATA FILE IS PRESENT ON THE DEVICE
         if(!mData.exists())
@@ -434,17 +447,31 @@ class Data
 
     public boolean sync()
     {
+        Log.d("DATA","syncing");
         getData();
 
 
-        mDeviceId=mServer.requestDeviceId(mDeviceId);
+        int newDeviceId=mServer.requestDeviceId(mDevData.mDeviceId);
+        Log.d("DATA","nid"+newDeviceId);
+        if(newDeviceId!=mDevData.mDeviceId)
+        {
+            mDevData.mDeviceId=newDeviceId;
+            updateData();
+        }
 
-        String data=mServer.requestDeviceData(mDeviceId);
+        getData();
+        int stat=getDeviceStatus();
+        if(stat==1)
+        {
+            String data=mServer.requestDeviceData(mDevData.mBuffer);
 
-        data.toCharArray();
+            data.toCharArray();
+        }
 
 
-        if(mDeviceId==0)return false;
+
+
+        if(mDevData.mDeviceId==0)return false;
 
 
         return true;
@@ -454,23 +481,74 @@ class Data
     {
         try
         {
+
             FileInputStream fi=new FileInputStream(mData);
-
-            byte[] buf=new byte[4];
-            fi.read(buf,0,4);
+            int fs=fi.available();
+            Log.d("DATA", "siz:" + fs);
+            byte[] buf=new byte[fs];
+            fi.read(buf, 0, fs);
             fi.close();
+            mDevData.mBuffer=buf;
+            if(fs<4)return;
+            mDevData.mDeviceId= (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
+            Log.d("DATA","did"+mDevData.mDeviceId);
+            if(fs<8)return;
+            mDevData.mStatus=(buf[4] << 24) | (buf[5] << 16) | (buf[6] << 8) | buf[7];
 
-            mDeviceId= (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
 
-            Log.d("DATA","local devId:"+ mDeviceId);
+
+            Log.d("DATA","local devId:"+ mDevData.mDeviceId);
 
         }
         catch (Exception io)
         {
-            Log.e("DATA","could not get data");
+            Log.e("DATA","could not get data"+io);
         }
 
 
+    }
+
+    int updateData()
+    {
+        mDevData.mStatus=1;
+        try
+        {
+            mDevData.mBuffer=new byte[8];
+            mDevData.mBuffer[0] = (byte)(mDevData.mDeviceId >> 24);
+            mDevData.mBuffer[1] = (byte)(mDevData.mDeviceId >> 16);
+            mDevData.mBuffer[2] = (byte)(mDevData.mDeviceId >> 8);
+            mDevData.mBuffer[3] = (byte)(mDevData.mDeviceId >> 0);
+
+            mDevData.mBuffer[4] = (byte)(mDevData.mStatus >> 24);
+            mDevData.mBuffer[5] = (byte)(mDevData.mStatus >> 16);
+            mDevData.mBuffer[6] = (byte)(mDevData.mStatus >> 8);
+            mDevData.mBuffer[7] = (byte)(mDevData.mStatus >> 0);
+
+
+            FileOutputStream fi=new FileOutputStream(mData);
+
+
+            byte[] buf=mDevData.mBuffer;
+            fi.write(buf,0,buf.length);
+            fi.close();
+
+
+
+            Log.d("DATA","local devId:"+ mDevData.mDeviceId);
+
+        }
+        catch (Exception io)
+        {
+            Log.e("DATA","could not get data"+io);
+        }
+        return 0;
+    }
+
+    int getDeviceStatus()
+    {
+        int stat=mDevData.mStatus;
+
+        return stat;
     }
 
     private void initData()
@@ -488,7 +566,7 @@ class Data
         {
             Log.e("DATA","could not initialize data");
         }
-        mDeviceId=0;
+        mDevData.mDeviceId=0;
     }
 
    /* private void getAppData()
