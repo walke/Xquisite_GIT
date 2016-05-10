@@ -98,6 +98,7 @@ public class InitClass extends SubAct{
 
                         if(mServer.checkConnection())
                         {
+
                             if(appData.sync())
                             {
                                 mServerConnection=1;
@@ -108,7 +109,10 @@ public class InitClass extends SubAct{
                             }
 
                         }
-                        else{mServerConnection=-1;}
+                        else
+                        {
+                            mServerConnection=1;
+                        }
                         Log.d("MAIN", "servResp" + mServerConnection);
                         mTime++;
                     }

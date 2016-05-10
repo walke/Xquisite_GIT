@@ -264,13 +264,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
-        //SERVER
-        mServer=new Server(this);
-
         //GET DATA
         appData=new Data(this,mServer);
+
+        //SERVER
+        mServer=new Server(this,appData);
+
+
 
 
 
@@ -405,28 +405,69 @@ class Data
     DevData mDevData;
 
 
-    class DevData
+    public class DevData
     {
+        public class Story
+        {
+            public class Part
+            {
+                int bufsize;
+                public String mQuestion;
+                public String mFileName;
+            }
+            int bufsize;
+            int mId;
+            int mParent;
+            int mNoParts;
+            boolean complete;
+            Part[] mPart;
+            public Story(int id,int parent,int compl)
+            {
+                bufsize=0;
+                mId=id;
+                mParent =parent;
+                mNoParts=0;
+                if(compl==0)complete=false;
+                else complete=true;
+
+            }
+            int addPart(int ndx,StoryPart part)
+            {
+                mPart[ndx]=new Part();
+                mPart[ndx].mQuestion=part.getQuestion();
+                mPart[ndx].mFileName=part.getFilePath();
+                return ndx;
+            }
+        }
         public byte[] mBuffer;
 
         public int mDeviceId;
         public int mStatus;
+        public int mNoStories;
+        public Story[] mStory;
         public DevData()
         {
 
+        }
+        public void addStory(int ndx,int id, int parent,int complete)
+        {
+            Log.d("DATA","adding story to "+ndx);
+            mStory[ndx]=new Story(id,parent,complete);
         }
     }
 
     public Data(Activity act,Server server)
     {
+
         mServer=server;
-        mData=new File(act.getFilesDir(),"data");
+        mData=new File(act.getFilesDir(),"data.txt");
+        //clearData();
         mDevData=new DevData();
 
         //CHECK IF DATA FILE IS PRESENT ON THE DEVICE
         if(!mData.exists())
         {
-            Log.d("MAIN", "no data file");
+            Log.d("DATA", "no data file");
 
             try
             {
@@ -443,6 +484,134 @@ class Data
         {
             initData();
         }
+        getData();
+    }
+
+    private void clearData()
+    {
+        byte[] buf={0,0,0,1};
+
+        try
+        {
+            FileOutputStream fo=new FileOutputStream(mData);
+            fo.write(buf,0,4);
+            fo.close();
+
+        }
+        catch (Exception io)
+        {
+            Log.e("DATA","could not initialize data");
+        }
+        /*mDevData.mDeviceId=0;
+        mDevData.mStatus=0;
+        mDevData.mNoStories=0;
+        mDevData.mBuffer=buf;*/
+    }
+
+    public boolean check()
+    {
+        return true;
+    }
+
+    public int[] getLastStory()
+    {
+        int[] result=new int[2];
+
+        if(mDevData.mNoStories==0)
+        {
+            result[0]=0;
+        }
+
+        return result;
+    }
+
+    public int addStory(int id,int parent,int complete)
+    {
+        Log.d("DATA", "sts: "+mDevData.mStory);
+        if(mDevData.mStory==null)
+        {
+            mDevData.mStory=new DevData.Story[1];
+            mDevData.addStory(0,id,parent,complete);
+
+            return 1;
+        }
+        else
+        {
+            DevData.Story[] tmpStory=mDevData.mStory;
+            mDevData.mStory=new DevData.Story[tmpStory.length+1];
+            for(int i=0;i<tmpStory.length;i++)
+            {
+                mDevData.mStory[i]=tmpStory[i];
+
+            }
+            mDevData.addStory(tmpStory.length,id,parent,complete);
+            return 1;
+        }
+
+    }
+
+    public int getEmptyStoryId()
+    {
+        int id=1;
+        if(mDevData.mStory==null)return id;
+        for(int i=0;i<mDevData.mStory.length;i++)
+        {
+            if(mDevData.mStory[i].mId==id)id++;
+        }
+        return id;
+    }
+
+    public int getStoryNdx(int id)
+    {
+        for(int i=0;i<mDevData.mStory.length;i++)
+        {
+            Log.d("DATA", "ids: "+id+","+mDevData.mStory[i].mId);
+            if(id==(mDevData.mStory[i].mId))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int addStoryPart(int ndx,StoryPart part,boolean up)
+    {
+        Log.d("DATA","to ndx:"+ndx);
+        if(mDevData.mStory[ndx].mPart==null)
+        {
+            mDevData.mStory[ndx].mPart=new DevData.Story.Part[1];
+            mDevData.mStory[ndx].addPart(0,part);
+
+            Log.d("DATA", "prt: " + ndx + "_" + mDevData.mStory[ndx].mPart[0].mQuestion + "," + mDevData.mStory[ndx].mPart[0].mFileName);
+            if(up)updateData();
+            return 1;
+        }
+        else
+        {
+            DevData.Story.Part[] tmpPart=mDevData.mStory[ndx].mPart;
+            mDevData.mStory[ndx].mPart=new DevData.Story.Part[mDevData.mStory[ndx].mPart.length+1];
+            for(int i=0;i<tmpPart.length;i++)
+            {
+                mDevData.mStory[ndx].mPart[i]=tmpPart[i];
+
+            }
+            mDevData.mStory[ndx].addPart(tmpPart.length, part);
+
+            Log.d("DATA", "prt: " + mDevData.mStory[ndx].mPart[tmpPart.length].mQuestion + "," + mDevData.mStory[ndx].mPart[tmpPart.length].mFileName);
+            if(up)updateData();
+            return tmpPart.length;
+        }
+        //return 0;
+    }
+
+    public int completeStory(int id,boolean up)
+    {
+        int ndx=getStoryNdx(id);
+        if (mDevData.mStory.length<=ndx)return -1;
+        mDevData.mStory[ndx].complete=true;
+        if(up)updateData();
+        return ndx;
+
     }
 
     public boolean sync()
@@ -479,6 +648,7 @@ class Data
 
     private void getData()
     {
+        Log.d("DATA","###Reading data");
         try
         {
 
@@ -489,20 +659,86 @@ class Data
             fi.read(buf, 0, fs);
             fi.close();
             mDevData.mBuffer=buf;
+
+            int n=0;
             if(fs<4)return;
-            mDevData.mDeviceId= (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-            Log.d("DATA","did"+mDevData.mDeviceId);
+            mDevData.mDeviceId= (buf[n] << 24) | (buf[n+1] << 16) | (buf[n+2] << 8) | buf[n+3];n+=4;
+            Log.d("DATA", "did" + mDevData.mDeviceId);
             if(fs<8)return;
-            mDevData.mStatus=(buf[4] << 24) | (buf[5] << 16) | (buf[6] << 8) | buf[7];
+            mDevData.mStatus=(buf[n] << 24) | (buf[n+1] << 16) | (buf[n+2] << 8) | buf[n+3];n+=4;
+
+            n+=4;
+            mDevData.mNoStories=0;
+            while(n<buf.length)
+            {
+                mDevData.mNoStories++;
+                int id=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;
+                //Log.d("DATA","story size: "+buf[n]+":"+buf[n+1]+":"+buf[n+2]+":"+(int)(char)buf[n+3]);
+                int size=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;
+                //int size=((char)buf[n] << 24) | (char)(buf[n+1] << 16) | (char)(buf[n+2] << 8) | (char)buf[n+3];n+=4;
+                int parent=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;
+                int complete=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;
+                addStory(id,parent,complete);
+                Log.d("DATA","story size: "+size+" id:"+id);
+                int sp=0;
+                size-=16;
+                while(size>0)
+                {
+                    StoryPart part=new StoryPart();
+                    int pid=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;size-=4;
+                    int psiz=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;size-=4;
+                    int pqsiz=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;size-=4;
+                    Log.d("DATA","pqsiz"+pqsiz);
+                    byte[] qbuf=new byte[pqsiz];
+                    for(int i=0;i<pqsiz;i++)
+                    {
+                        qbuf[i]=buf[n];n++;size-=1;
+                    }
+
+                    String q=new String(qbuf);
+
+                    int pfsiz=((0xFF & buf[n]) << 24) |((0xFF & buf[n+1]) << 16) |((0xFF & buf[n+2]) << 8) |(0xFF & buf[n+3]);n+=4;size-=4;
+
+                    byte[] fbuf=new byte[pfsiz];
+                    Log.d("DATA","pfsiz"+pfsiz+" "+fbuf.length+" "+buf.length);
+                    for(int i=0;i<pfsiz;i++)
+                    {
+                        fbuf[i]=buf[n];n++;size-=1;
+                    }
+
+                    String f=new String(fbuf);
+                    part.populate("", q, f);
+                    addStoryPart(getStoryNdx(id), part,false);
+
+                    Log.d("DATA","N:"+n+" bufl:"+buf.length+" s:"+size);
+                }
+                sp++;
+
+            }
 
 
 
-            Log.d("DATA","local devId:"+ mDevData.mDeviceId);
+            Log.d("DATA", "local devId:" + mDevData.mDeviceId);
+            Log.d("DATA", "local devStat:" + mDevData.mStatus);
+            Log.d("DATA","local stories:"+ mDevData.mNoStories);
+
+            for(int i=0;i<mDevData.mStory.length;i++)
+            {
+                Log.d("DATA"," story Id:"+ mDevData.mStory[i].mId);
+                Log.d("DATA"," story parent:"+ mDevData.mStory[i].mParent);
+                Log.d("DATA"," story complete:"+ mDevData.mStory[i].complete);
+                Log.d("DATA"," story parts:"+ mDevData.mStory[i].mPart.length);
+                for(int j=0;j<mDevData.mStory[i].mPart.length;j++)
+                {
+                    Log.d("DATA","  part Id:"+ mDevData.mStory[i].mPart[j].mQuestion);
+                    Log.d("DATA","  part Id:"+ mDevData.mStory[i].mPart[j].mFileName);
+                }
+            }
 
         }
         catch (Exception io)
         {
-            Log.e("DATA","could not get data"+io);
+            Log.e("DATA","could not get data GD"+io);
         }
 
 
@@ -511,18 +747,136 @@ class Data
     int updateData()
     {
         mDevData.mStatus=1;
+
+        Log.d("DATA","UPDATING DATA");
+
+        //BUFFER SIZE=
+        int bufsize=12;
+        for(int i=0;i<mDevData.mStory.length;i++)
+        {
+            Log.d("DATA","stories"+mDevData.mStory.length);
+            bufsize+=16;
+            int storysize=16;
+            if(mDevData.mStory[i].mPart!=null)
+            {
+                Log.d("DATA","story "+i+" parts"+mDevData.mStory[i].mPart.length);
+                for(int j=0;j<mDevData.mStory[i].mPart.length;j++)
+                {
+                    bufsize+=16;storysize+=16;
+                    bufsize+=mDevData.mStory[i].mPart[j].mQuestion.length();
+                    bufsize+=mDevData.mStory[i].mPart[j].mFileName.length();
+                    Log.d("DATA","qlen:"+mDevData.mStory[i].mPart[j].mQuestion.length());
+                    Log.d("DATA","flen:"+mDevData.mStory[i].mPart[j].mFileName.length());
+                    storysize+=mDevData.mStory[i].mPart[j].mQuestion.length();
+                    storysize+=mDevData.mStory[i].mPart[j].mFileName.length();
+
+                    mDevData.mStory[i].mPart[j].bufsize=mDevData.mStory[i].mPart[j].mFileName.length()+mDevData.mStory[i].mPart[j].mQuestion.length();
+                    mDevData.mStory[i].mPart[j].bufsize+=16;
+
+                }
+            }
+            mDevData.mStory[i].bufsize=storysize;
+        }
+        Log.d("DATA","buffsize:"+bufsize);
+
         try
         {
-            mDevData.mBuffer=new byte[8];
-            mDevData.mBuffer[0] = (byte)(mDevData.mDeviceId >> 24);
-            mDevData.mBuffer[1] = (byte)(mDevData.mDeviceId >> 16);
-            mDevData.mBuffer[2] = (byte)(mDevData.mDeviceId >> 8);
-            mDevData.mBuffer[3] = (byte)(mDevData.mDeviceId >> 0);
+            Log.d("DATA","writing head");
+            int n=0;
+            mDevData.mBuffer=new byte[bufsize];
+            mDevData.mBuffer[n] = (byte)(mDevData.mDeviceId >> 24);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mDeviceId >> 16);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mDeviceId >> 8);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mDeviceId >> 0);n++;
 
-            mDevData.mBuffer[4] = (byte)(mDevData.mStatus >> 24);
-            mDevData.mBuffer[5] = (byte)(mDevData.mStatus >> 16);
-            mDevData.mBuffer[6] = (byte)(mDevData.mStatus >> 8);
-            mDevData.mBuffer[7] = (byte)(mDevData.mStatus >> 0);
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 24);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 16);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 8);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 0);n++;
+
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 24);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 16);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 8);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 0);n++;
+
+            for(int i=0;i<mDevData.mStory.length;i++)
+            {
+                Log.d("DATA","writing story"+i);
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mId >> 24);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mId >> 16);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mId >> 8);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mId >> 0);n++;
+
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].bufsize >> 24);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].bufsize >> 16);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].bufsize >> 8);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].bufsize >> 0);n++;
+
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mParent >> 24);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mParent >> 16);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mParent >> 8);n++;
+                mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mParent >> 0);n++;
+
+                if(mDevData.mStory[i].complete)
+                {
+                    mDevData.mBuffer[n]=(byte)(1 >> 24);n++;
+                    mDevData.mBuffer[n]=(byte)(1 >> 16);n++;
+                    mDevData.mBuffer[n]=(byte)(1 >> 8);n++;
+                    mDevData.mBuffer[n]=(byte)(1 >> 0);n++;
+                }
+                else
+                {
+                    mDevData.mBuffer[n]=(byte)(0 >> 24);n++;
+                    mDevData.mBuffer[n]=(byte)(0 >> 16);n++;
+                    mDevData.mBuffer[n]=(byte)(0 >> 8);n++;
+                    mDevData.mBuffer[n]=(byte)(0 >> 0);n++;
+                }
+                Log.d("DATA","N:"+n);
+
+                for(int j=0;j<mDevData.mStory[i].mPart.length;j++)
+                {
+                    Log.d("DATA","writing story part"+j+"<-"+i);
+                    Log.d("DATA","Nps:"+n);
+                    mDevData.mBuffer[n]=(byte)(j >> 24);n++;
+                    mDevData.mBuffer[n]=(byte)(j >> 16);n++;
+                    mDevData.mBuffer[n]=(byte)(j >> 8);n++;
+                    mDevData.mBuffer[n]=(byte)(j >> 0);n++;
+
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].bufsize >> 24);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].bufsize >> 16);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].bufsize >> 8);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].bufsize >> 0);n++;
+
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mQuestion.length() >> 24);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mQuestion.length() >> 16);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mQuestion.length() >> 8);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mQuestion.length() >> 0);n++;
+
+                    for(int k=0;k<mDevData.mStory[i].mPart[j].mQuestion.length();k++)
+                    {
+                        //Log.d("DATA","Npm:"+n);
+                        mDevData.mBuffer[n]=(byte)mDevData.mStory[i].mPart[j].mQuestion.charAt(k);n++;
+                    }
+
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mFileName.length() >> 24);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mFileName.length() >> 16);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mFileName.length() >> 8);n++;
+                    mDevData.mBuffer[n]=(byte)(mDevData.mStory[i].mPart[j].mFileName.length() >> 0);n++;
+
+
+
+                    for(int k=0;k<mDevData.mStory[i].mPart[j].mFileName.length();k++)
+                    {
+                        //Log.d("DATA","Npm:"+n+" "+mDevData.mStory[i].mPart[j].mFileName.length()+":"+k);
+                        mDevData.mBuffer[n]=(byte)mDevData.mStory[i].mPart[j].mFileName.charAt(k);n++;
+                    }
+
+
+                    Log.d("DATA","Npe:"+n);
+                }
+            }
+
+
 
 
             FileOutputStream fi=new FileOutputStream(mData);
@@ -539,7 +893,7 @@ class Data
         }
         catch (Exception io)
         {
-            Log.e("DATA","could not get data"+io);
+            Log.e("DATA","could not put data"+io);
         }
         return 0;
     }
@@ -553,7 +907,7 @@ class Data
 
     private void initData()
     {
-        byte[] buf={0,0,0,0};
+        byte[] buf={0,0,0,1};
 
         try
         {
@@ -567,6 +921,9 @@ class Data
             Log.e("DATA","could not initialize data");
         }
         mDevData.mDeviceId=0;
+        mDevData.mStatus=0;
+        mDevData.mNoStories=0;
+        mDevData.mBuffer=buf;
     }
 
    /* private void getAppData()

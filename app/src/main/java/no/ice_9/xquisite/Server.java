@@ -29,6 +29,8 @@ import java.nio.ByteBuffer;
  */
 public class Server {
 
+    boolean offline=true;
+
     static String CODE_SERVER_PIN="3547";//SERVER PIN
     static String CODE_PACK_ID_PINC="23";//PACKET ID PIN
     static String CODE_PACK_ID_TASK="95";//PACKET ID TASK
@@ -50,9 +52,11 @@ public class Server {
     String adress;
     int serverResponseCode = 0;
     Context mContext;
+    Data mData;
 
-    Server(Context context)
+    Server(Context context,Data data)
     {
+        mData=data;
         mContext=context;
         String adr = context.getResources().getString(R.string.server_address);
 
@@ -69,6 +73,7 @@ public class Server {
         Log.d("SERVER","response"+response+";");
         if(response.matches("succ"))
         {
+            offline=false;
             Log.d("SERVER","got connection");
             result=true;
         }
@@ -78,9 +83,13 @@ public class Server {
 
     public int requestDeviceId(int id)
     {
+        if(offline)
+        {
+            return 1;
+        }
         byte[] bid=XQUtils.Int2ByteArr(id);
 
-        String response = postToServer(CODE_REQUST_DEVICE_ID,bid);
+        String response = postToServer(CODE_REQUST_DEVICE_ID, bid);
 
         if(response.length()>=4)
         {
@@ -114,7 +123,12 @@ public class Server {
     //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
     public int reserveNdx(int parent)
     {
-
+        if(offline)
+        {
+            int id=mData.getEmptyStoryId();
+            mData.addStory(id,parent,0);
+            return id;
+        }
         byte[] parentStr = new byte[4];
         parentStr[0]=(byte)((((parent/256)/256)/256)%256);
         parentStr[1]=(byte)(((parent/256)/256)%256);
@@ -140,7 +154,13 @@ public class Server {
     //COMPLETE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
     public int completeNdx(int ndx)
     {
+
         int result=-1;
+
+        if(offline)
+        {
+            return mData.completeStory(ndx,true);
+        }
 
         byte[] ndxStr = new byte[4];
         ndxStr[0]=(byte)((((ndx/256)/256)/256)%256);
@@ -162,6 +182,14 @@ public class Server {
 
     public boolean uploadPart(StoryPart part,int storyPart, int ndx, int parent, int user)
     {
+        if(offline)
+        {
+
+            int dndx=mData.getStoryNdx(ndx);
+            mData.addStoryPart(dndx,part,true);
+            return true;
+        }
+
         byte[] ndxStr = new byte[4];
         ndxStr[0]=(byte)((((ndx/256)/256)/256)%256);
         ndxStr[1]=(byte)(((ndx/256)/256)%256);
@@ -212,25 +240,38 @@ public class Server {
 
     public int[] getLastStoryNdx()
     {
-        String response=postToServer(CODE_GET_LST_STRY_NDX, "0000".getBytes());
-
+        String response="";
         //TODO: get correct unsigned!!
         int result[]=new int[2];
 
-        result[0] = ((0xFF & response.getBytes()[0]) << 24) |
-                ((0xFF & response.getBytes()[1]) << 16) |
-                ((0xFF & response.getBytes()[2]) << 8) |
-                (0xFF & response.getBytes()[3]);
+        if(offline)
+        {
+            result=mData.getLastStory();
+        }
+        else
+        {
+            response = postToServer(CODE_GET_LST_STRY_NDX, "0000".getBytes());
+            result[0] = ((0xFF & response.getBytes()[0]) << 24) |
+                    ((0xFF & response.getBytes()[1]) << 16) |
+                    ((0xFF & response.getBytes()[2]) << 8) |
+                    (0xFF & response.getBytes()[3]);
+
+            result[1]=response.getBytes()[7];
+            result[1]+=response.getBytes()[6]*256;
+            result[1]+=response.getBytes()[5]*256*256;
+            result[1]+=response.getBytes()[4]*256*256*256;
+        }
+
+
+
+
 
         /*result[0]=response.getBytes()[3];
         result[0]+=response.getBytes()[2]*256;
         result[0]+=response.getBytes()[1]*256*256;
         result[0]+=response.getBytes()[0]*256*256*256;*/
 
-        result[1]=response.getBytes()[7];
-        result[1]+=response.getBytes()[6]*256;
-        result[1]+=response.getBytes()[5]*256*256;
-        result[1]+=response.getBytes()[4]*256*256*256;
+
         Log.d("SERVER","responseLastNdx: "+result[0]+"; prts "+result[1]);
 
 
