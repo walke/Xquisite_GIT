@@ -77,6 +77,7 @@ public class MainActivity extends Activity {
         mUserWait=false;
         interSkip=skip;
         glTouch();
+
     }
 
     public void glTouch()
@@ -99,7 +100,10 @@ public class MainActivity extends Activity {
             case 0:
                 result=currentSubActivity.action();
                 res=result[0];
-                if(interSkip)mCurrentAction++;
+                if(interSkip) {
+                    mCurrentAction++;
+                    interSkip=false;
+                }
                 //if(res==1)mAscii.maximizeInfo();
                 break;
             case 1:
@@ -115,6 +119,9 @@ public class MainActivity extends Activity {
             case 2:
                 result=currentSubActivity.action();
                 res=result[0];
+                mParent=result[1];
+                mParentParts=result[2];
+
                 //mParent=result;
                 break;
             case 3:
@@ -127,6 +134,11 @@ public class MainActivity extends Activity {
                 result=currentSubActivity.action();
                 res=result[0];
                 mCurrentAction=-1;
+                mUserWait=true;
+                mParent=-1;
+                mParentParts=-1;
+                mReservedStory=-1;
+                mPartOffset=-1;
                 break;
         }
 
@@ -461,7 +473,7 @@ class Data
 
         mServer=server;
         mData=new File(act.getFilesDir(),"data.txt");
-        //clearData();
+        clearData();
         mDevData=new DevData();
 
         //CHECK IF DATA FILE IS PRESENT ON THE DEVICE
@@ -516,11 +528,24 @@ class Data
     public int[] getLastStory()
     {
         int[] result=new int[2];
-
-        if(mDevData.mNoStories==0)
+        result[0]=0;
+        if(mDevData.mStory==null)
         {
-            result[0]=0;
+            return result;
         }
+        if(mDevData.mStory.length==0)
+        {
+
+        }
+        else
+        {
+            for(int i=0;i<mDevData.mStory.length;i++)
+            {
+                if(mDevData.mStory[i].mId>result[0] && mDevData.mStory[i].complete)result[0]=mDevData.mStory[i].mId;
+            }
+            result[1]=mDevData.mStory[getStoryNdx(result[0])].mPart.length;
+        }
+
 
         return result;
     }

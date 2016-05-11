@@ -66,11 +66,12 @@ public class InitClass extends SubAct{
                     /*if(mTime==20)
                     {
                         mAscii.setRage(false);
-                        //mAscii.clear();
+                        mAscii.clear();
                         mTime++;
                     }*/
                     if(mTime==0 && !mAscii.isRage())
                     {
+                        mAscii.clear();
                         mLoadingDialog.dismiss();
                         mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
                         //mAscii.pushLine("########################");

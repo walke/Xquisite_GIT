@@ -69,10 +69,32 @@ public class PlayerClass extends SubAct{
 
         mParent=parent;
         mStoryParts=parentParts;
-
         mStartPart=mStoryParts-1;
 
+        Log.d("PLAYER","parent:"+mParent);
+        if(mParent<0)
+        {
+            Thread mTask = new Thread(new Runnable() {
+                @Override
+                public void run() {
 
+                    //Looper.prepare();
+                    int res[] = mServer.getLastStoryNdx();
+                    int storyindx = res[0];
+                    int storyParts= res[1];
+                    mParent=storyindx;
+                    mStoryParts=storyParts;
+                    Log.d("PLAYER","parent:"+mParent+","+mStoryParts);
+                    mStartPart=mStoryParts-1;
+                    if(mParent==0){mStartPart=0;}
+
+                }
+            });
+
+            mTask.start();
+        }
+        while(mStartPart<0){Log.d("PLAYER","wait"+mStartPart+" "+mStoryParts+" "+mParent);}
+        Log.d("PLAYER","startpart:"+mStartPart);
 
         mError=false;
 
@@ -120,6 +142,8 @@ public class PlayerClass extends SubAct{
                 }
                 else
                 {
+                    //mAscii.clear();
+                    //mAscii.pushLine("NO VIDEO FOUND, PUSH THE BUTTON TO RECORD NEW");
                     mAscii.mAsciiStopUpdater(100);
                 }
 
@@ -134,13 +158,16 @@ public class PlayerClass extends SubAct{
     @Override
     public int[] action()
     {
-        int[] result=new int[1];
+        int[] result=new int[5];
         result[0]=-1;
         if(mError)
         {
             mAscii.clear();
             Log.d("PLAYER","EXIT");
             result[0]=finishVideo();
+            result[1]=mParent;
+            result[2]=mStoryParts;
+
             //return -1;
         }
         else if(mVideoReady)
@@ -180,7 +207,14 @@ public class PlayerClass extends SubAct{
                         mAscii.pushLine("");
                         //mAscii.pushLine("Get ready to play!");
                         //mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
-                        mAscii.modLine("Listen to where we are in X's story. You will invent the next part.",0,0);
+                        if(mParent==0)
+                        {
+                            mAscii.modLine("No story found, push the button to start the story",0,0);
+                        }
+                        else
+                        {
+                            mAscii.modLine("Listen to where we are in X's story. You will invent the next part.", 0, 0);
+                        }
                         //mAscii.modLine();
 
                         //mAscii.pushLine("PRESS THE BUTTON TO PLAY");

@@ -119,7 +119,10 @@ public class RecorderClass extends SubAct{
         recThread=new Thread(new Runnable() {
             @Override
             public void run() {
-                //mServerReserved=mServer.reserveNdx(mCurrentParent);
+                if(mServerReserved<=0)
+                {
+                    mServerReserved = mServer.reserveNdx(mCurrentParent);
+                }
                 boolean done=false;
                 int allDone=0;
                 while(!done)

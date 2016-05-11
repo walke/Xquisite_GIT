@@ -222,6 +222,15 @@ public class Server {
 
     public StoryPart loadPart(int ndx, int storyPart)
     {
+        if(offline)
+        {
+            StoryPart part=new StoryPart();
+
+            String fname=mData.mDevData.mStory[mData.getStoryNdx(ndx)].mPart[storyPart].mFileName;
+            String quest=mData.mDevData.mStory[mData.getStoryNdx(ndx)].mPart[storyPart].mQuestion;
+            part.populate("",quest,fname);
+            return part;
+        }
         Log.d("SERVER","loading part:"+storyPart);
         String fpath=mContext.getExternalFilesDir("VID").toString()+"/part"+storyPart+".mp4";
         //String result;
