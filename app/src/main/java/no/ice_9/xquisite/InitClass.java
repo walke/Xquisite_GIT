@@ -106,7 +106,7 @@ public class InitClass extends SubAct{
                             }
                             else
                             {
-                                mServerConnection=-1;
+                                mServerConnection=1;
                             }
 
                         }

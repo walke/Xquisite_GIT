@@ -50,6 +50,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     float[] scratch2;// = new float[16];
     float[] scratch3;// = new float[16];
     float[] scratch4;// = new float[16];
+    float[] scratch5;// = new float[16];
 
     float[] mtx = new float[16];
 
@@ -60,28 +61,39 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     long mLasTime=0;
 
 
+    //GL OBJECTS
     private AsciiTiles mAsciiTiles;
     private InfoTile mInfoTile;
     private TextLine[] mTextLine;
     private ButtonTile mContinueButton;
     private AudioTile mAudioTile;
     private ProgressTile mProgressTile;
+    private NetworkLed mNetworkLed;
 
+
+    //TEXTURES
     public int[] textures = new int[4];
+    Bitmap mBitmap;
+    public SurfaceTexture mSurface;
+
     public Context actContext;
+
+    //ANIMS
     public boolean upAval;
     public boolean upVid;
+    private float mAngle;
 
-    Bitmap mBitmap;
 
+    //DIMENSIONS
     public int asciicols;
     public int asciirows;
 
+    //INTERFACE
     public ASCIIscreen view;
 
-    private float mAngle;
 
-    public SurfaceTexture mSurface;
+
+
 
     private boolean clearDone=true;
 
@@ -95,8 +107,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mAngle=0f;
 
-        mMesTime= Calendar.getInstance().getTimeInMillis();
-        mLasTime=mMesTime;
+        //time measure
+        /*mMesTime= Calendar.getInstance().getTimeInMillis();
+        mLasTime=mMesTime;*/
 
 
 
@@ -115,7 +128,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         Log.d("TIME","  GLREND TX2 INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
 
-        /*ASCII TILE BUILD*/
+
 
         mAsciiTiles =       new AsciiTiles(sx,sy,textures[0],textures[1],textures[2]);
 
@@ -126,6 +139,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mAudioTile =        new AudioTile();
 
         mProgressTile =     new ProgressTile();
+
+        mNetworkLed=        new NetworkLed(-0.95f,0.95f,0.02f,0.02f*mRatio,textures[3]);
+
+
 
 
         for(int j=0;j<sy;j++)
@@ -183,6 +200,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         scratch3=mTranslationMatrix.clone();
         scratch=mTranslationMatrix.clone();
         scratch4=mTranslationMatrix.clone();
+        scratch5=mTranslationMatrix.clone();
         Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
 
 
@@ -238,6 +256,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         Matrix.scaleM(scratch3, 0, mAudioTile.sizx, mAudioTile.sizy, 0.0f);
 
         mAudioTile.draw(scratch3);
+
+        Matrix.translateM(scratch5, 0, mNetworkLed.midx, mNetworkLed.midy, 1.0f);
+        Matrix.scaleM(scratch5, 0, mNetworkLed.sizx, mNetworkLed.sizy, 0.0f);
+        mNetworkLed.draw(scratch5);
     }
 
     public void onSurfaceChanged(GL10 unused, int width, int height) {
@@ -697,6 +719,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mContinueButton.isRecording=isRec;
     }
 
+    public void setLed(boolean onin,boolean load)
+    {
+        if(mNetworkLed!=null) {
+            mNetworkLed.setLed(onin);
+            if(load)
+            {
+                mNetworkLed.setLedLoad();
+            }
+        }
+    }
 
 
 }

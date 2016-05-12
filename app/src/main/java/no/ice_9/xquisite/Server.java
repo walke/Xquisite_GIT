@@ -38,16 +38,18 @@ public class Server {
     static String CODE_PACK_ID_FILE="108";//PACKET ID FILE
     static String CODE_PACK_ID_FDAT="109";//PACKET ID FILE
     static String CODE_PACK_ID_PRTQ="110";//PACKET ID DONE
+    static String CODE_PACK_ID_DATA="111";//PACKET ID FILE
     static String CODE_PACK_ID_DONE="124";//PACKET ID DONE
 
     static String CODE_CHECK_CONNECTION="0000";//check connection
-    static String CODE_REQUST_DEVICE_ID="0001";//load story parts
-    static String CODE_REQUST_DEVICE_DT="0002";//request device data
+    static String CODE_REQUST_DEVICE_ID="0001";//request device id
+
     static String CODE_GET_LST_STRY_NDX="0003";//get last story ndx
     static String CODE_UPLOAD_STORY_PRT="0005";//upload part of the story
     static String CODE_RESRV_NDX_ON_SRV="0006";//reserve ndx for recording story
     static String CODE_COMPL_NDX_ON_SRV="0007";//complete reserved ndx
     static String CODE_LOAD_STORY_PARTS="0008";//load story parts
+    static String CODE_REQUST_DEVICE_DT="0009";//request device data
 
     String adress;
     int serverResponseCode = 0;
@@ -90,9 +92,10 @@ public class Server {
         byte[] bid=XQUtils.Int2ByteArr(id);
 
         String response = postToServer(CODE_REQUST_DEVICE_ID, bid);
-
+        Log.d("SERVER","IDrecieved:"+response);
         if(response.length()>=4)
         {
+            Log.d("SERVER","IDrecieved:"+(int)XQUtils.ByteArr2Int(response.getBytes()));
             return (int)XQUtils.ByteArr2Int(response.getBytes());
         }
         else
@@ -119,6 +122,8 @@ public class Server {
             return "null";
         }
     }
+
+
 
     //RESERVE INDEX ON SERVER FOR CURRENTLY RECORDING STORY
     public int reserveNdx(int parent)
@@ -886,7 +891,7 @@ public class Server {
             bytesAvailable = buf.length;
             Log.d("SERVER", "AVAILABLE " + bytesAvailable + " bytes");
 
-            out.write(createFileStartPacket(Integer.parseInt(CODE_PACK_ID_FILE), bytesAvailable));
+            out.write(createFileStartPacket(Integer.parseInt(CODE_PACK_ID_DATA), bytesAvailable));
             //out.flush();
             /*
             byte[] buf = new byte[1024*16];
