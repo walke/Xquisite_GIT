@@ -51,6 +51,8 @@ public class Server {
     static String CODE_LOAD_STORY_PARTS="0008";//load story parts
     static String CODE_REQUST_DEVICE_DT="0009";//request device data
 
+    static String DATATYPE_DEVDATA ="0500";//device data
+
     String adress;
     int serverResponseCode = 0;
     Context mContext;
@@ -89,14 +91,15 @@ public class Server {
         {
             return 1;
         }
-        byte[] bid=XQUtils.Int2ByteArr(id);
+        byte[] bid=new byte[4];
+        XQUtils.Int2ByteArr(bid,id,0);
 
         String response = postToServer(CODE_REQUST_DEVICE_ID, bid);
         Log.d("SERVER","IDrecieved:"+response);
         if(response.length()>=4)
         {
-            Log.d("SERVER","IDrecieved:"+(int)XQUtils.ByteArr2Int(response.getBytes()));
-            return (int)XQUtils.ByteArr2Int(response.getBytes());
+            Log.d("SERVER","IDrecieved:"+(int)XQUtils.ByteArr2Int(response.getBytes(),0));
+            return (int)XQUtils.ByteArr2Int(response.getBytes(),0);
         }
         else
         {
@@ -319,7 +322,7 @@ public class Server {
             byte[] bbuf=new byte[4];
             int a=input.read(bbuf, 0, 4);
 
-            int size = (int)XQUtils.ByteArr2Int(bbuf);/*
+            int size = (int)XQUtils.ByteArr2Int(bbuf,0);/*
                     (((0x00 << 24 | bbuf[0] & 0xff) * 256 * 256 * 256) +
                             ((0x00 << 24 | bbuf[1] & 0xff) * 256 * 256) +
                             ((0x00 << 24 | bbuf[2] & 0xff) * 256) +
@@ -855,7 +858,7 @@ public class Server {
 
     private String uploadDataToServer(String code,byte[] buf)
     {
-
+        Log.d("SERVER","    DATA UPLOAD"+code);
         String result="-1";
         if(buf==null)return result;
         Socket sck=null;
@@ -885,7 +888,7 @@ public class Server {
             //out.flush();
             out.write(createPacketChr(Integer.parseInt(CODE_PACK_ID_TASK), 4, code));
             //out.flush();
-            //out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_TSKD), 4, code));
+            //out.write(createPacketBin(Integer.parseInt(CODE_PACK_ID_TSKD), 4, DATATYPE_DEVDATA));
 
 
             bytesAvailable = buf.length;

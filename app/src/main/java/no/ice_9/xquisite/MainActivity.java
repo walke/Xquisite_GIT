@@ -38,7 +38,7 @@ import java.util.TimerTask;
 
 public class MainActivity extends Activity {
 
-
+    DeviceData mDeviceData;
 
 
     Data appData;
@@ -278,6 +278,16 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mDeviceData=new DeviceData(this);
+
+        //mDeviceData.setDeviceId(2);
+
+        //int id=mDeviceData.getDeviceId();
+
+        //Log.d("MAIN","DEVID:"+id);
+
+        //if(mDeviceData==null)return;
+
         //SERVER
         mServer=new Server(this,appData);
 
@@ -365,7 +375,7 @@ public class MainActivity extends Activity {
 
             }};
 
-        new Timer().scheduleAtFixedRate(conCheck, 0, 8000);
+        new Timer().scheduleAtFixedRate(conCheck, 0, 16000);
 
         TimerTask sync= new TimerTask() {
             @Override
@@ -391,7 +401,7 @@ public class MainActivity extends Activity {
             }
         };
 
-        new Timer().scheduleAtFixedRate(sync, 0, 4000);
+        new Timer().scheduleAtFixedRate(sync, 0, 8000);
 
     }
 
@@ -542,7 +552,7 @@ class Data
 
         mServer=server;
         mData=new File(act.getFilesDir(),"data.txt");
-        clearData();
+        //clearData();
         mDevData=new DevData();
 
         //CHECK IF DATA FILE IS PRESENT ON THE DEVICE
@@ -717,7 +727,8 @@ class Data
         }
         Log.d("DATA", "syncing");
         getData();
-        Log.d("DATA","registered id: "+mDevData.mDeviceId);
+        Log.d("DATA", "registered id: " + mDevData.mDeviceId);
+        //Log.d("DATA","registered id: "+mDevData.mBuffer.length);
 
         int newDeviceId;
 
@@ -770,7 +781,7 @@ class Data
             mDevData.mStatus=(buf[n] << 24) | (buf[n+1] << 16) | (buf[n+2] << 8) | buf[n+3];n+=4;
 
             if(fs<12)return;
-            mDevData.mStatus=(buf[n] << 24) | (buf[n+1] << 16) | (buf[n+2] << 8) | buf[n+3];n+=4;
+            mDevData.mNoStories=(buf[n] << 24) | (buf[n+1] << 16) | (buf[n+2] << 8) | buf[n+3];n+=4;
             mDevData.mNoStories=0;
             if(fs==12)return;
             n+=0;
@@ -900,10 +911,17 @@ class Data
             mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 8);n++;
             mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 0);n++;
 
-            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 24);n++;
-            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 16);n++;
-            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 8);n++;
-            mDevData.mBuffer[n] = (byte)(mDevData.mStatus >> 0);n++;
+            if(mDevData.mStory!=null)
+            {mDevData.mNoStories=mDevData.mStory.length;}
+            else
+            {
+                mDevData.mNoStories=0;
+            }
+
+            mDevData.mBuffer[n] = (byte)(mDevData.mNoStories >> 24);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mNoStories >> 16);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mNoStories >> 8);n++;
+            mDevData.mBuffer[n] = (byte)(mDevData.mNoStories >> 0);n++;
 
             if(mDevData.mStory!=null)
             {
@@ -1065,51 +1083,7 @@ class Data
         mDevData.mBuffer=buf;
     }
 
-   /* private void getAppData()
-    {
 
-
-        FileOutputStream fo;
-        FileInputStream fi;
-
-        if(!data.exists())
-        {
-
-            try
-            {
-                data.createNewFile();
-            }catch (Exception io)
-            {
-
-            }
-
-        }
-        if(data.exists() && data.length()==0)
-        {
-            Log.d("MAIN","data file found");
-            try
-            {
-
-                fo=new FileOutputStream(data);
-
-
-
-
-
-                fo.close();
-            }catch (Exception io)
-            {
-                Log.e("MAIN","could not read data");
-            }
-
-        }
-        else if(data.exists())
-        {
-
-        }
-
-
-    }*/
 
 
 }
