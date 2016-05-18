@@ -52,6 +52,7 @@ public class DataBase {
     public void clear()
     {
         mDataFile.delete();
+        load();
     }
 
     /**
@@ -59,6 +60,8 @@ public class DataBase {
      */
     public void load()
     {
+        mDataBuffer=null;
+        mDataBlocks=null;
         if(!mDataFile.exists())
         {
             try
@@ -102,7 +105,7 @@ public class DataBase {
      * reads data file and returns its size
      * @return size of the data file
      */
-    private int getDataSize()
+    public int getDataSize()
     {
         int fs=0;
         try
@@ -155,7 +158,7 @@ public class DataBase {
             {
                 blockbuffer[i]=buffer[redBytes];redBytes++;
             }
-            Log.d("DATA","buflen:"+blockbuffer.length+","+buffer.length);
+            //Log.d("DATA","buflen:"+blockbuffer.length+","+buffer.length);
             addBlock(blockbuffer);
 
         }
@@ -169,7 +172,7 @@ public class DataBase {
      * adds new block of data to memory based on data read from local data file
      * @param blockbuffer raw buffer cut out of the data file
      */
-    public void addBlock(byte[] blockbuffer)
+    public Block addBlock(byte[] blockbuffer)
     {
         Block[] tmp;
         if(mDataBlocks==null)
@@ -189,6 +192,8 @@ public class DataBase {
         }
 
         mDataBlocks[tmp.length]=new Block(blockbuffer);
+
+        return mDataBlocks[tmp.length];
     }
 
     /**
@@ -233,8 +238,21 @@ public class DataBase {
         }catch (Exception io){Log.e("DATA", "could not save buffer");}
     }
 
+    public Block[] getAllBlocks()
+    {
+        Block[] blocks =new Block[mDataBlocks.length];
+
+        for(int i=0; i<mDataBlocks.length;i++)
+        {
+
+                blocks[i]=mDataBlocks[i];
+
+        }
+        return blocks;
+    }
+
     /**
-     * loops throug all blocks and returns only matching type
+     * loops through all blocks and returns only matching type
      * @param type type of the block
      * @return all blocks of matching type
      */
@@ -263,9 +281,25 @@ public class DataBase {
         return blocks;
     }
 
+    public Block getBlocksByBlockId(int id)
+    {
+
+        int count=0;
+        if(mDataBlocks==null){return null;}
+        for(int i=0; i<mDataBlocks.length;i++)
+        {
+            if(mDataBlocks[i].mId==id)
+            {
+                return mDataBlocks[i];
+            }
+        }
+
+        return null;
+    }
+
     /**
      * loops all block and gets empty block id
-     * TODO: needs to be optimized now would work only on sorted blocks
+     *
      * @return
      */
     public int getEmptyId()
@@ -277,9 +311,12 @@ public class DataBase {
             if(id==mDataBlocks[i].mId)
             {
                 id++;
+                i=0;
             }
         }
         return id;
     }
+
+
 
 }

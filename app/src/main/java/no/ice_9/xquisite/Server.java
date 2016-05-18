@@ -56,9 +56,9 @@ public class Server {
     String adress;
     int serverResponseCode = 0;
     Context mContext;
-    Data mData;
+    DeviceData mData;
 
-    Server(Context context,Data data)
+    Server(Context context,DeviceData data)
     {
         mData=data;
         mContext=context;
@@ -133,7 +133,7 @@ public class Server {
     {
         if(offline)
         {
-            int id=mData.getEmptyStoryId();
+            int id=mData.getEmptyTypeId(1);
             mData.addStory(id,parent,0);
             return id;
         }
@@ -193,7 +193,7 @@ public class Server {
         if(offline)
         {
 
-            int dndx=mData.getStoryNdx(ndx);
+            DataBase.Block dndx=mData.getStoryNdx(ndx);
             mData.addStoryPart(dndx,part,true);
             return true;
         }
@@ -232,11 +232,11 @@ public class Server {
     {
         if(offline)
         {
-            StoryPart part=new StoryPart();
-
-            String fname=mData.mDevData.mStory[mData.getStoryNdx(ndx)].mPart[storyPart].mFileName;
-            String quest=mData.mDevData.mStory[mData.getStoryNdx(ndx)].mPart[storyPart].mQuestion;
-            part.populate("",quest,fname);
+            //StoryPart part=new StoryPart();
+            StoryPart part=mData.getStoryPart(ndx,storyPart);
+            //String fname=mData.mDevData.mStory[mData.getStoryNdx(ndx)].mPart[storyPart].mFileName;
+            //String quest=mData.mDevData.mStory[mData.getStoryNdx(ndx)].mPart[storyPart].mQuestion;
+            //part.populate("",quest,fname);
             return part;
         }
         Log.d("SERVER","loading part:"+storyPart);

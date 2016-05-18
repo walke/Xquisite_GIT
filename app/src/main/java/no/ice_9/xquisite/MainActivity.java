@@ -289,12 +289,13 @@ public class MainActivity extends Activity {
         //if(mDeviceData==null)return;
 
         //SERVER
-        mServer=new Server(this,appData);
+        //mServer=new Server(this,appData);
+        mServer=new Server(this,mDeviceData);
 
         //GET DATA
-        appData=new Data(this,mServer);
+        //appData=new Data(this,mServer);
 
-        mServer.mData=appData;
+        //mServer.mData=appData;
 
 
         //CHECK CONNECTION DURING RUNNING
@@ -407,7 +408,10 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
+        super.onBackPressed();
+
+        Intent intent = new Intent(this, BrowserActivity.class);
+        startActivity(intent);
     }
 
 
@@ -827,7 +831,7 @@ class Data
                     part.populate("", q, f);
                     addStoryPart(getStoryNdx(id), part,false);
 
-                    Log.d("DATA","N:"+n+" bufl:"+buf.length+" s:"+size);
+                    //Log.d("DATA","N:"+n+" bufl:"+buf.length+" s:"+size);
                 }
                 sp++;
 
