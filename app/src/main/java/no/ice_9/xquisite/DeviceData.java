@@ -50,6 +50,13 @@ public class DeviceData {
     //DEVICE BLOCKS
     DataBase.Block mDeviceId;
 
+    /**
+     * Device data constructor
+     * holding:
+     *  device id for syncing with server
+     *  story data and its parts
+     * @param activity Activity is passed to get access to filesystem
+     */
     public DeviceData(Activity activity)
     {
         mDataBase=new DataBase(activity);
@@ -59,11 +66,20 @@ public class DeviceData {
 
     }
 
+    /**
+     * clear data function
+     * clears all data related to the app
+     * TODO:delete video files
+     */
     public void clear()
     {
         mDataBase.clear();
     }
 
+    /**
+     * set device id (1 is set by default in case no sychronization occured yet)
+     * @param id device id
+     */
     public void setDeviceId(int id)
     {
         byte[] buffer=new byte[BLOCKSIZE_DEVICE];
@@ -78,9 +94,13 @@ public class DeviceData {
         mDataBase.save();
     }
 
+    /**
+     * as it sounds get current device id
+     * @return device id
+     */
     public int getDeviceId()
     {
-        int id=0;
+        int id;
         DataBase.Block[] tmp=mDataBase.getBlocksByBlockType(BLOCKTYPE_DEVICE);
         if(tmp==null || tmp.length==0)
         {
@@ -95,6 +115,12 @@ public class DeviceData {
         return id;
     }
 
+    /**
+     * find not occupied id to store block
+     * TODO: maybe make reservation to avoid writing two blocks with same id
+     * @param type
+     * @return
+     */
     public int getEmptyTypeId(int type)
     {
         int id=1;
@@ -120,7 +146,12 @@ public class DeviceData {
     }
 
 
-
+    /**
+     * add new story and put its data in the data file
+     * @param id story id
+     * @param parent parent story id
+     * @param complete is complete story (TODO:in case story is added from the server)
+     */
     public void addStory(int id, int parent, int complete)
     {
         byte[] buffer=new byte[BLOCKSIZE_STORY];
@@ -141,6 +172,11 @@ public class DeviceData {
         mDataBase.save();
     }
 
+    /**
+     * gets block id of the story
+     * @param id story id
+     * @return block id
+     */
     public DataBase.Block getStoryNdx(int id)
     {
         DataBase.Block[] stories=mDataBase.getBlocksByBlockType(BLOCKTYPE_STORY);
@@ -152,6 +188,12 @@ public class DeviceData {
         return null;
     }
 
+    /**
+     * adds one part of the story
+     * @param story story block
+     * @param part part data (filename and question)
+     * @param up upload to server on creation TODO:?
+     */
     public void addStoryPart(DataBase.Block story,StoryPart part,boolean up)
     {
         byte[] buffer=new byte[BLOCKSIZE_PART];
@@ -188,6 +230,11 @@ public class DeviceData {
         mDataBase.save();
     }
 
+    /**
+     * adding string block
+     * @param str string of certaion length
+     * @return returns pointer to string block
+     */
     private DataBase.Block addStringBlock(String str)
     {
         byte[] buffer=new byte[12+str.length()];
@@ -210,6 +257,12 @@ public class DeviceData {
         return block;
     }
 
+    /**
+     * mark story as complete
+     * @param id story id
+     * @param up upload to server on completion TODO:?
+     * @return returns block id
+     */
     public int completeStory(int id,boolean up)
     {
         DataBase.Block storyBlock=getStoryNdx(id);
@@ -221,6 +274,12 @@ public class DeviceData {
         return storyBlock.mId;
     }
 
+    /**
+     * get story part data
+     * @param story story id
+     * @param part part id
+     * @return story data
+     */
     public StoryPart getStoryPart(int story,int part)
     {
         StoryPart storyPart=new StoryPart();
@@ -248,6 +307,11 @@ public class DeviceData {
         return storyPart;
     }
 
+    /**
+     * get last recorded story
+     * TODO: search by date/time
+     * @return {story id, number of parts}
+     */
     public int[] getLastStory()
     {
         DataBase.Block[] blocks = mDataBase.getBlocksByBlockType(BLOCKTYPE_STORY);
@@ -274,6 +338,11 @@ public class DeviceData {
         return result;
     }
 
+    /**
+     * get all data to print
+     * CONTROLLING FUNCTION, not necessary for app
+     * @return string of all data read from data file
+     */
     public String getAllData()
     {
         String ret = "";
@@ -350,5 +419,5 @@ public class DeviceData {
         return ret;
     }
 
-//TODO: count parts for story
+
 }
