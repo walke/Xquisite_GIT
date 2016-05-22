@@ -409,9 +409,9 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
-        Intent intent = new Intent(this, BrowserActivity.class);
-        startActivity(intent);
+        //UNCOMMENT TO GET DATA ON BACK PRESSED
+        //Intent intent = new Intent(this, BrowserActivity.class);
+        //startActivity(intent);
     }
 
 

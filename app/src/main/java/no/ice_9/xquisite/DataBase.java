@@ -32,7 +32,7 @@ public class DataBase {
         {
             mBuffer=buffer;
             mId=(int)XQUtils.ByteArr2Int(buffer,0);
-            mTypeId=(int)XQUtils.ByteArr2Int(buffer,4);
+            mTypeId=(int)XQUtils.ByteArr2Int(buffer,16);
 
         }
     }

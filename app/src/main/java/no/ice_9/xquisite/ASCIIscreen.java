@@ -91,11 +91,12 @@ public class ASCIIscreen implements Serializable{
     public Canvas canvas;
 
 
-
-
-
-
-
+    /**
+     * Ascii screen constructor
+     * meant to be a visual representation of video data
+     * @param context activity context
+     * @param actParent activity from where it is created
+     */
     public ASCIIscreen(Context context,String actParent)
     {
         mMesTime= Calendar.getInstance().getTimeInMillis();
