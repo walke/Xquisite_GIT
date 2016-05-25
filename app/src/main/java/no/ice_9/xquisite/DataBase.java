@@ -43,7 +43,11 @@ public class DataBase {
      */
     public DataBase(Activity activity)
     {
-        mDataFile=new File(activity.getFilesDir(),"data");
+        mDataFile=new File(activity.getExternalFilesDir("DAT").getPath(),"xq.dat");
+        try{
+        Log.d("DATA", "" + mDataFile.getCanonicalPath());}
+        catch (Exception io){}
+
     }
 
     /**
@@ -67,6 +71,7 @@ public class DataBase {
             try
             {
                 mDataFile.createNewFile();
+
             }
             catch (Exception io){Log.e("MAIN", "could not create data file");}
         }

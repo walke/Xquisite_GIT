@@ -258,6 +258,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.d("MAIN", "destroyed");
         mTimerLoop=null;
 
     }
@@ -265,19 +266,34 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("MAIN", "resumed");
         mAscii.mAsciiStartUpdater(50);
+        mAscii.mGLView.onResume();
         createTimerTask();
         mTimer=new Timer();
 
         mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
 
-        mAscii.mGLView.onResume();
+
+    }
+
+    @Override
+    protected void onStart() {
+
+        super.onStart();
+        Log.d("MAIN", "started");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d("MAIN", "restarted");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d("MAIN", "created");
         mDeviceData=new DeviceData(this);
 
         //mDeviceData.setDeviceId(2);
@@ -301,7 +317,7 @@ public class MainActivity extends Activity {
         //CHECK CONNECTION DURING RUNNING
 
 
-
+        Log.d("ASCII","main created");
 
 
 
@@ -410,8 +426,8 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         //UNCOMMENT TO GET DATA ON BACK PRESSED
-        //Intent intent = new Intent(this, BrowserActivity.class);
-        //startActivity(intent);
+        /*Intent intent = new Intent(this, BrowserActivity.class);
+        startActivity(intent);*/
     }
 
 

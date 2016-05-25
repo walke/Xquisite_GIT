@@ -24,12 +24,31 @@ public class InitClass extends SubAct{
     int mTime;
     public boolean mInitDone=false;
     Dialog mLoadingDialog;
+    boolean loading=true;
 
     //@Override
-    public InitClass(Activity activity,ASCIIscreen ascii,Server server,Data data)
+    public InitClass(final Activity activity,ASCIIscreen ascii,Server server,Data data)
     {
         mLoadingDialog = ProgressDialog.show(activity, "",
                       "Loading. Please wait...", true);
+        loading=true;
+
+        Thread loadingWait=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(!mAscii.mReady && loading);
+                activity.runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        mLoadingDialog.dismiss();
+                        loading=false;
+                    }
+                });
+
+            }
+        });
+        loadingWait.start();
 
         appData=data;
         mServer=server;
@@ -71,8 +90,9 @@ public class InitClass extends SubAct{
                     }*/
                     if(mTime==0 && !mAscii.isRage())
                     {
-                        mAscii.clear();
-                        mLoadingDialog.dismiss();
+                        Log.d("ASCII","toclear");
+                        //mAscii.clear();
+                        //mLoadingDialog.dismiss();
                         mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
                         //mAscii.pushLine("########################");
                         //mAscii.pushLine("#scienceFuture xquisite#");

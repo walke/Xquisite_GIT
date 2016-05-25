@@ -396,7 +396,17 @@ mAscii.clear();
             }
 
             if(!result){return false;}
-            else{Log.d("RECORDER","got Preview");}
+            else
+            {
+                Log.d("RECORDER","got Preview1");
+                Camera.Parameters parm=mCamera.getParameters();
+                Log.d("RECORDER", "PARM:" + parm.getPreviewSize().height + "," + parm.getPreviewSize().width);
+                parm.setPreviewSize(640,480);
+                parm.setAutoExposureLock(true);
+                mCamera.setParameters(parm);
+            }
+
+            //mCamera.setParameters(new Camera.Parameters());
             mCamera.startPreview();
             mTimeLeft=10;
 
@@ -514,11 +524,8 @@ mAscii.clear();
         mUserReady=true;
         //mCurrentPart++;
         startRecordingSequence();
-
-
-
-
-
+        Camera.Parameters parm=mCamera.getParameters();
+        Log.d("RECORDER", "PARM:" + parm.getPreviewSize().height + "," + parm.getPreviewSize().width);
 
 
     }
@@ -647,10 +654,16 @@ mAscii.clear();
 
         mRecorder.setOrientationHint(270);
 
+
+        mRecorder.setVideoSize(640,480);
+
         //Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
         // Create our Preview view and set it as the content of our activity.
         //mRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
         mRecorder.setPreviewDisplay(new Surface(mAscii.mGLView.mRenderer.mSurface));
+
+
+
 
         try {
             mRecorder.prepare();
@@ -667,6 +680,8 @@ mAscii.clear();
             releaseMediaRecorder();
             return false;
         }
+
+
 
         return true;
     }

@@ -72,7 +72,7 @@ public class PlayerClass extends SubAct{
         mStartPart=mStoryParts-1;
 
         Log.d("PLAYER","parent:"+mParent);
-        if(mParent<0)
+        if(mParent<1)
         {
             Thread mTask = new Thread(new Runnable() {
                 @Override
