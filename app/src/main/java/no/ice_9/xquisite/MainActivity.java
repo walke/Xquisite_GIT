@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
     DeviceData mDeviceData;
 
 
-    Data appData;
+    //Data appData;
 
     SubAct currentSubActivity;
 
@@ -74,6 +74,10 @@ public class MainActivity extends Activity {
    boolean interSkip=false;
 
 
+    /**
+     * function is executed on dialog reaction that asks user to do interview or not
+     * @param skip button choice
+     */
     public void diaBut(boolean skip)
     {
         mUserWait=false;
@@ -82,6 +86,10 @@ public class MainActivity extends Activity {
 
     }
 
+    /**
+     * Main RED button action
+     * executes action of the current subActivity (class)
+     */
     public void glTouch()
     {
         Log.d("GL","TOUCH");
@@ -99,6 +107,8 @@ public class MainActivity extends Activity {
          }
         switch(mCurrentAction)
         {
+            /** init class initializes the application
+             */
             case 0:
                 result=currentSubActivity.action();
                 res=result[0];
@@ -108,6 +118,9 @@ public class MainActivity extends Activity {
                 }
                 //if(res==1)mAscii.maximizeInfo();
                 break;
+            /** prerecorder class (interview part) can be skipped
+             * if not it asks user personal questions
+             */
             case 1:
                 result=currentSubActivity.action();
                 res=result[0];
@@ -118,6 +131,8 @@ public class MainActivity extends Activity {
                 //if (result==1){mCurrentAction++;}
                 break;
 
+            /**player class plays last part of the last story
+             * */
             case 2:
                 result=currentSubActivity.action();
                 res=result[0];
@@ -126,12 +141,17 @@ public class MainActivity extends Activity {
 
                 //mParent=result;
                 break;
+
+            /** recorder class records continuance of the story
+             * */
             case 3:
                 result=currentSubActivity.action();
                 res=result[0];
                 //if (result==1){mCurrentAction++;}
                 break;
 
+            /**finalize class thanks user for participating and by pressing the button sends him back to start
+             * */
             case 4:
                 result=currentSubActivity.action();
                 res=result[0];
@@ -175,6 +195,9 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * function creates timeline for a current subactivity (class)
+     */
     private void createTimerTask()
     {
         switch(mCurrentAction)
@@ -256,6 +279,22 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("MAIN", "resumed");
+        mAscii.mAsciiStartUpdater(50);
+
+        createTimerTask();
+        mTimer=new Timer();
+
+        mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
+
+        mAscii.mGLView.onResume();
+
+
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         Log.d("MAIN", "destroyed");
@@ -263,19 +302,7 @@ public class MainActivity extends Activity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d("MAIN", "resumed");
-        mAscii.mAsciiStartUpdater(50);
-        mAscii.mGLView.onResume();
-        createTimerTask();
-        mTimer=new Timer();
 
-        mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
-
-
-    }
 
     @Override
     protected void onStart() {
@@ -454,6 +481,9 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * dialog that offers a user to do an interview
+     */
     public static class InterviewSkip extends DialogFragment {
         /*MainActivity acti
 
@@ -483,10 +513,17 @@ public class MainActivity extends Activity {
 
 }
 
+/**
+ * class that is being used as a base for all subactivities : initclass, prerecorderclass, playerclass, recorder class, finalizeclass
+ */
 class SubAct
 {
 
 
+    /**
+     * initializes timeline of the class
+     * @return timertask of the class to be run through
+     */
     public TimerTask getTimerTask()
     {
         return new TimerTask() {
@@ -497,6 +534,10 @@ class SubAct
         };
     }
 
+    /**
+     * every class will have an action function that is related to the content of it: play, record etc
+     * @return
+     */
     public int[] action()
     {
         int[] result=new int[1];
@@ -509,7 +550,10 @@ class SubAct
     }
 }
 
-class Data
+/**
+ * TODO: Check through, maybe delete
+ */
+/*class Data
 {
     Server mServer;
     File mData;
@@ -617,7 +661,7 @@ class Data
         mDevData.mStatus=0;
         mDevData.mNoStories=0;
         mDevData.mBuffer=buf;*/
-    }
+    /*}
 
     public boolean check()
     {
@@ -1106,6 +1150,6 @@ class Data
 
 
 
-}
+}*/
 
 

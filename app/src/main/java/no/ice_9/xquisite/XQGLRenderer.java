@@ -107,6 +107,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mAngle=0f;
 
+
         //time measure
         /*mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;*/

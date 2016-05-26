@@ -19,7 +19,7 @@ public class InitClass extends SubAct{
     int mServerConnection=0;
     int mReconnectTime=-1;
     boolean mScreenSaver=false;
-    Data appData;
+    //Data appData;
 
     int mTime;
     public boolean mInitDone=false;
@@ -27,7 +27,7 @@ public class InitClass extends SubAct{
     boolean loading=true;
 
     //@Override
-    public InitClass(final Activity activity,ASCIIscreen ascii,Server server,Data data)
+    public InitClass(final Activity activity,ASCIIscreen ascii,Server server)//,Data data)
     {
         mLoadingDialog = ProgressDialog.show(activity, "",
                       "Loading. Please wait...", true);
@@ -50,7 +50,7 @@ public class InitClass extends SubAct{
         });
         loadingWait.start();
 
-        appData=data;
+        //appData=data;
         mServer=server;
         mAscii = ascii;
         mTime=0;

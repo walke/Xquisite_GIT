@@ -388,7 +388,11 @@ mAscii.clear();
             //result = initPreview();
             result=true;
             try{
+
+
+
                 mCamera.setPreviewTexture(mAscii.mGLView.mRenderer.mSurface);
+
             }catch (IOException ioe)
             {
                 Log.d("REC","ERROR SETTING TEXTURE");
@@ -398,12 +402,15 @@ mAscii.clear();
             if(!result){return false;}
             else
             {
-                Log.d("RECORDER","got Preview1");
+                Log.d("RECORDER", "got Preview1");
                 Camera.Parameters parm=mCamera.getParameters();
                 Log.d("RECORDER", "PARM:" + parm.getPreviewSize().height + "," + parm.getPreviewSize().width);
-                parm.setPreviewSize(640,480);
+                parm.setPreviewSize(1280, 720);
+                parm.setVideoStabilization(true);
+
                 parm.setAutoExposureLock(true);
                 mCamera.setParameters(parm);
+
             }
 
             //mCamera.setParameters(new Camera.Parameters());
@@ -473,6 +480,7 @@ mAscii.clear();
     private boolean initPreview()
     {
         mPreview = new Preview(tAct,mCamera);
+
 
         //Log.d("RECORDER","preview created "+mPreview.getHolder().getSurface());
 
@@ -633,6 +641,7 @@ mAscii.clear();
         Log.d("RECORDER", "creating media recorder ");
         mRecorder = new MediaRecorder();
 
+
         Log.d("RECORDER", "unlocking camera ");
         mCamera.unlock();
 
@@ -647,6 +656,7 @@ mAscii.clear();
 
         Log.d("RECORDER", "setting profile ");
         mRecorder.setProfile(CamcorderProfile.get(1, CamcorderProfile.QUALITY_HIGH));
+        //mRecorder.setProfile(CamcorderProfile.get(1, 1));
         mRecorder.setVideoEncodingBitRate(69000);
 
         Log.d("RECORDER", "setting outputfile ");
@@ -655,11 +665,15 @@ mAscii.clear();
         mRecorder.setOrientationHint(270);
 
 
-        mRecorder.setVideoSize(640,480);
+
+        mRecorder.setVideoSize(1280,720);
+
 
         //Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
         // Create our Preview view and set it as the content of our activity.
         //mRecorder.setPreviewDisplay(mPreview.getHolder().getSurface());
+
+
         mRecorder.setPreviewDisplay(new Surface(mAscii.mGLView.mRenderer.mSurface));
 
 
