@@ -156,7 +156,7 @@ public class PlayerClass extends SubAct{
     }
 
     @Override
-    public int[] action()
+    public int[] action(int act)
     {
         int[] result=new int[5];
         result[0]=-1;

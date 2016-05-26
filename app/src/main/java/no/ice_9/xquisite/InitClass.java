@@ -58,7 +58,7 @@ public class InitClass extends SubAct{
     }
 
     @Override
-    public int[] action()
+    public int[] action(int act)
     {
         int[]result=new int[1];
         result[0]=-1;

@@ -63,6 +63,7 @@ public class PreRecorderClass extends SubAct{
     boolean mUserReady;
     boolean mMainDone;
     int mCurrentPart;
+    int mCurrentSubPart;
 
     static Question[] mQuestion;
     static int mQuestionTime;
@@ -205,34 +206,48 @@ public class PreRecorderClass extends SubAct{
 
 
     @Override
-    public int[] action()
+    public int[] action(int act)
     {
+
         int[] result=new int[4];
         result[0]=-1;
-        if(!isRecording)
+        if(act==0)
         {
-            mAscii.fillTrash();
-            mUserReady=true;
-            result[0]=-1;
+            if (!isRecording)
+            {
+                mCurrentSubPart++;
+                //PAUSE
+            }
         }
-        if(mTime==1)
+        else if(act==1)
         {
-            mTime++;
+            //NEXT PART
+            if (!isRecording) {
+                mAscii.fillTrash();//?
+                mUserReady = true;
+                result[0] = -1;
+            }
+            if (mTime == 1) {
+                mTime++;
+            }
+            if (mTime == 3) {
+                mTime++;
+                mTimeLeft = 0;
+            }
+            if (mCurrentPart >= mQuestion.length)//if(mMainDone)
+            {
+                finishRecording();
+                mAscii.clear();//?
+                result[0] = mCurrentParent;
+                result[1] = mParentStoryParts;
+                result[2] = mServerReserved;
+                result[3] = mCurrentPart;
+                //return result;
+            }
         }
-        if(mTime==3)
+        else if(act==2)
         {
-            mTime++;
-            mTimeLeft=0;
-        }
-        if(mCurrentPart>=mQuestion.length)//if(mMainDone)
-        {
-            finishRecording();
-mAscii.clear();
-            result[0]=mCurrentParent;
-            result[1]=mParentStoryParts;
-            result[2]=mServerReserved;
-            result[3]=mCurrentPart;
-            //return result;
+            //RECORD
         }
 
         return result;
@@ -449,7 +464,7 @@ mAscii.clear();
                                     mTimeElapsedPq=0;
                                     //forceStopCapture();
                                     forceStartCapture();
-                                }//TODO: yes that is target entry point of the crash
+                                }
                             }
                         });
                     }
@@ -545,26 +560,23 @@ mAscii.clear();
     {
         UItimer=new Timer();
                 UItimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (isRecording)
-                {
-                    tAct.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run()
-                        {
-                            if(mRecorder!=null && mAscii.mReady)
-                            {
-                                mAscii.mGLView.mRenderer.setAudio(mRecorder.getMaxAmplitude());
-                            }
+                    @Override
+                    public void run() {
+                        if (isRecording) {
+                            tAct.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (mRecorder != null && mAscii.mReady) {
+                                        mAscii.mGLView.mRenderer.setAudio(mRecorder.getMaxAmplitude());
+                                    }
+                                }
+                            });
+
                         }
-                    });
-
-                }
 
 
-            }
-        },0,50);
+                    }
+                }, 0, 50);
         recTimer=new Timer();
         recTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -588,7 +600,7 @@ mAscii.clear();
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        mTimeLeft=mQuestion[mCurrentPart].time;
+                        mTimeLeft = mQuestion[mCurrentPart].time;
                         //forceStopCapture();
                         /*if (mCurrentPart == 0) {
                             mTimeLeft = FTIME;//FREE TIME

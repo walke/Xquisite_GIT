@@ -680,10 +680,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }
 
     }
+    public  boolean releaseClick(float x, float y)
+    {
+        sliderTarget=0.0f;
+
+        return false;
+    }
 
     public boolean getClick(float x, float y)
     {
-        sliderTarget=0.0f;
+
         if(mContinueButton.isDown)
         {
             if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
@@ -699,24 +705,26 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         return false;
     }
 
-    public boolean holdAndMove(float x,float y)
+    public int holdAndMove(float x,float y)
     {
         if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
                 x < mContinueButton.midx + (mContinueButton.sizx / 1.0f) &&
                 y > mContinueButton.midy - (mContinueButton.sizy / 1.0f) &&
                 y < mContinueButton.midy + (mContinueButton.sizy / 1.0f))
         {
-            if(x>0.0f && x<0.3f)
+            if(x>-0.3f && x<0.3f)
             {
                 slider=x;
                 sliderTarget=x;
-                if(x>=0.26f){return true;}
+                if(x>=0.26f){return 1;}
+
+                if(x<=-0.26f){return 2;}
             }
         }
 
 
 
-        return false;
+        return 0;
     }
 
     public void setAudio(int value)

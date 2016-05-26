@@ -72,6 +72,7 @@ public class MainActivity extends Activity {
 
     boolean mUserWait=true;
    boolean interSkip=false;
+    boolean interInit=false;
 
 
     /**
@@ -82,7 +83,8 @@ public class MainActivity extends Activity {
     {
         mUserWait=false;
         interSkip=skip;
-        glTouch();
+        interInit=false;
+        glTouch(0);
 
     }
 
@@ -90,17 +92,18 @@ public class MainActivity extends Activity {
      * Main RED button action
      * executes action of the current subActivity (class)
      */
-    public void glTouch()
+    public void glTouch(int extra)
     {
         Log.d("GL","TOUCH");
         //CreateNewStory();
         int[] result;
         int res=-1;
-        if(mUserWait)
+        if(mUserWait && !interInit)
         {
             //mCurrentAction=-2;
             DialogFragment dg= new InterviewSkip();
             dg.show(getFragmentManager(),"Skip Interview");
+            interInit=true;
 
             return;
             //while(mUserWait);
@@ -110,7 +113,7 @@ public class MainActivity extends Activity {
             /** init class initializes the application
              */
             case 0:
-                result=currentSubActivity.action();
+                result=currentSubActivity.action(extra);
                 res=result[0];
                 if(interSkip) {
                     mCurrentAction++;
@@ -122,7 +125,7 @@ public class MainActivity extends Activity {
              * if not it asks user personal questions
              */
             case 1:
-                result=currentSubActivity.action();
+                result=currentSubActivity.action(extra);
                 res=result[0];
                 mParent=result[0];
                 mParentParts=result[1];
@@ -134,7 +137,7 @@ public class MainActivity extends Activity {
             /**player class plays last part of the last story
              * */
             case 2:
-                result=currentSubActivity.action();
+                result=currentSubActivity.action(extra);
                 res=result[0];
                 mParent=result[1];
                 mParentParts=result[2];
@@ -145,7 +148,7 @@ public class MainActivity extends Activity {
             /** recorder class records continuance of the story
              * */
             case 3:
-                result=currentSubActivity.action();
+                result=currentSubActivity.action(extra);
                 res=result[0];
                 //if (result==1){mCurrentAction++;}
                 break;
@@ -153,7 +156,7 @@ public class MainActivity extends Activity {
             /**finalize class thanks user for participating and by pressing the button sends him back to start
              * */
             case 4:
-                result=currentSubActivity.action();
+                result=currentSubActivity.action(extra);
                 res=result[0];
                 mCurrentAction=-1;
                 mUserWait=true;
@@ -248,7 +251,7 @@ public class MainActivity extends Activity {
 
         super.onTouchEvent(event);
 
-        glTouch();
+        glTouch(event.getAction());
         Log.d("MAIN","touch");
 
         return true;
@@ -568,7 +571,7 @@ class SubAct
      * every class will have an action function that is related to the content of it: play, record etc
      * @return
      */
-    public int[] action()
+    public int[] action(int act)
     {
         int[] result=new int[1];
         return result;

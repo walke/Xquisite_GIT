@@ -464,19 +464,22 @@ class XQGLSurfaceView extends GLSurfaceView{
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                if(mRenderer.holdAndMove(x,y))
-                {
-                    actContext.onTouchEvent(e);
-                }
+                int action=mRenderer.holdAndMove(x,y);
+                e.setAction(action);
+                actContext.onTouchEvent(e);
+
+                if(mRenderer.holdAndMove(x,y)==2)
                 break;
             case MotionEvent.ACTION_DOWN:
                 mRenderer.setClick(x,y);
                 //actContext.onTouchEvent(e);
                 break;
             case MotionEvent.ACTION_UP:
+                mRenderer.releaseClick(x,y);
                 if(mRenderer.getClick(x,y))
                 {
-                    //actContext.onTouchEvent(e);
+                    e.setAction(0);
+                    actContext.onTouchEvent(e);
                 }
                 break;
         }
