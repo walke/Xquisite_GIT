@@ -203,7 +203,7 @@ public class MainActivity extends Activity {
         switch(mCurrentAction)
         {
             case 0:
-                currentSubActivity=new InitClass(this,mAscii,mServer,appData);
+                currentSubActivity=new InitClass(this,mAscii,mServer);//,appData);
                 //currentSubActivity.Create(this,mAscii,mServer);
                 //initClass=new InitClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
@@ -297,6 +297,17 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        currentSubActivity.destroy();
+        mAscii.mGLView.onPause();
+
+
+        mAscii.mAsciiStopUpdater(1);
+        mTimerLoop.cancel();
+        mTimer.cancel();
+        mTimer.purge();
+        mTimer=null;
+
+
         Log.d("MAIN", "destroyed");
         mTimerLoop=null;
 
@@ -322,6 +333,25 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.d("MAIN", "created");
         mDeviceData=new DeviceData(this);
+
+        mCurrentAction=0;
+
+
+
+
+
+
+
+        mSync=false;
+
+        mParent=-1;
+        mParentParts=-1;
+        mReservedStory=-1;
+        mPartOffset=-1;
+
+
+        mUserWait=true;
+        interSkip=false;
 
         //mDeviceData.setDeviceId(2);
 
@@ -386,7 +416,7 @@ public class MainActivity extends Activity {
 
         new Timer().scheduleAtFixedRate(auto, 0, 4000);*/
 
-        TimerTask conCheck= new TimerTask() {
+        /*TimerTask conCheck= new TimerTask() {
             @Override
             public void run() {
                 if(mServer.checkConnection())
@@ -417,16 +447,16 @@ public class MainActivity extends Activity {
                     }
                 });*/
 
-            }};
+            /*}};
 
-        new Timer().scheduleAtFixedRate(conCheck, 0, 16000);
+        new Timer().scheduleAtFixedRate(conCheck, 0, 16000);*/
 
-        TimerTask sync= new TimerTask() {
+        /*TimerTask sync= new TimerTask() {
             @Override
             public void run() {
                 if(mSync)
                 {
-                    if(appData.sync())
+                    /*if(appData.sync())
                     {
                         runOnUiThread(new Runnable()
                         {
@@ -435,8 +465,8 @@ public class MainActivity extends Activity {
                                 mAscii.mGLView.mRenderer.setLed(true, true);
                             }
                         });
-                    }
-                }
+                    }*/
+                /*}
 
 
 
@@ -445,7 +475,7 @@ public class MainActivity extends Activity {
             }
         };
 
-        new Timer().scheduleAtFixedRate(sync, 0, 8000);
+        new Timer().scheduleAtFixedRate(sync, 0, 8000);*/
 
     }
 

@@ -54,6 +54,9 @@ public class PreRecorderClass extends SubAct{
 
     Thread recThread;
 
+    Timer UItimer;
+    Timer recTimer;
+
     int mTotalTime=0;
 
     boolean isRecording;
@@ -408,7 +411,7 @@ mAscii.clear();
                 parm.setPreviewSize(1280, 720);
                 parm.setVideoStabilization(true);
 
-                parm.setAutoExposureLock(true);
+                //parm.setAutoExposureLock(true);
                 mCamera.setParameters(parm);
 
             }
@@ -540,7 +543,8 @@ mAscii.clear();
 
     private void startRecordingSequence()
     {
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        UItimer=new Timer();
+                UItimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (isRecording)
@@ -561,7 +565,8 @@ mAscii.clear();
 
             }
         },0,50);
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        recTimer=new Timer();
+        recTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Log.d("RECORDER", "TIMER: rec");
@@ -666,7 +671,7 @@ mAscii.clear();
 
 
 
-        mRecorder.setVideoSize(1280,720);
+        mRecorder.setVideoSize(1280, 720);
 
 
         //Log.d("RECORDER", "SURFACE: " + mPreview.getHolder().getSurface());
@@ -869,7 +874,18 @@ mAscii.clear();
     @Override
     public void destroy() {
         super.destroy();
+        forceStopCapture();
+        UItimer.cancel();
+        UItimer.purge();
+        recTimer.cancel();
+        recTimer.purge();
 
-        recThread.interrupt();
+        if(recThread!=null)recThread.interrupt();
+
+        if(mRecorder!=null)mRecorder.release();
+        mCamera.release();
+
+
+
     }
 }

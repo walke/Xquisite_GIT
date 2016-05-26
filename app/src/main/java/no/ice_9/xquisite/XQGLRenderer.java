@@ -42,6 +42,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private float progress=0.0f;
     private float progressTarget=0.0f;
 
+    private float slider=0.0f;
+    private float sliderTarget=0.0f;
+
 
     private float mRatio=1f;
 
@@ -248,6 +251,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         }
 
+        mContinueButton.midx=slider;
         Matrix.translateM(scratch2, 0, mContinueButton.midx, mContinueButton.midy, 1.0f);
         Matrix.scaleM(scratch2, 0, mContinueButton.sizx, mContinueButton.sizy, 0.0f);
 
@@ -368,6 +372,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         if (progress!=progressTarget)
         {
             progress+=(progressTarget-progress)/10.0f;
+        }
+
+        if(slider!=sliderTarget)
+        {
+            slider+=(sliderTarget-slider)/10.0f;
         }
     }
 
@@ -674,6 +683,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public boolean getClick(float x, float y)
     {
+        sliderTarget=0.0f;
         if(mContinueButton.isDown)
         {
             if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
@@ -686,6 +696,26 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             }
             mContinueButton.setUp();
         }
+        return false;
+    }
+
+    public boolean holdAndMove(float x,float y)
+    {
+        if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
+                x < mContinueButton.midx + (mContinueButton.sizx / 1.0f) &&
+                y > mContinueButton.midy - (mContinueButton.sizy / 1.0f) &&
+                y < mContinueButton.midy + (mContinueButton.sizy / 1.0f))
+        {
+            if(x>0.0f && x<0.3f)
+            {
+                slider=x;
+                sliderTarget=x;
+                if(x>=0.26f){return true;}
+            }
+        }
+
+
+
         return false;
     }
 

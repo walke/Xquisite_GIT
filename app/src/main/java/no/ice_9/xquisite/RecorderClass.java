@@ -59,6 +59,9 @@ public class RecorderClass extends SubAct{
 
     Thread recThread;
 
+    Timer UItimer;
+    Timer recTimer;
+
     boolean isRecording;
     boolean mUserReady;
     boolean mMainDone;
@@ -450,7 +453,8 @@ public class RecorderClass extends SubAct{
 
     private void startRecordingSequence()
     {
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        UItimer=new Timer();
+        UItimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if (isRecording)
@@ -471,7 +475,8 @@ public class RecorderClass extends SubAct{
 
             }
         },0,50);
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        recTimer=new Timer();
+        recTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 Log.d("RECORDER", "TIMER: rec");
@@ -768,6 +773,17 @@ public class RecorderClass extends SubAct{
     public void destroy() {
         super.destroy();
 
-        recThread.interrupt();
+        forceStopCapture();
+        UItimer.cancel();
+        UItimer.purge();
+        recTimer.cancel();
+        recTimer.purge();
+
+        if(recThread!=null)recThread.interrupt();
+
+        if(mRecorder!=null)mRecorder.release();
+        mCamera.release();
+
+
     }
 }

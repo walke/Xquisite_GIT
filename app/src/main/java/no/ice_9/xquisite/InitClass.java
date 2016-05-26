@@ -90,7 +90,7 @@ public class InitClass extends SubAct{
                     }*/
                     if(mTime==0 && !mAscii.isRage())
                     {
-                        Log.d("ASCII","toclear");
+                        Log.d("ASCII", "toclear");
                         //mAscii.clear();
                         //mLoadingDialog.dismiss();
                         mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
@@ -120,14 +120,15 @@ public class InitClass extends SubAct{
                         if(mServer.checkConnection())
                         {
 
-                            if(appData.sync())
+                            /*if(appData.sync())
                             {
                                 mServerConnection=1;
                             }
                             else
                             {
                                 mServerConnection=1;
-                            }
+                            }*/
+                            mServerConnection=1;
 
                         }
                         else
