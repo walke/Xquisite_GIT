@@ -683,6 +683,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public  boolean releaseClick(float x, float y)
     {
         sliderTarget=0.0f;
+        if(slider>0.26 || slider<-0.26){return true;}
 
         return false;
     }

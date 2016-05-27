@@ -213,8 +213,10 @@ public class PreRecorderClass extends SubAct{
         result[0]=-1;
         if(act==0)
         {
-            if (!isRecording)
+            if (isRecording)
             {
+                mUserReady = false;
+                forceStopCapture();
                 mCurrentSubPart++;
                 //PAUSE
             }
@@ -248,6 +250,20 @@ public class PreRecorderClass extends SubAct{
         else if(act==2)
         {
             //RECORD
+            if (!isRecording) {
+                mAscii.fillTrash();//?
+                mUserReady = true;
+                result[0] = -1;
+
+                if (mTime == 1) {
+                    mTime++;
+                }
+                if (mTime == 3) {
+                    mTime++;
+                    mTimeLeft = 0;
+                }
+            }
+
         }
 
         return result;
@@ -887,10 +903,17 @@ public class PreRecorderClass extends SubAct{
     public void destroy() {
         super.destroy();
         forceStopCapture();
-        UItimer.cancel();
-        UItimer.purge();
-        recTimer.cancel();
-        recTimer.purge();
+        if(UItimer!=null)
+        {
+            UItimer.cancel();
+            UItimer.purge();
+        }
+        if(recTimer!=null)
+        {
+            recTimer.cancel();
+            recTimer.purge();
+        }
+
 
         if(recThread!=null)recThread.interrupt();
 

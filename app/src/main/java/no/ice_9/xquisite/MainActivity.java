@@ -108,6 +108,7 @@ public class MainActivity extends Activity {
             return;
             //while(mUserWait);
          }
+        if(interInit){return;}
         switch(mCurrentAction)
         {
             /** init class initializes the application

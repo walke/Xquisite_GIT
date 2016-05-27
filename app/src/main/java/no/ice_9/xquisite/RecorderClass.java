@@ -457,14 +457,11 @@ public class RecorderClass extends SubAct{
         UItimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (isRecording)
-                {
+                if (isRecording) {
                     tAct.runOnUiThread(new Runnable() {
                         @Override
-                        public void run()
-                        {
-                            if(mRecorder!=null && mAscii.mReady)
-                            {
+                        public void run() {
+                            if (mRecorder != null && mAscii.mReady) {
                                 mAscii.mGLView.mRenderer.setAudio(mRecorder.getMaxAmplitude());
                             }
                         }
@@ -474,7 +471,7 @@ public class RecorderClass extends SubAct{
 
 
             }
-        },0,50);
+        }, 0, 50);
         recTimer=new Timer();
         recTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -498,7 +495,7 @@ public class RecorderClass extends SubAct{
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        mTimeLeft=mQuestion[mCurrentPart].time;
+                        mTimeLeft = mQuestion[mCurrentPart].time;
 
                         /*if (mCurrentPart == 0) {
                             mTimeLeft = FTIME;//FREE TIME
@@ -774,10 +771,16 @@ public class RecorderClass extends SubAct{
         super.destroy();
 
         forceStopCapture();
-        UItimer.cancel();
-        UItimer.purge();
-        recTimer.cancel();
-        recTimer.purge();
+        if(UItimer!=null)
+        {
+            UItimer.cancel();
+            UItimer.purge();
+        }
+        if(recTimer!=null)
+        {
+            recTimer.cancel();
+            recTimer.purge();
+        }
 
         if(recThread!=null)recThread.interrupt();
 
