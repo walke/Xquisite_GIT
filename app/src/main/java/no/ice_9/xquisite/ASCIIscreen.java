@@ -59,8 +59,7 @@ public class ASCIIscreen implements Serializable{
     XQGLSurfaceView mGLView;
 
     //STATIC LINE NUMBER
-    static private int lineCount=120
-            ;
+    static private int lineCount=120;
     private float lineHeight;
 
 
@@ -78,7 +77,7 @@ public class ASCIIscreen implements Serializable{
 
     Activity tAct;
 
-    AsciiCharSet mAsciiCharSet;
+    //AsciiCharSet mAsciiCharSet;
 
     TimerTask mUpdater;
     boolean mUpdating;
@@ -94,6 +93,8 @@ public class ASCIIscreen implements Serializable{
     /**
      * Ascii screen constructor
      * meant to be a visual representation of video data
+     * and other UI related content
+     * TODO: change class and objects names to be more straight forward
      * @param context activity context
      * @param actParent activity from where it is created
      */
@@ -104,7 +105,7 @@ public class ASCIIscreen implements Serializable{
 
 
         mActParent=actParent;
-        mAsciiCharSet=new AsciiCharSet("ASCII",null);
+        //mAsciiCharSet=new AsciiCharSet("ASCII",null);
         mUpdating=false;
         mLine=new String[lineCount];
         mLinePointer=0;
@@ -159,6 +160,7 @@ public class ASCIIscreen implements Serializable{
         //mAsciiStartUpdater(50);
     }
 
+    //TODO: remove?
     private void createUpdater()
     {
         mStopTime=-1;
@@ -193,7 +195,12 @@ public class ASCIIscreen implements Serializable{
     }
 
 
-
+    /**
+     * used to start updating the screen data
+     * might be not used anymore
+     * TODO: check usefullness
+     * @param rate
+     */
     public void mAsciiStartUpdater(int rate)
     {
         Log.d("ASCII","CREATING UPDATER");
@@ -208,6 +215,10 @@ public class ASCIIscreen implements Serializable{
 
     }
 
+    /**
+     * stop updating related to above
+     * @param delay
+     */
     public void mAsciiStopUpdater(int delay)
     {
         Log.d("ASCII","STOPPING UPDATER");
@@ -217,11 +228,19 @@ public class ASCIIscreen implements Serializable{
         mUpdating=false;
     }
 
+    /**
+     * was used to get line height that can be fit to the screen
+     * @return
+     */
     public float getTextSize()
     {
         return lineHeight;
     }
 
+    /**
+     * pushes line of text into info frame
+     * @param line line to be pushed
+     */
     public void pushLine(String line)
     {
         //Log.d("ASCII","line:"+line);
@@ -249,6 +268,12 @@ public class ASCIIscreen implements Serializable{
 
     }
 
+    /**
+     * modifies line of text in given position
+     * @param line Text to be replaced to
+     * @param ndx line index
+     * @param pos was used before as offset from first character
+     */
     public void modLine(String line, int ndx,int pos) {
         mGLView.mRenderer.putMsgString(line, ndx);
         //mGLView.putString(line,ndx,pos);
@@ -280,18 +305,28 @@ public class ASCIIscreen implements Serializable{
 
     }
 
+    /**
+     * currently not used, was used to make info frame smaller and bring video to focus
+     */
     public void minimizeInfo()
     {
-        Log.d("ASCII","MINIMIZING");
+        Log.d("ASCII", "MINIMIZING");
         mGLView.mRenderer.minimizeInfo();
     }
 
+    /**
+     * also not used, befor it brought info frame to focus
+     */
     public void maximizeInfo()
     {
         Log.d("ASCII","MAXIMIZING");
         mGLView.mRenderer.maximizeInfo();
     }
 
+    /**
+     * puts a custom image as ascii to the screen
+     * @param btm
+     */
     public void putImage(Bitmap btm)
     {
 
@@ -339,6 +374,12 @@ public class ASCIIscreen implements Serializable{
         }*/
     }
 
+    /**
+     * puts canvas as ascii to the screen
+     * TODO: check if necessary and if working
+     * currently not used
+     * @param cnvs
+     */
     public void putCanvas(Canvas cnvs)
     {
         Bitmap bitmap= Bitmap.createBitmap(cnvs.getWidth(),cnvs.getHeight(),Bitmap.Config.ARGB_8888);
@@ -350,8 +391,10 @@ public class ASCIIscreen implements Serializable{
     }
 
 
-
-
+    /**
+     * PUTS Random chars as ascii
+     * TODO: remove or remake
+     */
     public void fillTrash()
     {
 
@@ -376,12 +419,25 @@ public class ASCIIscreen implements Serializable{
 
     }
 
+    /**
+     * RAGE MODE- time when ascii are randomly generated
+     * TODO: remove or remake
+     * currently not used
+     * @param on
+     */
     public void setRage(boolean on)
     {
         if(on){mRage=true;}
         else{mRage=false;}
     }
+    public boolean isRage()
+    {
+        return mRage;
+    }
 
+    /**
+     * clears all ascii and text from info frame
+     */
     public void clear()
     {
 
@@ -404,14 +460,16 @@ public class ASCIIscreen implements Serializable{
         mReady=true;
     }
 
-    public boolean isRage()
-    {
-        return mRage;
-    }
+
+
 
 
 }
 
+/**
+ * GL Surface class
+ * MAIN UI surface responsible for all visual and interactive events
+ */
 class XQGLSurfaceView extends GLSurfaceView{
     //DEBUG TIME MEASURE
     long mMesTime=0;
@@ -421,6 +479,15 @@ class XQGLSurfaceView extends GLSurfaceView{
     private final Activity actContext;
     DisplayMetrics mMetrics;
 
+    boolean mMotionEngaged=false;
+
+    /**
+     * Constructor:
+     * @param context Context from main activity
+     * @param metrics Screen metrics
+     * @param lineCount Line count fitting to the screen TODO: remake for small screens
+     * @param asciiscreen passed UI-controller to GL Surface
+     */
     public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount,ASCIIscreen asciiscreen)
     {
         super(context);
@@ -452,6 +519,12 @@ class XQGLSurfaceView extends GLSurfaceView{
     private float mPreviousX;
     private float mPreviousY;
 
+    /**
+     * Here GL passes touch actions to the activity
+     * move, press, release
+     * @param e motion event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent e) {
 
@@ -464,11 +537,13 @@ class XQGLSurfaceView extends GLSurfaceView{
 
         switch (e.getAction()) {
             case MotionEvent.ACTION_MOVE:
+
                 int action=mRenderer.holdAndMove(x,y);
+                if(action!=0)mMotionEngaged=true;
                 e.setAction(action);
                 actContext.onTouchEvent(e);
-
-                if(mRenderer.holdAndMove(x,y)==2)
+                Log.d("ASCII", "ACT:"+action);
+                //if(mRenderer.holdAndMove(x,y)==2)
                 break;
             case MotionEvent.ACTION_DOWN:
                 mRenderer.setClick(x,y);
@@ -477,13 +552,14 @@ class XQGLSurfaceView extends GLSurfaceView{
             case MotionEvent.ACTION_UP:
                 if(mRenderer.releaseClick(x,y))
                 {
+                    mMotionEngaged=false;
                     e.setAction(0);
                     Log.d("ASCII","ACT0");
                     actContext.onTouchEvent(e);
                 }
-                if(mRenderer.getClick(x,y))
+                if(mRenderer.getClick(x,y) && !mMotionEngaged)
                 {
-                    e.setAction(0);
+                    e.setAction(3);
                     Log.d("ASCII","ACT0");
                     actContext.onTouchEvent(e);
                 }
@@ -495,12 +571,23 @@ class XQGLSurfaceView extends GLSurfaceView{
         return true;
     }
 
+    /**
+     * not used anymore
+     * was used to put line of text inbetween ascii characters
+     * @param str text
+     * @param row offset from top
+     * @param pos offset from right
+     */
     public void putString(String str,int row,int pos)
     {
         Log.d("ASCII","line:"+str);
         mRenderer.putString(str, row, pos);
     }
 
+    /**
+     * put image as ascii
+     * @param bitmap
+     */
     public void putImage(Bitmap bitmap)
     {
         int h=bitmap.getHeight();
@@ -531,20 +618,16 @@ class XQGLSurfaceView extends GLSurfaceView{
         bitmap.recycle();
     }
 
-    public void setText()
-    {
-
-    }
-
 
 
 }
 
 
+//OLD ASCII SET
+//TODO: remove
 
-
-
-class AsciiCharSet extends Charset {
+/*
+class AsciiCharSet extends Charset {*/
     /**
      * Constructs a <code>Charset</code> object. Duplicated aliases are
      * ignored.
@@ -555,7 +638,7 @@ class AsciiCharSet extends Charset {
      *                                     <code>canonicalName</code> or for any element of
      *                                     <code>aliases</code>.
      */
-    protected AsciiCharSet(String canonicalName, String[] aliases) {
+    /*protected AsciiCharSet(String canonicalName, String[] aliases) {
         super(canonicalName, aliases);
     }
 
@@ -571,7 +654,7 @@ class AsciiCharSet extends Charset {
         return new CharsetDecoder(this,0.25f,0.25f) {
             @Override
             protected CoderResult decodeLoop(ByteBuffer in, CharBuffer out) {
-                int a;
+                int a;*/
                 /*while(in.remaining()>0)
                 {
                     if(out.remaining()>0)
@@ -585,7 +668,7 @@ class AsciiCharSet extends Charset {
                     }
 
                 }*/
-                while(in.remaining()>0)
+                /*while(in.remaining()>0)
                 {
                     a=0;
                     a+=in.get();
@@ -618,3 +701,4 @@ class AsciiCharSet extends Charset {
         };
     }
 }
+*/

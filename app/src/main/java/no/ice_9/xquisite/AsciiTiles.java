@@ -10,9 +10,19 @@ import java.nio.ShortBuffer;
 
 /**
  * Created by human on 01.04.16.
+ *
+ * GL object
+ * Plane mesh consists of XxY planes with dynamically mapped texture of ascii symbols
+ * used to visualize video or other data with some GL filter(currently ASCII)
+ * represents filtered video/still/text in form of matrix of ascii symbols
+ * TODO: combine all GL classes to one? to many similarities
  */
 public class AsciiTiles
 {
+    /**
+     * SHADER USED IN THIS OBJECT translates pixel data to a value 0-255
+     * that value is being used to map a texture made of 8x32 ascii symbols
+     */
     //ASCI TILES FULL SHADERS
     private final String vertexTileFullShaderCode =
             //"#extension GL_OES_EGL_image_external : require \n"+
@@ -76,10 +86,14 @@ public class AsciiTiles
                     //"  gl_FragColor = vec4(avalRow,0.0,0.0,1.0);" +
                     "}";
 
+    //3 textures are used in this object:
+    //1. main texture that contains an image of ascii symbols FONT can be changed by changing that image
     private int textureRef = -1;
     private int fsTexture;
+    //2. ascii-value texure translates text to pixel data to manually write text on top of video or image
     private int avalTextureRef = -1;
     private int avalfsTexture;
+    //3. image data like video or still to translate to ascii value
     private int vidTextureRef = -1;
     private int vidfsTexture;
 
@@ -92,32 +106,41 @@ public class AsciiTiles
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    float tileCoords[];
-    /*float tileCoords[] = {   // in counterclockwise order:
-            0.1f, 0.1f, 0.0f, // top
-            0.1f, 0.9f, 0.0f, // bottom left
-            0.9f, 0.1f, 0.0f, // bottom left
-            0.9f, 0.9f, 0.0f  // bottom right
-    };*/
 
-    //private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
+    //holder of all vertices
+    float tileCoords[];
+
+    //holder of indices
     private short drawOrder[];
 
+    //texture coordinates per vertex
     static final int COORDS_PER_TEXTURE = 2;
+
+    //holders for texture coordinates
     float[] tileTextureCoords;
     float[] tileAvalTextureCoords;
     float[] tileVidTextureCoords;
 
 
 
-    // Set color with red, green, blue and alpha (opacity) values
+    //Color tint of the final ascii image for now it is white and probably will remain, so can be used to pass any other 4 bytes of data to shader
     float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+    //shader program
     private final int mProgram;
 
 
+    /**
+     * Constructor:
+     * @param totx total number of ascii tiles in x direction
+     * @param toty total number of ascii tiles in y direction
+     * @param texture FONT texture
+     * @param avalTexture ASCII-VALUE texture
+     * @param videoTexture VIDEOPIXEl-VALUE texure
+     */
     public AsciiTiles(int totx,int toty, int texture, int avalTexture, int videoTexture) {
 
+        //assign above shaders to this object
         int vertexFullShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexTileFullShaderCode);
         int fragmentFullShader = XQGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
@@ -135,6 +158,7 @@ public class AsciiTiles
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(mProgram);
 
+        //create all tiles and its texture mapping coordinates
         tileCoords            =   new float[totx*toty*COORDS_PER_VERTEX*4];
         tileTextureCoords     =   new float[totx*toty*COORDS_PER_TEXTURE*4];
         tileAvalTextureCoords =   new float[totx*toty*COORDS_PER_TEXTURE*4];
@@ -143,7 +167,7 @@ public class AsciiTiles
 
         //vertcord
         float xscal=2/(float)totx;
-        float yscal=2/(float)toty;//TODO: REMOVE OFFSET
+        float yscal=2/(float)toty;//TODO: REMOVE OFFSET?
 
         //avalcord
         float xavscal=1.0f/(float)totx;
@@ -154,7 +178,7 @@ public class AsciiTiles
         float yvdscal=xavscal;
 
 
-
+        //for every tile calculate all coordinates for textures and position in space
         for(int j=0;j<toty;j++)
         {
             float yd=yscal*j;
@@ -237,7 +261,7 @@ public class AsciiTiles
 
 
 
-
+        //init buffers
         ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
         byteBuffer.order(ByteOrder.nativeOrder());
         vertexBuffer = byteBuffer.asFloatBuffer();
@@ -278,6 +302,7 @@ public class AsciiTiles
 
     }
 
+    
     private int mPositionHandle;
     private int mColorHandle;
     private int mTextureHandle;

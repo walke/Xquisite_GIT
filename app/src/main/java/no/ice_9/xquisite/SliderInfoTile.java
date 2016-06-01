@@ -8,10 +8,9 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * Created by human on 01.04.16.
+ * Created by human on 30.05.16.
  */
-public class ButtonTile {
-
+public class SliderInfoTile {
     public boolean isRecording=false;
     private float recBlink=0.0f;
     private boolean recBlinkUp=true;
@@ -27,7 +26,7 @@ public class ButtonTile {
     private int fsTexture;
 
     private final String vertexInfoTileShaderCode =
-                    "attribute vec2 TexCoordIn;" +
+            "attribute vec2 TexCoordIn;" +
                     "varying vec2 TexCoordOut;" +
                     "uniform mat4 uMVPMatrix;" +
                     "attribute vec4 vPosition;" +
@@ -44,10 +43,10 @@ public class ButtonTile {
                     "varying lowp vec2 TexCoordOut;" +
                     "void main() {" +
                     "   vec4 col = texture2D(Texture, TexCoordOut);"+//
-                    "   col.a=col.a;"+
-                    "   col.r=vColor.g;"+
-                    "   col.b=vColor.b;"+
-                    "   col.g=vColor.b;"+
+                    "   col.a=(vColor.r*col.r)+((1.0-vColor.r)*col.b);"+
+                    "   col.r=col.r;"+
+                    "   col.b=col.b;"+
+                    "   col.g=col.g;"+
                     "   gl_FragColor =  col;" +
                     "}";
 
@@ -60,26 +59,37 @@ public class ButtonTile {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     float tileCoords[] = {   // in counterclockwise order:
-            -1.0f, -1.0f, 0.1f, // top
-            -1.0f,  1.0f, 0.1f, // bottom left
-            1.0f, -1.0f, 0.1f, // bottom left
-            1.0f,  1.0f, 0.1f  // bottom right
+            -1.0f, 1.0f, -0.12f, // bottom left
+            -1.0f,  -1.0f, -0.12f, // bottom left
+            0.0f,  1.0f, -0.12f, // bottom left
+            0.0f, -1.0f, -0.12f, // top
+
+            0.0f,  1.0f, -0.12f, // bottom left
+            0.0f, -1.0f, -0.12f, // top
+            1.0f, 1.0f, -0.12f, // top
+            1.0f,  -1.0f, -0.12f,  // bottom right
+
     };
 
     static final int COORDS_PER_TEXTURE = 2;
     float TextureCoords[] = {   // in counterclockwise order:
             0f, 0f,  // top
-            0f, 1f,  // bottom left
+            0f, 0.5f,  // bottom left
             1f, 0f,  // bottom left
+            1f, 0.5f,  // bottom right
+
+            0f, 0.5f,  // top
+            0f, 1f,  // bottom left
+            1f, 0.5f,  // bottom left
             1f, 1f  // bottom right
     };
 
-    private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
+    private short drawOrder[] = { 0, 1, 2, 1, 2, 3, 4, 5, 6, 5, 6, 7 }; // order to draw vertices
 
     // Set color with red, green, blue and alpha (opacity) values
     float color[] = { 0.8f, 0.8f, 0.0f, 1.0f };
 
-    public ButtonTile(float mx,float my, float sx, float sy, int texture)
+    public SliderInfoTile(float mx,float my, float sx, float sy, int texture)
     {
         midx=mx;
         midy=my;
@@ -160,7 +170,7 @@ public class ButtonTile {
         else
         {
             if(recBlink>0.0)
-            recBlink-=0.02f;
+                recBlink-=0.02f;
         }
         if(recBlink>0.4)
         {
@@ -217,9 +227,9 @@ public class ButtonTile {
                 GLES20.GL_FLOAT, false,
                 textureStride, textureBuffer);
 
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE3);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE4);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureRef);
-        GLES20.glUniform1i(fsTexture, 3);
+        GLES20.glUniform1i(fsTexture, 4);
 
         //GLES20.glEnableVertexAttribArray(mPositionHandle);
         GLES20.glEnableVertexAttribArray(mTextureHandle);

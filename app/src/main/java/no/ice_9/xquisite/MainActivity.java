@@ -35,19 +35,22 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+/**
+ * Main, currently only activity in the application
+ */
 public class MainActivity extends Activity {
 
+    //database
     DeviceData mDeviceData;
 
 
-    //Data appData;
 
-    SubAct currentSubActivity;
 
 
     //CURRENT ACTION
     private int mCurrentAction=0;
+    //"subactivity" to store objects for active actions
+    SubAct currentSubActivity;
 
     //ACII LAYER
     public ASCIIscreen mAscii;
@@ -84,13 +87,14 @@ public class MainActivity extends Activity {
         mUserWait=false;
         interSkip=skip;
         interInit=false;
-        glTouch(0);
+        glTouch(3);
 
     }
 
     /**
      * Main RED button action
      * executes action of the current subActivity (class)
+     * @param extra action passed by touch of the screen from GLView class or simulated from other classes
      */
     public void glTouch(int extra)
     {
@@ -98,7 +102,7 @@ public class MainActivity extends Activity {
         //CreateNewStory();
         int[] result;
         int res=-1;
-        if(mUserWait && !interInit)
+        if(mUserWait && !interInit && extra==3)
         {
             //mCurrentAction=-2;
             DialogFragment dg= new InterviewSkip();
@@ -116,6 +120,7 @@ public class MainActivity extends Activity {
             case 0:
                 result=currentSubActivity.action(extra);
                 res=result[0];
+                if(res==-1)return;
                 if(interSkip) {
                     mCurrentAction++;
                     interSkip=false;
@@ -168,7 +173,11 @@ public class MainActivity extends Activity {
                 break;
         }
 
-
+        /**
+         * if touch triggers a "subactivity" exit action
+         * following is being executed
+         * subactivity is being purged and next one is created
+         */
         if(res!=-1)
         {
 
@@ -214,7 +223,7 @@ public class MainActivity extends Activity {
                 break;
 
             case 1:
-                currentSubActivity=new PreRecorderClass(this,mAscii,mServer);
+                currentSubActivity=new InterviewClass(this,mAscii,mServer);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
@@ -227,7 +236,7 @@ public class MainActivity extends Activity {
                 break;
 
             case 3:
-                currentSubActivity=new RecorderClass(this,mAscii,mServer,mParent,mReservedStory,mPartOffset);
+                currentSubActivity=new StoryRecClass(this,mAscii,mServer,mParent,mReservedStory,mPartOffset);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
@@ -243,10 +252,11 @@ public class MainActivity extends Activity {
     }
 
 
-
-
-
-    //TODO: fix on touch event
+    /**
+     * passes action forward from GLView to FUNC: glTouch()
+     * @param event event passed by Touch action
+     * @return for now unused TODO: make void if no use is planned
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
@@ -258,6 +268,9 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    /**
+     * TODO: fix activity lifecicle to get proper pause, stop, restart without crashing and returning to last user access point
+     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -332,12 +345,19 @@ public class MainActivity extends Activity {
         Log.d("MAIN", "restarted");
     }
 
+    /**
+     * Creates an activity and initializes all necessary variables and objects
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("MAIN", "created");
+
+        //DATABASE
         mDeviceData=new DeviceData(this);
 
+        //CURRENT ACTION
         mCurrentAction=0;
 
 
@@ -345,54 +365,31 @@ public class MainActivity extends Activity {
 
 
 
-
+        //SERVER SYNC for later sync use
         mSync=false;
 
+        //STORY RELATED VARIABLES
         mParent=-1;
         mParentParts=-1;
         mReservedStory=-1;
         mPartOffset=-1;
 
 
+        //STATE of user interactions
         mUserWait=true;
         interSkip=false;
 
-        //mDeviceData.setDeviceId(2);
 
-        //int id=mDeviceData.getDeviceId();
-
-        //Log.d("MAIN","DEVID:"+id);
-
-        //if(mDeviceData==null)return;
 
         //SERVER
-        //mServer=new Server(this,appData);
         mServer=new Server(this,mDeviceData);
 
-        //GET DATA
-        //appData=new Data(this,mServer);
-
-        //mServer.mData=appData;
-
-
-        //CHECK CONNECTION DURING RUNNING
 
 
         Log.d("ASCII","main created");
 
 
-
-        /*try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // Restore interrupt status.
-            Thread.currentThread().interrupt();
-        }*/
-
-
-        //finish();
-
-        //setContentView(R.layout.activity_main);
+        //force screen to be on while app is running unless power button is pressed
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         //GET GLES
@@ -405,7 +402,7 @@ public class MainActivity extends Activity {
         mTimer=new Timer();
 
 
-        //AUTOBOT
+        //AUTOBOT used for running tests and simulate user interactions
         /*TimerTask auto= new TimerTask() {
             @Override
             public void run() {
@@ -420,6 +417,8 @@ public class MainActivity extends Activity {
 
         new Timer().scheduleAtFixedRate(auto, 0, 4000);*/
 
+
+        //CHECK CONNECTION not used in offline version TODO: rewrite to own function
         /*TimerTask conCheck= new TimerTask() {
             @Override
             public void run() {
@@ -453,8 +452,10 @@ public class MainActivity extends Activity {
 
             /*}};
 
+
         new Timer().scheduleAtFixedRate(conCheck, 0, 16000);*/
 
+        //SYNC THREAD
         /*TimerTask sync= new TimerTask() {
             @Override
             public void run() {
@@ -483,20 +484,28 @@ public class MainActivity extends Activity {
 
     }
 
+    /**
+     * Override to avoid accidental back button press
+     * in develop mode enable database viewing
+     */
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        //UNCOMMENT TO GET DATA ON BACK PRESSED
+        //UNCOMMENT TO GET DATABASE ON BACK PRESSED
         /*Intent intent = new Intent(this, BrowserActivity.class);
         startActivity(intent);*/
     }
 
 
-
+    /**
+     * THIS AND NEXT FUNCTIONS ARE NOT USED BUT COULD BE??
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -505,12 +514,12 @@ public class MainActivity extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        //int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        //if (id == R.id.action_settings) {
+        //    return true;
+        //}
 
         return super.onOptionsItemSelected(item);
     }
@@ -584,8 +593,8 @@ class SubAct
     }
 }
 
-/**
- * TODO: Check through, maybe delete
+/**OLD DATABASE CLASS
+ * TODO: Check through any useful stuff, delete
  */
 /*class Data
 {

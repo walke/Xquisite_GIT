@@ -44,6 +44,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private float slider=0.0f;
     private float sliderTarget=0.0f;
+    private boolean mSlidGrub=false;
 
 
     private float mRatio=1f;
@@ -54,6 +55,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     float[] scratch3;// = new float[16];
     float[] scratch4;// = new float[16];
     float[] scratch5;// = new float[16];
+    float[] scratch6;// = new float[16];
 
     float[] mtx = new float[16];
 
@@ -72,10 +74,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private AudioTile mAudioTile;
     private ProgressTile mProgressTile;
     private NetworkLed mNetworkLed;
+    private SliderInfoTile mSliderInfo;
 
 
     //TEXTURES
-    public int[] textures = new int[4];
+    public int[] textures = new int[5];
     Bitmap mBitmap;
     public SurfaceTexture mSurface;
 
@@ -95,7 +98,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public ASCIIscreen view;
 
 
-
+    boolean mRecSequence=false;
 
 
     private boolean clearDone=true;
@@ -145,6 +148,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mProgressTile =     new ProgressTile();
 
         mNetworkLed=        new NetworkLed(-0.95f,0.95f,0.02f,0.02f*mRatio,textures[3]);
+
+        mSliderInfo=        new SliderInfoTile(0.0f,-0.45f,0.5f,0.1f,textures[4]);
 
 
 
@@ -203,8 +208,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         scratch2=mTranslationMatrix.clone();
         scratch3=mTranslationMatrix.clone();
         scratch=mTranslationMatrix.clone();
-        scratch4=mTranslationMatrix.clone();
+        //scratch4=mTranslationMatrix.clone();
         scratch5=mTranslationMatrix.clone();
+        scratch6=mTranslationMatrix.clone();
         Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
 
 
@@ -216,6 +222,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //int sy=asciirows;
         //int k=0;
 
+        //ASCII TILES
         mAsciiTiles.draw();
         /*for(int j=0;j<sy;j++)
         {
@@ -228,13 +235,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
 
+        //TEXT BACKGROUND
         mInfoTile.draw(mTranslationMatrix);
 
-        Matrix.translateM(scratch4, 0, mProgressTile.midx, mProgressTile.midy, 1.0f);
+        //PROGRESS BAR
+        /*Matrix.translateM(scratch4, 0, mProgressTile.midx, mProgressTile.midy, 1.0f);
         Matrix.scaleM(scratch4, 0, mProgressTile.sizx+progress*2f, mProgressTile.sizy, 0.0f);
 
-        mProgressTile.draw(scratch4);
+        mProgressTile.draw(scratch4);*/
 
+        //TEXT LINES
         float hoffset=0.0f;
         float tothoffset=0.0f;
         for(int j=0;j<activeLine+1.0f;j++)
@@ -251,17 +261,32 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         }
 
+        //SLIDER INFO
+        if(mRecSequence)
+        {
+            Matrix.translateM(scratch5, 0, mSliderInfo.midx, mSliderInfo.midy, 1.0f);
+            Matrix.scaleM(scratch5, 0, mSliderInfo.sizx, mSliderInfo.sizy, 0.0f);
+
+            mSliderInfo.draw(scratch5);
+        }
+
+
+        //BUTTON
         mContinueButton.midx=slider;
         Matrix.translateM(scratch2, 0, mContinueButton.midx, mContinueButton.midy, 1.0f);
         Matrix.scaleM(scratch2, 0, mContinueButton.sizx, mContinueButton.sizy, 0.0f);
 
         mContinueButton.draw(scratch2);
 
+
+
+        //AUDIO BAR
         Matrix.translateM(scratch3, 0, mAudioTile.midx, mAudioTile.midy, 1.0f);
         Matrix.scaleM(scratch3, 0, mAudioTile.sizx, mAudioTile.sizy, 0.0f);
 
         mAudioTile.draw(scratch3);
 
+        //NETWORK LED
         Matrix.translateM(scratch5, 0, mNetworkLed.midx, mNetworkLed.midy, 1.0f);
         Matrix.scaleM(scratch5, 0, mNetworkLed.sizx, mNetworkLed.sizy, 0.0f);
         mNetworkLed.draw(scratch5);
@@ -322,42 +347,17 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private void animInfo()
     {
         if(infoStatus!=infoTarget)
-        //if(infoStatus<(infoTarget-0.0001f) || infoStatus>(infoTarget+0.0001f))
-        //if(infoTarget!=infoStatus)
+
         {
-            //Log.d("ASCII","H"+mInfoTile.sizy);
+
 
             infoStatus+=(infoTarget-infoStatus)/10.0f;
-            //mInfoTile.midx=0.0f;
-            //mInfoTile.midy=(infoStatus-0.2f)-0.8f;
-            //mInfoTile.sizx=1.0f;
+
             mInfoTile.sizy=(infoStatus+0.2f)*2f;
-                    /*mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
-                    mInfoTile.midy+=(((infoStatus-0.2f)-0.8f)-mInfoTile.midy)/10.0f;
-                    mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
-                    mInfoTile.sizy+=(infoTarget-mInfoTile.sizy)/10.0f;*/
 
-            //infoHeight=infoHeight+(0.3f-infoHeight)/10.0f;
-            //infoTop=infoTop+(-0.85f-infoTop)/10.0f;
 
-            //mContinueButton.midx+=(0.9f-mContinueButton.midx)/10.0f;
-            //float icalc=((infoStatus-0.2f)*(1f/0.8f));
+
             mContinueButton.midy=infoStatus*0.8f+(1.0f-infoStatus)*-0.5f;
-            //mContinueButton.sizx+=(0.1f-mContinueButton.sizx)/10.0f;
-            //mContinueButton.sizy+=(0.2f-mContinueButton.sizy)/10.0f;
-
-            //if(mInfoTile.sizy>0.2f-0.01f || mInfoTile.sizy<0.2f+0.01f){infoStatus=infoTarget;}
-
-
-
-
-                   /* mInfoTile.midx+=(0.0f-mInfoTile.midx)/10.0f;
-                    mInfoTile.midy+=(-0.0f-mInfoTile.midy)/10.0f;
-                    mInfoTile.sizx+=(1.0f-mInfoTile.sizx)/10.0f;
-                    mInfoTile.sizy+=(1.0f-mInfoTile.sizy)/10.0f;
-                    infoHeight=infoHeight+(1.0f-infoHeight)/10.0f;*/
-
-            //if(mInfoTile.sizy>1.0f-0.01f || mInfoTile.sizy<1.0f+0.01f){infoStatus=infoTarget;}
 
 
 
@@ -369,10 +369,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             activeLine+=(activeLineTarget-activeLine)/10.0f;
         }
 
-        if (progress!=progressTarget)
+       /* if (progress!=progressTarget)
         {
             progress+=(progressTarget-progress)/10.0f;
-        }
+        }*/
 
         if(slider!=sliderTarget)
         {
@@ -418,7 +418,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         //GLES20.glGenTextures(2, textures, 2);
 
-        Random r= new Random();
+        //Random r= new Random();
 
         for(int i=0;i<asciicols;i++)
         {
@@ -489,6 +489,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         int butMaskTex=loadTexture(actContext,R.drawable.continuebutfull);
         textures[3]=butMaskTex;
+
+        //TEXTURE 4
+        mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+
+        int SliderMaskTex=loadTexture(actContext,R.drawable.slider);
+        textures[4]=SliderMaskTex;
 
 
 
@@ -677,11 +684,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 y<mContinueButton.midy+(mContinueButton.sizy/1.0f))
         {
             mContinueButton.setDown();
+            mSlidGrub=true;
         }
 
     }
     public  boolean releaseClick(float x, float y)
     {
+        mSlidGrub=true;
         sliderTarget=0.0f;
         if(slider>0.26 || slider<-0.26){return true;}
 
@@ -708,19 +717,19 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public int holdAndMove(float x,float y)
     {
-        if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
-                x < mContinueButton.midx + (mContinueButton.sizx / 1.0f) &&
-                y > mContinueButton.midy - (mContinueButton.sizy / 1.0f) &&
-                y < mContinueButton.midy + (mContinueButton.sizy / 1.0f))
+
+        if (mSlidGrub && mRecSequence)
         {
             if(x>-0.3f && x<0.3f)
             {
                 slider=x;
                 sliderTarget=x;
-                if(x>=0.26f){return 1;}
-
-                if(x<=-0.26f){return 2;}
             }
+
+                if(slider>=0.26f){return 1;}
+
+                if(slider<=-0.26f){return 2;}
+
         }
 
 
@@ -768,6 +777,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 mNetworkLed.setLedLoad();
             }
         }
+    }
+
+    public void setRecSequence(boolean rec)
+    {
+        mRecSequence=rec;
     }
 
 

@@ -62,7 +62,13 @@ public class InitClass extends SubAct{
     {
         int[]result=new int[1];
         result[0]=-1;
-        if(mInitDone)result[0]=1;
+        if(act==3)
+        {
+            if(mInitDone)result[0]=1;
+        }
+
+
+
 
         return result;
     }
