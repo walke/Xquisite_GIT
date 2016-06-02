@@ -9,6 +9,12 @@ import java.nio.ShortBuffer;
 
 /**
  * Created by human on 01.04.16.
+ *
+ * GL Object
+ * currently there is only one button and now it is also a slider
+ * used to navigate user to touch a curtain point on the screen and indicate recording status
+ *
+ * one plane 4 vertices
  */
 public class ButtonTile {
 
@@ -26,6 +32,9 @@ public class ButtonTile {
     private int textureRef = -1;
     private int fsTexture;
 
+    /**
+     * Shader here takes texture of the button and mixes it with dynamical color data
+     */
     private final String vertexInfoTileShaderCode =
                     "attribute vec2 TexCoordIn;" +
                     "varying vec2 TexCoordOut;" +
@@ -51,8 +60,10 @@ public class ButtonTile {
                     "   gl_FragColor =  col;" +
                     "}";
 
+    //shader program
     private final int mProgram;
 
+    //buffers
     private FloatBuffer vertexBuffer;
     private ShortBuffer indexBuffer;
     private FloatBuffer textureBuffer;
@@ -60,23 +71,23 @@ public class ButtonTile {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
     float tileCoords[] = {   // in counterclockwise order:
-            -1.0f, -1.0f, 0.1f, // top
-            -1.0f,  1.0f, 0.1f, // bottom left
-            1.0f, -1.0f, 0.1f, // bottom left
-            1.0f,  1.0f, 0.1f  // bottom right
+            -1.0f, -1.0f, 0.1f,
+            -1.0f,  1.0f, 0.1f,
+            1.0f, -1.0f, 0.1f,
+            1.0f,  1.0f, 0.1f
     };
 
     static final int COORDS_PER_TEXTURE = 2;
     float TextureCoords[] = {   // in counterclockwise order:
-            0f, 0f,  // top
-            0f, 1f,  // bottom left
-            1f, 0f,  // bottom left
-            1f, 1f  // bottom right
+            0f, 0f,
+            0f, 1f,
+            1f, 0f,
+            1f, 1f
     };
 
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
 
-    // Set color with red, green, blue and alpha (opacity) values
+    // Initial color of the button ?
     float color[] = { 0.8f, 0.8f, 0.0f, 1.0f };
 
     public ButtonTile(float mx,float my, float sx, float sy, int texture)
@@ -134,6 +145,11 @@ public class ButtonTile {
     private int mMVPMatrixHandle;
     private int mTextureHandle;
 
+    /**
+     * drawing function
+     * also calculates color value
+     * @param mvpMatrix
+     */
     public void draw(float[] mvpMatrix)
     {
         if(isRecording)
@@ -194,7 +210,7 @@ public class ButtonTile {
         fsTexture = GLES20.glGetUniformLocation(mProgram, "Texture");
         //if (fsTexture == -1) Log.e("ASCII", "Texture not found");
 
-        // Set color for drawing the triangle
+        //
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
         // get handle to shape's transformation matrix
@@ -205,10 +221,10 @@ public class ButtonTile {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         //MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
-        // Enable a handle to the triangle vertices
+        //
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-        // Prepare the triangle coordinate data
+        //
         GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
@@ -237,6 +253,9 @@ public class ButtonTile {
         GLES20.glDisableVertexAttribArray(mTextureHandle);
     }
 
+    /**
+     * sets button to pressed state
+     */
     public void setDown()
     {
         isDown=true;
@@ -248,6 +267,10 @@ public class ButtonTile {
 
 
     }
+
+    /**
+     * sets button to idle state
+     */
     public void setUp()
     {
         isDown=false;

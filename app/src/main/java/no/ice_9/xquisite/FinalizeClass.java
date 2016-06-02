@@ -10,6 +10,8 @@ import java.util.TimerTask;
 
 /**
  * Created by human on 03.04.16.
+ *
+ * Last subactivity, mostly used to thank user for participating and sending him back to start
  */
 public class FinalizeClass extends SubAct{
 
@@ -23,7 +25,7 @@ public class FinalizeClass extends SubAct{
     public boolean mInitDone=false;
 
 
-    //@Override
+
     public FinalizeClass(Activity activity,ASCIIscreen ascii,Server server)
     {
 
@@ -38,7 +40,7 @@ public class FinalizeClass extends SubAct{
     public int[] action(int act)
     {
         int[] result=new int[1];
-        System.gc();
+        System.gc();//garbage collector, maybe not necessary
         result[0]=1;
         return result;
     }

@@ -9,19 +9,31 @@ import java.io.FileOutputStream;
 
 /**
  * Created by human on 16.05.16.
+ *
+ * Local database
+ *
+ * made of blocks
+ * all blocks are written to single file TODO: think of better system! now file is being rewritten each time some block is being deleted. unsafe?
+ * this class is separated from DeviceData class to provide more flexible structure of database
+ *
  */
 public class DataBase {
 
-    File mDataFile;
-    byte[] mDataBuffer;
-    Block[] mDataBlocks;
+    File mDataFile;//data file
+    byte[] mDataBuffer; //memory for reading data file to memory TODO: read parts?
+    Block[] mDataBlocks; //memory for translating buffer to blocks
 
+    /**
+     * Structure of data block
+     */
     class Block
     {
-
+        //each block gets its part from total buffer TODO: 2x high memory consumtion!!
         byte[] mBuffer;
 
+        //Block id
         int mId;
+        //Block type id
         int mTypeId;
         /**
          *Block of data contains different data related to the application

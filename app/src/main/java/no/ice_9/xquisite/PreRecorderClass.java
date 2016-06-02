@@ -17,6 +17,8 @@ import java.util.TimerTask;
 
 /**
  * Created by human on 04.04.16.
+ *
+ * TODO: To be removed, was replaced by Interview class
  */
 public class PreRecorderClass extends SubAct{
 

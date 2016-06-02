@@ -11,6 +11,9 @@ import java.util.TimerTask;
 
 /**
  * Created by human on 23.03.16.
+ *
+ * First subactivity
+ * Introduces user to the application
  */
 public class InitClass extends SubAct{
 

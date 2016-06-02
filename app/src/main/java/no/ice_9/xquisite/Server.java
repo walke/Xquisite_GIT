@@ -26,6 +26,11 @@ import java.nio.ByteBuffer;
 
 /**
  * Created by HUMAN on 15.10.2015.
+ *
+ * Server class is used to communicate with server and sync stories
+ * TODO: right now is in an OFFLINE state and have many functions that are not used or being forced to return communicate with offline database instead of the server
+ * TODO: probably call it OFFLINE-Server and make an ONLINE SERVER that passes all database blocks to the server
+ *
  */
 public class Server {
 

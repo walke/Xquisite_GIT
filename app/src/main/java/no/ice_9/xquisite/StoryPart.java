@@ -2,6 +2,9 @@ package no.ice_9.xquisite;
 
 /**
  * Created by human on 06.11.15.
+ *
+ * Every story is made out of parts and each part is made out of few data-values
+ * this values are organized here to be used throughout whole application
  */
 public class StoryPart {
 

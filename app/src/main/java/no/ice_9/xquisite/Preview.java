@@ -11,6 +11,8 @@ import java.util.List;
 
 /**
  * Created by HUMAN on 17.10.2015.
+ *
+ * Used to create a sufrface from mediarecorder and pass to GL texture
  */
 public class Preview extends SurfaceView implements SurfaceHolder.Callback
 {

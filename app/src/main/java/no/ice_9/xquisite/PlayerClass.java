@@ -27,6 +27,9 @@ import java.util.TimerTask;
 
 /**
  * Created by human on 23.03.16.
+ *
+ * Player subactivity
+ * plays last part of the story
  */
 public class PlayerClass extends SubAct{
 

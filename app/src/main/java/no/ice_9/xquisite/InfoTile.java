@@ -10,6 +10,9 @@ import java.nio.ShortBuffer;
 
 /**
  * Created by human on 31.03.16.
+ *
+ * GL Object
+ * only purpose of it is to be a white background of info text
  */
 public class InfoTile {
 
@@ -119,10 +122,10 @@ public class InfoTile {
         GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
         //MyGLRenderer.checkGlError("glUniformMatrix4fv");
 
-        // Enable a handle to the triangle vertices
+        //
         GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-        // Prepare the triangle coordinate data
+        //
         GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);

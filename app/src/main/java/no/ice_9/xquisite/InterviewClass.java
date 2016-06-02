@@ -4,6 +4,9 @@ import android.app.Activity;
 
 /**
  * Created by human on 27.05.16.
+ *
+ * This is an extention of RecorderBase class to
+ * purpose of it to make Record an interview of the user in same way as story is being recorded
  */
 public class InterviewClass extends RecorderBase {
 

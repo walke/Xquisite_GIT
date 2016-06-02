@@ -4,6 +4,8 @@ import android.app.Activity;
 
 /**
  * Created by human on 27.05.16.
+ *
+ * this class is an extension of
  */
 public class StoryRecClass extends RecorderBase {
 

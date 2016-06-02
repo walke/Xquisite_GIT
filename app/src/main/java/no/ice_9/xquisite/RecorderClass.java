@@ -22,6 +22,7 @@ import java.util.TimerTask;
 
 /**
  * Created by human on 25.03.16.
+ * TODO: to be removed, was replaced by StoryRecClass, check for useful stuff
  */
 public class RecorderClass extends SubAct{
 

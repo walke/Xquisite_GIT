@@ -302,7 +302,7 @@ public class AsciiTiles
 
     }
 
-    
+
     private int mPositionHandle;
     private int mColorHandle;
     private int mTextureHandle;
@@ -313,6 +313,9 @@ public class AsciiTiles
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
     private final int textureStride = COORDS_PER_TEXTURE * 4; // 4 bytes per vertex
 
+    /**
+     * GL Drawing function
+     */
     public void draw() {
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
@@ -352,13 +355,10 @@ public class AsciiTiles
 
 
 
-        // Set color for drawing the triangle
+        //
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
-        // Enable a handle to the triangle vertices
-        //GLES20.glEnableVertexAttribArray(mPositionHandle);
 
-        // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
                 GLES20.GL_FLOAT, false,
                 vertexStride, vertexBuffer);
@@ -414,14 +414,17 @@ public class AsciiTiles
 
 
 
-        /*// Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, vertexCount);
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);*/
+
 
 
     }
 
+    /**
+     * Not used
+     * supposed to put custom character in the field
+     * TODO: check & remove
+     * @param ch
+     */
     public void putChar(char ch)
     {
 

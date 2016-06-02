@@ -16,6 +16,10 @@ import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * This activity is used by developer to browse database and review its consistancy while testing
+ * currently is basic tree view
+ */
 public class BrowserActivity extends AppCompatActivity {
 
     DeviceData mData;
@@ -51,6 +55,10 @@ public class BrowserActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
     }
 
+    /**
+     * clears database
+     * @param view method is launced by button press therefore View is passed but not used
+     */
     public void clearData(View view)
     {
         Log.d("BROWSER","clearing");
@@ -60,6 +68,9 @@ public class BrowserActivity extends AppCompatActivity {
         loadData();
     }
 
+    /**
+     * load local database to memory
+     */
     public void loadData()
     {
         /*LinearLayout ll = new LinearLayout(this);
@@ -80,6 +91,11 @@ public class BrowserActivity extends AppCompatActivity {
         //mTextView.setText(mDataText);
     }
 
+    /**
+     * if datablock points to another datablock it can be expanded and
+     *
+     * @param leaf Leaf to be expanded
+     */
     public void expandLeaf(dataleaf leaf)
     {
         mDataList.removeAllViews();
@@ -97,6 +113,9 @@ public class BrowserActivity extends AppCompatActivity {
 
 }
 
+/**
+ * tree leaf represents datablock can point to other leafs and have single line of text as a string
+ */
 class dataleaf
 {
     String title;
@@ -108,12 +127,20 @@ class dataleaf
     LinearLayout box;
 
 
+    /**
+     * Constructor of leaf
+     * @param t string to be shown as a title of leaf
+     */
     public dataleaf(String t)
     {
         expanded=false;
         title=t;
     }
 
+    /**
+     * adds pointer to another leaf
+     * @param leaf
+     */
     public void addLeaf(dataleaf leaf)
     {
         if(dataleafs==null)
@@ -132,6 +159,10 @@ class dataleaf
         dataleafs[dataleafs.length-1]=leaf;
     }
 
+    /**
+     * expand this leaf
+     * @param exp true/false
+     */
     public void expand(boolean exp)
     {
 
@@ -139,6 +170,11 @@ class dataleaf
 
     }
 
+    /**
+     * put this leaf to the UI
+     * @param parent parent Layout to put this leaf to
+     * @param act activity pointer
+     */
     public void print(LinearLayout parent,final BrowserActivity act)
     {
         LinearLayout titleLine=new LinearLayout(act);

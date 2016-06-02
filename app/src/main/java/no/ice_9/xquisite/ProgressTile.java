@@ -9,6 +9,8 @@ import java.nio.ShortBuffer;
 
 /**
  * Created by human on 02.04.16.
+ *
+ * Plane that changes size while user is recording a video or playing it back
  */
 public class ProgressTile {
 

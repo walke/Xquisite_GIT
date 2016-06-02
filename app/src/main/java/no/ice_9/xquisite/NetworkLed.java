@@ -9,6 +9,9 @@ import java.nio.ShortBuffer;
 
 /**
  * Created by human on 12.05.16.
+ *
+ * Small led in right upper corner, only to show connection to server status
+ * could be removed in final version or in any public version?
  */
 public class NetworkLed {
 

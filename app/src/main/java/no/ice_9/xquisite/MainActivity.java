@@ -558,6 +558,7 @@ public class MainActivity extends Activity {
 
 /**
  * class that is being used as a base for all subactivities : initclass, prerecorderclass, playerclass, recorder class, finalizeclass
+ * TODO: "Subactivity" is bad class name because class this class has nothing to do with android-activity
  */
 class SubAct
 {

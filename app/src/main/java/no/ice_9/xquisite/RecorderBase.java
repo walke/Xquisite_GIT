@@ -36,6 +36,10 @@ import java.util.TimerTask;
 
 /**
  * Created by human on 27.05.16.
+ *
+ * Recording subactivity
+ * used to record video and audio in parts and store them in a chain/tree database with direct relation to other stories
+ * TODO:fix mp4parser parts are not being combined properly
  */
 public class RecorderBase extends SubAct{
 

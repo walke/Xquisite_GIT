@@ -12,6 +12,8 @@ import java.util.List;
 
 /**
  * Created by human on 23.03.16.
+ *
+ * Is used to create a surface to be sent to GL texture from video player
  */
 public class PlayView extends SurfaceView implements SurfaceHolder.Callback
 {

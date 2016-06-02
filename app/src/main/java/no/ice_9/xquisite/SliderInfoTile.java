@@ -9,6 +9,8 @@ import java.nio.ShortBuffer;
 
 /**
  * Created by human on 30.05.16.
+ *
+ * Background of the slider
  */
 public class SliderInfoTile {
     public boolean isRecording=false;
