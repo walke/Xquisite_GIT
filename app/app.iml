@@ -95,8 +95,8 @@
     <orderEntry type="library" exported="" name="recyclerview-v7-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.1.0" level="project" />
+    <orderEntry type="library" exported="" name="isoparser-1.0-RC-27" level="project" />
     <orderEntry type="library" exported="" name="design-23.1.0" level="project" />
-    <orderEntry type="library" exported="" name="isoviewer-1.0-RC-35" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.0" level="project" />
   </component>
 </module>

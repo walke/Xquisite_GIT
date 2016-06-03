@@ -8,8 +8,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 
-
-import com.coremedia.iso.IsoFile;
+import com.coremedia.iso.boxes.FileTypeBox;
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -685,11 +684,17 @@ public class RecorderBase extends SubAct{
             fileToUpload=f.toString();
             OutputStream os = null;
             try {
+
                 Movie[] _clips=new Movie[mTmpPart.filearr.length];
                 for(int i=0; i<mTmpPart.filearr.length;i++){
 
+                    //Movie tm=MovieCreator.
+                    Log.d("RECORDER","trying!!!");
                     Movie tm = MovieCreator.build(mTmpPart.filearr[i]);
+
                     _clips[i]=tm;
+
+                    Log.d("RECORDER","TM:"+tm.toString());
 
                 }
 
@@ -708,25 +713,55 @@ public class RecorderBase extends SubAct{
                 }
 
                 Movie result = new Movie();
+                /*Track[] vidtrarr=new Track[videoTracks.size()];
+                Track[] audtrarr=new Track[videoTracks.size()];
 
-                if (audioTracks.size() > 0) {
-                    result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+                for(int i=0;i<videoTracks.size();i++)
+                {
+                    vidtrarr[i]=videoTracks.get(i);
+                    //result.addTrack(videoTracks.get(i));
+
+                    //Log.d("RECORDER","durtrV "+i+"-"+vidtrarr[i].getDuration());
                 }
+                for(int i=0;i<audioTracks.size();i++)
+                {
+                    audtrarr[i]=audioTracks.get(i);
+                    //result.addTrack(audioTracks.get(i));
+                    //Log.d("RECORDER","durtrA "+i+"-"+vidtrarr[i].getDuration());
+                }*/
+
+
+                //Track vidTot=new AppendTrack(vidtrarr);
+                //Track audTot=new AppendTrack(audtrarr);
+                //Log.d("RECORDER","durtrV "+"-"+vidTot.getDuration());
+                //Log.d("RECORDER","durtrA "+"-"+audTot.getDuration());
+
+                //result.addTrack(vidTot);
+                //result.addTrack(audTot);
+
+
                 if (videoTracks.size() > 0) {
                     result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
                 }
+                if (audioTracks.size() > 0) {
+                    result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+                }
 
+                Log.d("RECORDER","result"+result.toString());
 
                 Container out = new DefaultMp4Builder().build(result);
+                //IsoFile out = new DefaultMp4Builder().build(result);
 
                 FileChannel fc = new RandomAccessFile(String.format(f.toString()), "rw").getChannel();
+                //FileChannel fc2 =new FileOutputStream(f).getChannel();
                 out.writeContainer(fc);
+
                 fc.close();
 
                 if (os != null) {
                     os.close();
                 }
-            }catch (Exception io){}
+            }catch (Exception io){Log.e("RECORDER","err:" +io.getMessage());}
 
             mTmpPart.clear();
 
