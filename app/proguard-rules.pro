@@ -15,6 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keep class * implements com.coremedia.iso.boxes.Box { *; }
+-dontwarn com.coremedia.iso.boxes.**
+-dontwarn com.googlecode.mp4parser.authoring.tracks.mjpeg.**
+-dontwarn com.googlecode.mp4parser.authoring.tracks.ttml.**
 
--keep class com.coremedia.iso.boxes.** { *; }
--keep class com.googlecode.mp4parser.boxes.mp4.ESDescriptorBox { *; }

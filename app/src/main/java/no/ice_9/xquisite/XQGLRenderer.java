@@ -725,10 +725,20 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 slider=x;
                 sliderTarget=x;
             }
+            else if(x<-0.3f)
+            {
+                slider=-0.3f;
+                sliderTarget=-0.3f;
+            }
+            else if(x>0.3f)
+            {
+                slider=0.3f;
+                sliderTarget=0.3f;
+            }
 
-                if(slider>=0.26f){return 1;}
+            if(slider>=0.26f){return 1;}
 
-                if(slider<=-0.26f){return 2;}
+            if(slider<=-0.26f){return 2;}
 
         }
 

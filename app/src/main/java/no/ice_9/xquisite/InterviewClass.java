@@ -42,7 +42,7 @@ public class InterviewClass extends RecorderBase {
         mQuestion[1]=new Question("What is your email? (spell if needed)",60);//OLD 8
         mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60);//OLD 8
         mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60);//OLD 8
-        mQuestion[4]=new Question("Where did you grow up?",60);//OLD 8
+        mQuestion[4]=new Question("Describe briefly your earliest memory",60);//OLD 8
         mQuestion[5]=new Question("Would your close friends call you an optimist or pessimist about the future?",60);//OLD 8
         mQuestion[6]=new Question("What is your favorite science fiction story?",60);//OLD 8
         mQuestion[7]=new Question("Briefly describe your work and your research themes.",60);//OLD 8

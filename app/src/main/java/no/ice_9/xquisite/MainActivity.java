@@ -26,6 +26,9 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.util.TypedValue;
 
+import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
+import com.googlecode.mp4parser.boxes.mp4.objectdescriptors.ExtensionDescriptor;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -364,7 +367,6 @@ public class MainActivity extends Activity {
 
 
 
-
         //SERVER SYNC for later sync use
         mSync=false;
 
@@ -481,6 +483,20 @@ public class MainActivity extends Activity {
         };
 
         new Timer().scheduleAtFixedRate(sync, 0, 8000);*/
+
+        /*try {
+
+            MovieCreator.build(new File(getExternalFilesDir("VID").getPath(), "sub").getPath()+"/SUB_0.mp4");
+        }catch (Exception io)
+        {
+            Log.e("MAIN","err "+io);
+            StackTraceElement[] st=io.getStackTrace();
+            for(int i=0;i<st.length;i++)
+            {
+                Log.e("MAIN","msg "+st[i].toString());
+            }
+
+        }*/
 
     }
 

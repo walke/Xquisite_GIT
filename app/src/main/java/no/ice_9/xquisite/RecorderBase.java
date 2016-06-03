@@ -8,7 +8,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 
-import com.coremedia.iso.boxes.FileTypeBox;
+
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
@@ -512,13 +512,13 @@ public class RecorderBase extends SubAct{
         recTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                Log.d("RECORDER", "TIMER: rec");
+                //Log.d("RECORDER", "TIMER: rec");
                 if (mMainDone && mWorking) {
                     Log.d("RECORDER", "TIMER: exiting");
                     this.cancel();
 
                 } else if (tAct != null && mWorking) {
-                    Log.d("RECORDER", "user ready:" + mUserReady);
+                    //Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
                     if (!isRecording && mUserReady && !mMainDone) {
 
@@ -554,8 +554,8 @@ public class RecorderBase extends SubAct{
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
                                 //mAscii.modLine("RECORDING", 1, -1);
-                                //mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 3, -1);
-                                mAscii.modLine("-" + mTmpPart.filearr.length+":"+mCurrentSubPart, 3, -1);
+                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 3, -1);
+                                //mAscii.modLine("-" + mTmpPart.filearr.length+":"+mCurrentSubPart, 3, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 if (mCurrentPart >= 0) {
@@ -704,6 +704,7 @@ public class RecorderBase extends SubAct{
                 for (Movie m : _clips) {
                     for (Track t : m.getTracks()) {
                         if (t.getHandler().equals("soun")) {
+
                             audioTracks.add(t);
                         }
                         if (t.getHandler().equals("vide")) {
@@ -713,7 +714,7 @@ public class RecorderBase extends SubAct{
                 }
 
                 Movie result = new Movie();
-                /*Track[] vidtrarr=new Track[videoTracks.size()];
+                Track[] vidtrarr=new Track[videoTracks.size()];
                 Track[] audtrarr=new Track[videoTracks.size()];
 
                 for(int i=0;i<videoTracks.size();i++)
@@ -728,24 +729,24 @@ public class RecorderBase extends SubAct{
                     audtrarr[i]=audioTracks.get(i);
                     //result.addTrack(audioTracks.get(i));
                     //Log.d("RECORDER","durtrA "+i+"-"+vidtrarr[i].getDuration());
-                }*/
+                }
 
 
-                //Track vidTot=new AppendTrack(vidtrarr);
-                //Track audTot=new AppendTrack(audtrarr);
+                Track vidTot=new AppendTrack(vidtrarr);
+                Track audTot=new AppendTrack(audtrarr);
                 //Log.d("RECORDER","durtrV "+"-"+vidTot.getDuration());
                 //Log.d("RECORDER","durtrA "+"-"+audTot.getDuration());
 
-                //result.addTrack(vidTot);
-                //result.addTrack(audTot);
+                result.addTrack(vidTot);
+                result.addTrack(audTot);
 
 
-                if (videoTracks.size() > 0) {
+                /*if (videoTracks.size() > 0) {
                     result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
                 }
                 if (audioTracks.size() > 0) {
                     result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
-                }
+                }*/
 
                 Log.d("RECORDER","result"+result.toString());
 
