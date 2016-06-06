@@ -38,7 +38,7 @@ public class InterviewClass extends RecorderBase {
         //mQuestionTime=QTIME;
 
         mQuestion=new Question[NPARTS];
-        mQuestion[0]=new Question("What is your name?" ,60);//OLD 8
+        mQuestion[0]=new Question("What is your name?" ,5);//OLD 8
         mQuestion[1]=new Question("What is your email? (spell if needed)",60);//OLD 8
         mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60);//OLD 8
         mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60);//OLD 8

@@ -164,6 +164,7 @@ public class RecorderBase extends SubAct{
                 //NEXT PART
                 if(mCurrentSubPart>0)
                 {
+
                     mPauseRequest=false;
                     nextPart();
 
@@ -179,12 +180,14 @@ public class RecorderBase extends SubAct{
                     result[0] = -1;
                 }
                 if (mTime == 1) {
+                    Log.d("RECORDER","mtime=1");
                     mTime++;
                 }
                 if (mTime == 3) {
                     Log.d("RECORDER","mtiome");
                     mTime++;
-                    mTimeLeft = 0;
+                    //mTimeLeft = 0;
+                    forceStartCapture();
                 }
                 break;
         }
@@ -341,6 +344,7 @@ public class RecorderBase extends SubAct{
         mFilePath = tAct.getExternalFilesDir("VID").getPath();
 
         mCurrentPart=0;
+        mTimeLeft = mQuestion[mCurrentPart].time;
         //INIT CAMERA AND ALL IT DEPENDS ON
         initCamera(1);//for now camId = 1; asuming front facing camera.
 
@@ -440,12 +444,12 @@ public class RecorderBase extends SubAct{
                                 mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
                                 mAscii.modLine("", 4, 0);
                                 //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
-                                if (mTimeLeft <= 0) {
+                                /*if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
                                     mTimeElapsedPq=0;
                                     //forceStopCapture();
                                     forceStartCapture();
-                                }
+                                }*/
                             }
                         });
                     }
@@ -531,7 +535,7 @@ public class RecorderBase extends SubAct{
 
                             isRecording = true;//Probably can get that from mRecorder..
                         }
-                        mTimeLeft = mQuestion[mCurrentPart].time;
+                        //mTimeLeft = mQuestion[mCurrentPart].time;
                         //forceStopCapture();
                         /*if (mCurrentPart == 0) {
                             mTimeLeft = FTIME;//FREE TIME
@@ -566,6 +570,8 @@ public class RecorderBase extends SubAct{
                                     //mUserReady = false;
 
                                     //forceStopCapture();
+                                    pauseRecording();
+                                    nextPart();
 
                                 }
                             }
@@ -670,6 +676,7 @@ public class RecorderBase extends SubAct{
 
     private void nextPart()
     {
+        mTimeLeft = mQuestion[mCurrentPart].time;
         mAscii.mGLView.mRenderer.setProgress(0.0f,1);
         mAscii.mGLView.mRenderer.setRecording(false);
         mAscii.mGLView.mRenderer.setAudio(0);
