@@ -38,18 +38,18 @@ public class InterviewClass extends RecorderBase {
         //mQuestionTime=QTIME;
 
         mQuestion=new Question[NPARTS];
-        mQuestion[0]=new Question("What is your name?" ,5);//OLD 8
-        mQuestion[1]=new Question("What is your email? (spell if needed)",60);//OLD 8
-        mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60);//OLD 8
-        mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60);//OLD 8
-        mQuestion[4]=new Question("Describe briefly your earliest memory",60);//OLD 8
-        mQuestion[5]=new Question("Would your close friends call you an optimist or pessimist about the future?",60);//OLD 8
-        mQuestion[6]=new Question("What is your favorite science fiction story?",60);//OLD 8
-        mQuestion[7]=new Question("Briefly describe your work and your research themes.",60);//OLD 8
-        mQuestion[8]=new Question("What is the most exciting element of your research? ",60);//OLD 8
-        mQuestion[9]=new Question("What is the most challenging element of your work?",60);//OLD 8
-        mQuestion[10]=new Question("What are the most important environmental changes likely to happen in your field in the next 100 years?",60);//OLD 8
-        mQuestion[11]=new Question("How might this change affect human lives?",60);//OLD 8
+        mQuestion[0]=new Question("What is your name?" ,5,PART_TYPE_TEXT);//OLD 8
+        mQuestion[1]=new Question("What is your email? (spell if needed)",60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60,PART_TYPE_CHOOSE);//OLD 8
+        mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60,PART_TYPE_CHOOSE);//OLD 8
+        mQuestion[4]=new Question("Describe briefly your earliest memory",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[5]=new Question("Would your close friends call you an optimist or pessimist about the future?",60,PART_TYPE_CHOOSE);//OLD 8
+        mQuestion[6]=new Question("What is your favorite science fiction story?",60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[7]=new Question("Briefly describe your work and your research themes.",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[8]=new Question("What is the most exciting element of your research? ",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[9]=new Question("What is the most challenging element of your work?",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[10]=new Question("What are the most important environmental changes likely to happen in your field in the next 100 years?",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[11]=new Question("How might this change affect human lives?",60,PART_TYPE_VIDEO);//OLD 8
 
         for (int i=0;i<mQuestion.length;i++)
         {

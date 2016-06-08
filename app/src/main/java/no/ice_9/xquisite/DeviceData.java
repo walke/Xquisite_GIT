@@ -337,7 +337,7 @@ public class DeviceData {
         //for (int i=12;i<fnameBlock.mBuffer.length;i++){fname+=fnameBlock.mBuffer[i];}
         fname=new String(fnameBlock.mBuffer,24,fnameBlock.mBuffer.length-24);
 
-        storyPart.populate("", question, fname);
+        storyPart.populate("", question, fname,StoryPart.PART_TYPE_VIDEO,"",0);
 
         return storyPart;
     }

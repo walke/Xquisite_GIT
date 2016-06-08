@@ -838,7 +838,7 @@ public class Server {
             if(buffer[0]==-1){retPart.setLast();}
             else
             {
-                retPart.populate("part" + part + ".mp4", new String(bufferQ, "ASCII"), mContext.getExternalFilesDir("VID").toString() + "/part" + part + ".mp4");
+                retPart.populate("part" + part + ".mp4", new String(bufferQ, "ASCII"), mContext.getExternalFilesDir("VID").toString() + "/part" + part + ".mp4",StoryPart.PART_TYPE_VIDEO,"",0);
             }
                     //result = "1";
 

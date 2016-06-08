@@ -13,10 +13,17 @@ import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.TextureView;
+import android.view.View;
+import android.widget.EditText;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -29,6 +36,8 @@ import javax.microedition.khronos.opengles.GL10;
  * Created by human on 16.03.16.
  */
 public class XQGLRenderer implements GLSurfaceView.Renderer {
+
+    public EditText inputField;
 
     private float infoStatus=0.0f;
     private float infoTarget=0.0f;
@@ -113,7 +122,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mAngle=0f;
 
+        inputField = new EditText(actContext);
 
+        //this.actContext.
+        //Looper.prepare();
+        //inputField.requestFocus();
         //time measure
         /*mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;*/
@@ -180,7 +193,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Random rnd=new Random();
        // view.mReady=true;
  //
+        //inputField.requestFocus();
+        putString(inputField.getText().toString(),0,0);
+        if(inputField.getText().length()>0)
+        {
 
+        }
 
 
         /*int l=0;

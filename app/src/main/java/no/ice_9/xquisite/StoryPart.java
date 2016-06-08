@@ -8,11 +8,20 @@ package no.ice_9.xquisite;
  */
 public class StoryPart {
 
+    public static final int PART_TYPE_TEXT =  0;
+    public static final int PART_TYPE_CHOOSE= 1;
+    public static final int PART_TYPE_VIDEO = 2;
+
     boolean empty=true;
     boolean last=false;
     String mFname;
     String mQuestion;
     String mPath;
+    int mType;
+
+    String mText;
+    int mChoose;
+
     public StoryPart()
     {
         empty=true;
@@ -22,12 +31,15 @@ public class StoryPart {
         last=false;
     }
 
-    public void populate(String fname, String quest,String path)
+    public void populate(String fname, String quest,String path,int type,String text,int choose)
     {
         empty=false;
         mFname=fname;
         mQuestion=quest;
         mPath=path;
+        mType=type;
+        mText=text;
+        mChoose=choose;
     }
 
     public void setLast()

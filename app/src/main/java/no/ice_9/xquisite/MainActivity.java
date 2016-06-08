@@ -8,21 +8,29 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.input.InputManager;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.util.TypedValue;
 
@@ -33,6 +41,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 import java.util.Timer;
@@ -57,7 +66,7 @@ public class MainActivity extends Activity {
 
     //ACII LAYER
     public ASCIIscreen mAscii;
-
+    public EditText inputField;
 
     //MAIN LOOP
     public TimerTask mTimerLoop;
@@ -79,6 +88,10 @@ public class MainActivity extends Activity {
     boolean mUserWait=true;
    boolean interSkip=false;
     boolean interInit=false;
+
+
+
+
 
 
     /**
@@ -255,6 +268,10 @@ public class MainActivity extends Activity {
     }
 
 
+
+
+
+
     /**
      * passes action forward from GLView to FUNC: glTouch()
      * @param event event passed by Touch action
@@ -267,6 +284,8 @@ public class MainActivity extends Activity {
 
         glTouch(event.getAction());
         Log.d("MAIN","touch");
+
+
 
         return true;
     }
@@ -301,6 +320,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
         Log.d("MAIN", "resumed");
         mAscii.mAsciiStartUpdater(50);
 
@@ -311,6 +331,19 @@ public class MainActivity extends Activity {
 
         mAscii.mGLView.onResume();
 
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        InputMethodManager imm =  (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        imm.showSoftInput(inputField, InputMethodManager.SHOW_FORCED);
+        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        imm.viewClicked(inputField);
+
+        //Log.d("ASCII","T:"+imm.isAcceptingText());
+       //imm.
+        //
+        //mAscii.mGLView.mRenderer.inputField.requestFocus();
+        //mAscii.mGLView.mRenderer.inputField.requestFocus();
 
     }
 
@@ -347,6 +380,8 @@ public class MainActivity extends Activity {
         super.onRestart();
         Log.d("MAIN", "restarted");
     }
+
+
 
     /**
      * Creates an activity and initializes all necessary variables and objects
@@ -396,9 +431,41 @@ public class MainActivity extends Activity {
 
         //GET GLES
         mAscii=new ASCIIscreen(this,"MAIN");
-        setContentView(mAscii.mGLView);
+        LinearLayout ll=new LinearLayout(this);
+        inputField=new EditText(this);
+        inputField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("ASCII","CHA");
+                mAscii.mGLView.mRenderer.inputField.setText(inputField.getText());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        ll.addView(mAscii.mGLView);
+        ll.addView(inputField);
+        ll.setOrientation(LinearLayout.VERTICAL);
+
+        //setContentView(mAscii.mGLView);
+        setContentView(ll);
 
 
+
+        mAscii.mGLView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                Log.d("ASCII","KEY!!!");
+                return true;
+            }
+        });
 
         //MAIN TREAD
         mTimer=new Timer();
@@ -498,6 +565,8 @@ public class MainActivity extends Activity {
 
         }*/
 
+
+
     }
 
     /**
@@ -510,6 +579,9 @@ public class MainActivity extends Activity {
         //UNCOMMENT TO GET DATABASE ON BACK PRESSED
         /*Intent intent = new Intent(this, BrowserActivity.class);
         startActivity(intent);*/
+        return;
+
+
     }
 
 

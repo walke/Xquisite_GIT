@@ -2,11 +2,14 @@ package no.ice_9.xquisite;
 
 import android.app.Activity;
 
+import android.content.Context;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 
 import com.coremedia.iso.boxes.Container;
@@ -46,6 +49,12 @@ public class RecorderBase extends SubAct{
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
+    public static final int PART_TIME_LIMIT = 10;
+
+    public static final int PART_TYPE_TEXT =  0;
+    public static final int PART_TYPE_CHOOSE= 1;
+    public static final int PART_TYPE_VIDEO = 2;
+
     int NPARTS= 0;
 
     ASCIIscreen mAscii;
@@ -68,6 +77,7 @@ public class RecorderBase extends SubAct{
     int mTimeLeft=0;
     int mTimeElapsed;
     int mTimeElapsedPq=0;
+    int mTimeLimit=PART_TIME_LIMIT;
 
     boolean lastRecorder=false;
 
@@ -91,11 +101,13 @@ public class RecorderBase extends SubAct{
     {
         public String question;
         public int time;
+        public int type;
 
-        public Question(String q,int t)
+        public Question(String q,int t,int tp)
         {
             question=q;
             time=t;
+            type=tp;
         }
 
 
@@ -142,9 +154,10 @@ public class RecorderBase extends SubAct{
     @Override
     public int[] action(int act)
     {
+
         int[] result=new int[4];
         result[0]=-1;
-        Log.d("RECORDER","ACT"+act);
+        Log.d("RECORDER","ACT"+act+"."+mTimeLimit);
         switch(act)
         {
             case 0:
@@ -172,21 +185,27 @@ public class RecorderBase extends SubAct{
                 break;
 
             case 2:
-
+                if(mTimeLimit<=0)
+                {
+                    if(isRecording){pauseRecording();}
+                    mUserReady = false;
+                    return result;
+                }
                 //RECORD
-                if (!isRecording) {
+                if (!isRecording && mTimeLimit>0) {
+                    Log.d("RECORDER","push_record");
                     mPauseRequest=false;
                     mUserReady = true;
                     result[0] = -1;
                 }
-                if (mTime == 1) {
+                if (mTime == 1 && mTimeLimit>0) {
                     Log.d("RECORDER","mtime=1");
                     mTime++;
                 }
-                if (mTime == 3) {
+                if (mTime == 3 && mTimeLimit>0) {
                     Log.d("RECORDER","mtiome");
                     mTime++;
-                    //mTimeLeft = 0;
+                    mTimeLeft = 0;
                     forceStartCapture();
                 }
                 break;
@@ -346,7 +365,24 @@ public class RecorderBase extends SubAct{
         mCurrentPart=0;
         mTimeLeft = mQuestion[mCurrentPart].time;
         //INIT CAMERA AND ALL IT DEPENDS ON
-        initCamera(1);//for now camId = 1; asuming front facing camera.
+        Log.d("RECORDER","partType:"+mQuestion[mCurrentPart].type);
+        if (mQuestion[mCurrentPart].type == PART_TYPE_VIDEO)
+        {
+            initCamera(1);//for now camId = 1; asuming front facing camera.
+        }
+        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
+        {
+            Log.d("RECORDER","TEXT INPUT");
+
+            //mAscii.mGLView.mRenderer.inputField.setText("1234");
+
+            InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mAscii.mGLView.mRenderer.inputField, InputMethodManager.SHOW_FORCED);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            mAscii.mGLView.mRenderer.inputField.requestFocus();
+
+        }
+
 
         return true;
     }
@@ -482,6 +518,7 @@ public class RecorderBase extends SubAct{
     //FORCE TO START CAPTURING
     private void forceStartCapture()
     {
+        if(mTimeLimit<=0)return;
         mUserReady=true;
         //mCurrentPart++;
         startRecordingSequence();
@@ -493,6 +530,7 @@ public class RecorderBase extends SubAct{
 
     private void startRecordingSequence()
     {
+        //if(mTimeLimit<=0)return;
         UItimer=new Timer();
         UItimer.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -516,7 +554,8 @@ public class RecorderBase extends SubAct{
         recTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                //Log.d("RECORDER", "TIMER: rec");
+
+                Log.d("RECORDER", "TIMER: rec");
                 if (mMainDone && mWorking) {
                     Log.d("RECORDER", "TIMER: exiting");
                     this.cancel();
@@ -524,7 +563,7 @@ public class RecorderBase extends SubAct{
                 } else if (tAct != null && mWorking) {
                     //Log.d("RECORDER", "user ready:" + mUserReady);
                     //IF NOT RECORDING START RECORDING CURRENT PART
-                    if (!isRecording && mUserReady && !mMainDone) {
+                    if (!isRecording && mUserReady && !mMainDone && mTimeLimit>0) {
 
                         //mAscii.clear();
                         mUserReady = false;
@@ -558,25 +597,25 @@ public class RecorderBase extends SubAct{
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
                                 mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
                                 //mAscii.modLine("RECORDING", 1, -1);
-                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 3, -1);
+                                mAscii.modLine("-" + (mTimeLimit / 60 + ":" + (mTimeLimit % 60)), 3, -1);
                                 //mAscii.modLine("-" + mTmpPart.filearr.length+":"+mCurrentSubPart, 3, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 if (mCurrentPart >= 0) {
                                     //TODO:mAscii.modLine("" + mQuestion[mCurrentPart], 3, -1);
                                 }
-                                if (mTimeLeft <= 0) {
+                                if (mTimeLimit <= 0) {
                                     //mCurrentPart++;
                                     //mUserReady = false;
 
                                     //forceStopCapture();
-                                    pauseRecording();
-                                    nextPart();
+                                    //pauseRecording();
+                                    //nextPart();//TODO: CHANGE TO hideRecSlider()
 
                                 }
                             }
                         });
-
+                        mTimeLimit--;
                         mTimeLeft--;
                         mTimeElapsed++;
                         mTimeElapsedPq++;
@@ -676,6 +715,7 @@ public class RecorderBase extends SubAct{
 
     private void nextPart()
     {
+
         mTimeLeft = mQuestion[mCurrentPart].time;
         mAscii.mGLView.mRenderer.setProgress(0.0f,1);
         mAscii.mGLView.mRenderer.setRecording(false);
@@ -778,7 +818,7 @@ public class RecorderBase extends SubAct{
 
 
 
-            mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload);
+            mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload,StoryPart.PART_TYPE_VIDEO,"",0);
             Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
             Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
 
@@ -839,6 +879,7 @@ public class RecorderBase extends SubAct{
             mAscii.modLine("",1,0);
             mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0);
         }
+        mTimeLimit=PART_TIME_LIMIT;
     }
 
     //WHEN TIME IS OUT
@@ -873,7 +914,7 @@ public class RecorderBase extends SubAct{
             {
 
 
-                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload);
+                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload,StoryPart.PART_TYPE_VIDEO,"",0);
                 Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
                 Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
 

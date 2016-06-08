@@ -767,7 +767,7 @@ public class PreRecorderClass extends SubAct{
             {
 
 
-                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload);
+                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload,StoryPart.PART_TYPE_VIDEO,"",0);
                 Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
                 Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
 

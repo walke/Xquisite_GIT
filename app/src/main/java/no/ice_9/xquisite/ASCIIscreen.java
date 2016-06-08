@@ -12,13 +12,19 @@ import android.opengl.GLSurfaceView;
 
 
 import android.text.BoringLayout;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 
+import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -57,6 +63,7 @@ public class ASCIIscreen implements Serializable{
 
     //TextView mText;
     XQGLSurfaceView mGLView;
+
 
     //STATIC LINE NUMBER
     static private int lineCount=120;
@@ -491,7 +498,8 @@ class XQGLSurfaceView extends GLSurfaceView{
     public XQGLSurfaceView(Context context,DisplayMetrics metrics,int lineCount,ASCIIscreen asciiscreen)
     {
         super(context);
-
+        //setFocusable(true);
+        //setFocusableInTouchMode(true);
         mMetrics=metrics;
         mMesTime= Calendar.getInstance().getTimeInMillis();
         mLasTime=mMesTime;
@@ -512,7 +520,53 @@ class XQGLSurfaceView extends GLSurfaceView{
         mMesTime= Calendar.getInstance().getTimeInMillis();
         Log.d("TIME","    GL INIT "+(mMesTime-mLasTime)+"ms");
         mLasTime=mMesTime;
+        requestFocus();
 
+
+    }
+
+
+
+
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        Log.d("ASCII","INPUT!!");
+
+        outAttrs.inputType = InputType.TYPE_CLASS_TEXT;// InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_VARIATION_SHORT_MESSAGE | InputType.TYPE_CLASS_TEXT;
+        outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_FLAG_NO_FULLSCREEN;
+        return super.onCreateInputConnection(outAttrs);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.d("ASCII", "KEY"+String.valueOf(event.getKeyCode()));
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean onKeyDown(int KeyCode, KeyEvent event) {
+        super.onKeyDown(KeyCode,event);
+        Log.d("ASCII","!!!!!!!");
+        //mAscii.mGLView.mRenderer.inputField.setText(mAscii.mGLView.mRenderer.inputField.getText()+"123");
+        //mAscii.mGLView.mRenderer.inputField.setText("1231231");
+        /*switch (keyCode) {
+            case KeyEvent.KEYCODE_D:
+
+                return true;
+            case KeyEvent.KEYCODE_F:
+
+                return true;
+            case KeyEvent.KEYCODE_J:
+
+                return true;
+            case KeyEvent.KEYCODE_K:
+
+                return true;
+            default:
+                return super.onKeyUp(keyCode, event);
+        }*/
+        //return true;
+        return super.onKeyDown(KeyCode,event);
     }
 
     private final float TOUCH_SCALE_FACTOR = 180.0f / 320;
@@ -528,9 +582,12 @@ class XQGLSurfaceView extends GLSurfaceView{
     @Override
     public boolean onTouchEvent(MotionEvent e) {
 
+
         // MotionEvent reports input details from the touch screen
         // and other input controls. In this case, you are only
         // interested in events where the touch position changed.
+
+        //Log.d("ASCII",""+e.get());
 
         float x = (e.getX()/mMetrics.widthPixels*2)-1.0f;
         float y = 1.0f-(e.getY()/mMetrics.heightPixels*2);
@@ -702,3 +759,4 @@ class AsciiCharSet extends Charset {*/
     }
 }
 */
+

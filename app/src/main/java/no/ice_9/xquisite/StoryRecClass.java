@@ -32,9 +32,9 @@ public class StoryRecClass extends RecorderBase {
         //mQuestionTime=QTIME;
 
         mQuestion=new Question[NPARTS];
-        mQuestion[0]=new Question("What are the key words from what you just heard? " ,10);
-        mQuestion[1]=new Question("Think of what X might do next. Put yourself in her shoes, and challenge yourself to be dramatic. ",120);
-        mQuestion[2]=new Question("You now have one more minute to add to your story, or summarise for the next player. ",60);
+        mQuestion[0]=new Question("What are the key words from what you just heard? " ,10,PART_TYPE_VIDEO);
+        mQuestion[1]=new Question("Think of what X might do next. Put yourself in her shoes, and challenge yourself to be dramatic. ",120,PART_TYPE_VIDEO);
+        mQuestion[2]=new Question("You now have one more minute to add to your story, or summarise for the next player. ",60,PART_TYPE_VIDEO);
 
         for (int i=0;i<mQuestion.length;i++)
         {
