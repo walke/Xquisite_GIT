@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -331,19 +332,10 @@ public class MainActivity extends Activity {
 
         mAscii.mGLView.onResume();
 
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        InputMethodManager imm =  (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-        imm.showSoftInput(inputField, InputMethodManager.SHOW_FORCED);
-        //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-        imm.viewClicked(inputField);
 
-        //Log.d("ASCII","T:"+imm.isAcceptingText());
-       //imm.
-        //
-        //mAscii.mGLView.mRenderer.inputField.requestFocus();
-        //mAscii.mGLView.mRenderer.inputField.requestFocus();
+
+
 
     }
 
@@ -428,11 +420,15 @@ public class MainActivity extends Activity {
 
         //force screen to be on while app is running unless power button is pressed
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
 
         //GET GLES
         mAscii=new ASCIIscreen(this,"MAIN");
         LinearLayout ll=new LinearLayout(this);
         inputField=new EditText(this);
+        //inputField.clearFocus();
+        inputField.setInputType(inputField.getInputType() | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
         inputField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -441,8 +437,13 @@ public class MainActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("ASCII","CHA");
-                mAscii.mGLView.mRenderer.inputField.setText(inputField.getText());
+                if((int)inputField.getText().charAt(inputField.getText().length()-1)==10)
+                {
+                    Log.d("ASCII","NL");
+                    mAscii.mGLView.mRenderer.inpRow++;
+                }
+                Log.d("ASCII","CHA"+s+";"+start+";"+before+";"+count+";CD-"+(int)inputField.getText().charAt(inputField.getText().length()-1));
+                mAscii.mGLView.mRenderer.inputBox.setText(s);
             }
 
             @Override

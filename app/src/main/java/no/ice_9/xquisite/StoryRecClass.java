@@ -9,7 +9,7 @@ import android.app.Activity;
  */
 public class StoryRecClass extends RecorderBase {
 
-    public StoryRecClass(Activity activity,ASCIIscreen ascii,Server server,int parent, int reserved, int offset)
+    public StoryRecClass(MainActivity activity,ASCIIscreen ascii,Server server,int parent, int reserved, int offset)
     {
         NPARTS=3;
 

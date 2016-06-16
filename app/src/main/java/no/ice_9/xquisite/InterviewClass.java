@@ -1,6 +1,8 @@
 package no.ice_9.xquisite;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.view.WindowManager;
 
 /**
  * Created by human on 27.05.16.
@@ -11,9 +13,12 @@ import android.app.Activity;
 public class InterviewClass extends RecorderBase {
 
 
-    public InterviewClass(Activity activity,ASCIIscreen ascii,Server server)
+    public InterviewClass(MainActivity activity,ASCIIscreen ascii,Server server)
     {
         NPARTS=12;
+        activity.inputField.clearFocus();
+        activity.mAscii.mGLView.requestFocus();
+        activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mAscii=ascii;
         tAct=activity;

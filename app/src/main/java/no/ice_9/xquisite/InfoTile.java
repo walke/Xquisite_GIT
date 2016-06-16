@@ -20,6 +20,10 @@ public class InfoTile {
     public float midy;
     public float sizx;
     public float sizy;
+    public float midTx;
+    public float midTy;
+    public float sizTx;
+    public float sizTy;
 
     private final String vertexInfoTileShaderCode =
             "uniform mat4 uMVPMatrix;" +
@@ -61,6 +65,10 @@ public class InfoTile {
         midy=-1.0f;
         sizx=1.0f;
         sizy=0.4f;
+        midTx=0.0f;
+        midTy=-1.0f;
+        sizTx=1.0f;
+        sizTy=0.4f;
 
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
                 vertexInfoTileShaderCode);
@@ -103,6 +111,16 @@ public class InfoTile {
 
     public void draw(float[] mvpMatrix)
     {
+        float dif=Math.abs(midx-midTx)+Math.abs(midy-midTy)+Math.abs(sizx-sizTx)+Math.abs(sizy-sizTy);
+        //Log.d("ASCII","dif"+dif);
+        if(dif>0.01)
+        {
+            midx+=(midTx-midx)/10.0f;
+            midy+=(midTy-midy)/10.0f;
+            sizx+=(sizTx-sizx)/10.0f;
+            sizy+=(sizTy-sizy)/10.0f;
+        }
+
         GLES20.glUseProgram(mProgram);
 
         // get handle to vertex shader's vPosition member
@@ -137,6 +155,14 @@ public class InfoTile {
 
         //Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+    }
+
+    public void setTargetShape(float x,float y,float w,float h)
+    {
+        midTx=x;
+        midTy=y;
+        sizTx=w;
+        sizTy=h;
     }
 
 }

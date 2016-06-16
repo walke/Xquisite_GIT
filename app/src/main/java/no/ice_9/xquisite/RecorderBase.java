@@ -8,6 +8,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -59,7 +60,7 @@ public class RecorderBase extends SubAct{
 
     ASCIIscreen mAscii;
     Server mServer;
-    Activity tAct;
+    MainActivity tAct;
 
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
@@ -288,7 +289,7 @@ public class RecorderBase extends SubAct{
 
         mTmpPart=new TmpPart();
 
-        Thread mTask = new Thread(new Runnable() {
+        Thread mTask = new Thread( new Runnable() {
             @Override
             public void run() {
 
@@ -372,15 +373,19 @@ public class RecorderBase extends SubAct{
         }
         else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
         {
+            mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
+            tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
             Log.d("RECORDER","TEXT INPUT");
 
-            //mAscii.mGLView.mRenderer.inputField.setText("1234");
-
             InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(mAscii.mGLView.mRenderer.inputField, InputMethodManager.SHOW_FORCED);
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-            mAscii.mGLView.mRenderer.inputField.requestFocus();
 
+
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
+
+            //imm.viewClicked(tAct.inputField);
+            tAct.inputField.requestFocus();
         }
 
 

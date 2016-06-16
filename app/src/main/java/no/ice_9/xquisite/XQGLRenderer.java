@@ -37,7 +37,105 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
+    public static final int MODE_INIT=0;
+    public static final int MODE_REC=1;
+    public static final int MODE_PLAY=2;
+    public static final int MODE_INPT=3;
+    public static final int MODE_CHOS=4;
+
+    class InputBox
+    {
+        public float midx=0.0f;
+        public float midy=0.0f;
+        public float siz=1.0f;
+
+        int mMaxRows;
+        int mMaxCols;
+
+
+        int currentLine=0;
+        String[] line;
+        boolean ready=false;
+        public InputBox(int rows,int cols)
+        {
+            mMaxRows=rows;
+            mMaxCols=cols;
+            line=new String[1];
+            line[0]="";
+            ready=true;
+        }
+        public String getLine(int ndx)
+        {
+            if(line==null){return null;}
+
+            if(line.length<=ndx){return null;}
+
+            if(line[ndx]==null){return null;}
+
+            return line[ndx];
+
+
+        }
+        public void setText(CharSequence text)
+        {
+            ready=false;
+            int linecounter=1;
+            for(int i=0;i<text.length();i++)
+            {
+                if(text.charAt(i)==10){linecounter++;}
+            }
+
+            line=new String[linecounter];
+
+            int last=0;
+            int lineP=0;
+
+            int i;
+            for(i=0;i<text.length();i++)
+            {
+                if(text.charAt(i)==10)
+                {
+                    line[lineP]=text.subSequence(last,i).toString();
+                    last=i+1;
+                    lineP++;
+
+                }
+            }
+
+            line[lineP]=text.subSequence(last,i).toString();
+
+            int maxchars=0;
+            for(i=0;i<linecounter;i++)
+            {
+                if(line[i].length()>maxchars){maxchars=line[i].length();}
+            }
+
+            siz=(float)mMaxCols/(float)(maxchars+4);
+
+            midx=(-siz*((float)(maxchars+4)/(float)mMaxCols))+siz;
+            midy=(((float)(linecounter+4)/(float)mMaxRows))-siz;
+
+
+
+
+
+            ready=true;
+
+        }
+        public void clear()
+        {
+            currentLine=0;
+            line=new String[1];
+            line[0]="";
+        }
+
+
+    }
+
+    public int mMode=MODE_INIT;
+
     public EditText inputField;
+    public InputBox inputBox;
 
     private float infoStatus=0.0f;
     private float infoTarget=0.0f;
@@ -122,7 +220,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mAngle=0f;
 
-        inputField = new EditText(actContext);
+
 
         //this.actContext.
         //Looper.prepare();
@@ -141,6 +239,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         int sx=asciicols;
         int sy=asciirows;
+
+        inputBox=new InputBox(sy,sx);
+        inputField = new EditText(actContext);
 
         mRatio=(float)sx/(float)sy;
 
@@ -186,7 +287,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     }
 
 
-
+    public int inpRow=2;
 
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
@@ -194,11 +295,30 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
        // view.mReady=true;
  //
         //inputField.requestFocus();
-        putString(inputField.getText().toString(),0,0);
-        if(inputField.getText().length()>0)
-        {
 
+        /*if(inputField.getText().length()>0)
+        {
+            putString(inputField.getText().toString(),inpRow,2);
+        }*/
+
+        if(mMode==MODE_INPT)
+        {
+            String line=inputBox.getLine(0);
+            int c=1;
+            while(line!=null)
+            {
+                putString(inputBox.line[c-1], c, 2);
+                line=inputBox.getLine(c);
+                c++;
+            }
         }
+
+        /*if(!inputBox.isEmpty())
+        {
+            for(int i=0;i<inputBox.line.length;i++) {
+                putString(inputBox.line[i], i, 2);
+            }
+        }*/
 
 
         /*int l=0;
@@ -222,15 +342,15 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //Matrix.multiplyMM(mMVPMatrix, 0, mProjectionMatrix, 0, mViewMatrix, 0);
 
         //Matrix.translateM(mTranslationMatrix, 0, 0f, 0f, -2f);
-        Matrix.setIdentityM(mTranslationMatrix, 0);
-        scratch2=mTranslationMatrix.clone();
-        scratch3=mTranslationMatrix.clone();
-        scratch=mTranslationMatrix.clone();
-        //scratch4=mTranslationMatrix.clone();
-        scratch5=mTranslationMatrix.clone();
-        scratch6=mTranslationMatrix.clone();
-        Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
+        Matrix.setIdentityM(mTranslationMatrix, 0);//INFOTILE
+        scratch2=mTranslationMatrix.clone();//BUTTON
+        scratch3=mTranslationMatrix.clone();//AUDIO BAR
 
+        //scratch4=mTranslationMatrix.clone();
+        scratch5=mTranslationMatrix.clone();//NETLED
+        scratch6=mTranslationMatrix.clone();//ASCII
+        Matrix.translateM(mTranslationMatrix, 0, mInfoTile.midx, mInfoTile.midy, 0f);
+        scratch=mTranslationMatrix.clone();//TEXTLINES
 
         Matrix.scaleM(mTranslationMatrix, 0, mInfoTile.sizx, mInfoTile.sizy, 1.0f);
 
@@ -241,7 +361,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //int k=0;
 
         //ASCII TILES
-        mAsciiTiles.draw();
+        Matrix.translateM(scratch6, 0, mAsciiTiles.midx, mAsciiTiles.midy, 0f);
+        Matrix.scaleM(scratch6,0,mAsciiTiles.sizx,mAsciiTiles.sizy,1.0f);
+        mAsciiTiles.draw(scratch6);
         /*for(int j=0;j<sy;j++)
         {
             for(int i=0;i<sx;i++)
@@ -267,7 +389,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         float tothoffset=0.0f;
         for(int j=0;j<activeLine+1.0f;j++)
         {tothoffset+=mTextLine[j].mLineCount*0.07f;}
-        Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 1.75f, 0.0f);
+        Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 0.75f, 0.0f);
         for(int j=0;j<asciirows;j++)
         {
             if(!mTextLine[j].isEmpty())
@@ -364,7 +486,19 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     private void animInfo()
     {
-        if(infoStatus!=infoTarget)
+        switch(mMode)
+        {
+            case MODE_INIT:
+                break;
+            case MODE_INPT:
+                mAsciiTiles.setTargetShape(inputBox.midx,inputBox.midy,inputBox.siz,inputBox.siz);
+                mInfoTile.setTargetShape(0.0f,1.0f,1.0f,0.4f);
+                break;
+            default:
+                break;
+        }
+
+        /*if(infoStatus!=infoTarget)
 
         {
 
@@ -380,7 +514,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
 
-        }
+        }*/
 
         if (activeLine!=activeLineTarget)
         {
@@ -812,5 +946,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mRecSequence=rec;
     }
 
+    public void setMode(int mode)
+    {
+        mMode=mode;
+    }
 
 }

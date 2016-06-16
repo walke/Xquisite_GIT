@@ -2,6 +2,7 @@ package no.ice_9.xquisite;
 
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,6 +20,15 @@ import java.nio.ShortBuffer;
  */
 public class AsciiTiles
 {
+
+    public float midx;
+    public float midy;
+    public float sizx;
+    public float sizy;
+    public float midTx;
+    public float midTy;
+    public float sizTx;
+    public float sizTy;
     /**
      * SHADER USED IN THIS OBJECT translates pixel data to a value 0-255
      * that value is being used to map a texture made of 8x32 ascii symbols
@@ -26,6 +36,7 @@ public class AsciiTiles
     //ASCI TILES FULL SHADERS
     private final String vertexTileFullShaderCode =
             //"#extension GL_OES_EGL_image_external : require \n"+
+            "uniform mat4 uMVPMatrix;" +
             "attribute vec4 vPosition;" +
                     "attribute vec2 TexCoordIn;" +
                     "varying vec2 TexCoordOut;" +
@@ -35,10 +46,11 @@ public class AsciiTiles
                     "varying vec2 VidTexCoordOut;" +
                     "void main() {" +
                     //the matrix must be included as a modifier of gl_Position
-                    "  gl_Position = vPosition;" +
+                   // "  gl_Position = vPosition;" +
                     "  TexCoordOut = TexCoordIn;" +
                     "  AvalTexCoordOut = AvalTexCoordIn;" +
                     "  VidTexCoordOut = VidTexCoordIn;" +
+                    "  gl_Position = uMVPMatrix*vPosition;" +
                     "}";
 
     private final String fragmentTileFullShaderCode =
@@ -139,6 +151,15 @@ public class AsciiTiles
      * @param videoTexture VIDEOPIXEl-VALUE texure
      */
     public AsciiTiles(int totx,int toty, int texture, int avalTexture, int videoTexture) {
+
+        midx=0.0f;
+        midy=0.0f;
+        sizx=1.0f;
+        sizy=1.0f;
+        midTx=0.0f;
+        midTy=0.0f;
+        sizTx=1.0f;
+        sizTy=1.0f;
 
         //assign above shaders to this object
         int vertexFullShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
@@ -292,7 +313,10 @@ public class AsciiTiles
 
 
 
-
+midTx=0.0f;
+        midTy=0.0f;
+        sizTx=1.0f;
+        sizTy=1.0f;
 
         textureRef = texture;
         avalTextureRef = avalTexture;
@@ -308,6 +332,7 @@ public class AsciiTiles
     private int mTextureHandle;
     private int mAvalTextureHandle;
     private int mVidTextureHandle;
+    private int mMVPMatrixHandle;
 
     //private final int vertexCount = tileCoords.length / COORDS_PER_VERTEX;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
@@ -316,9 +341,28 @@ public class AsciiTiles
     /**
      * GL Drawing function
      */
-    public void draw() {
+    public void draw(float[] mvpMatrix) {
+
+        float dif=Math.abs(midx-midTx)+Math.abs(midy-midTy)+Math.abs(sizx-sizTx)+Math.abs(sizy-sizTy);
+        //Log.d("ASCII","dif"+dif);
+        if(dif>0.01)
+        {
+            midx+=(midTx-midx)/10.0f;
+            midy+=(midTy-midy)/10.0f;
+            sizx+=(sizTx-sizx)/10.0f;
+            sizy+=(sizTy-sizy)/10.0f;
+        }
+
+
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
+
+        // get handle to shape's transformation matrix
+        mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+        //XQGLRenderer.checkGlError("glGetUniformLocation");
+
+        // Apply the projection and view transformation
+        GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
 
         // get handle to vertex shader's vPosition member
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
@@ -458,6 +502,14 @@ public class AsciiTiles
 
 
 
+    }
+
+    public void setTargetShape(float x,float y,float w,float h)
+    {
+        midTx=x;
+        midTy=y;
+        sizTx=w;
+        sizTy=h;
     }
 
 }
