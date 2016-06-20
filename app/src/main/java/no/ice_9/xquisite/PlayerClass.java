@@ -34,7 +34,8 @@ import java.util.TimerTask;
 public class PlayerClass extends SubAct{
 
     ASCIIscreen mAscii;
-    Server mServer;
+    //Server mServer;
+    DBmanager mDBmanager;
     int mTime=0;
 
     MediaPlayer mVideoView;
@@ -59,10 +60,11 @@ public class PlayerClass extends SubAct{
 
 
 
-    public PlayerClass(Activity activity,ASCIIscreen ascii,Server server, int parent, int parentParts)
+    public PlayerClass(Activity activity,ASCIIscreen ascii,DBmanager dBman, int parent, int parentParts)
     {
         tAct=activity;
-        mServer=server;
+        //mServer=server;
+        mDBmanager=dBman;
         mAscii = ascii;
 
         //mVideoView = new VideoView(tAct);
@@ -82,7 +84,7 @@ public class PlayerClass extends SubAct{
                 public void run() {
 
                     //Looper.prepare();
-                    int res[] = mServer.getLastStoryNdx();
+                    int res[] = mDBmanager.getLastStoryNdx();
                     int storyindx = res[0];
                     int storyParts= res[1];
                     mParent=storyindx;
@@ -120,7 +122,7 @@ public class PlayerClass extends SubAct{
                 Looper.prepare();
 
                 //TODO:TMP
-                int res[] = mServer.getLastStoryNdx();
+                int res[] = mDBmanager.getLastStoryNdx();
                 int storyindx = res[0];
                 int storyParts= res[1];
                 mParent=storyindx;
@@ -458,7 +460,7 @@ public class PlayerClass extends SubAct{
         {
 
             Log.d("PLAYER","part:"+i);
-            mVideoPart[i]=mServer.loadPart(mParent,i);
+            mVideoPart[i]=mDBmanager.loadPart(mParent,i);
             Log.d("PLAYER","part:"+i+"->"+mVideoPart[i].getFilePath());
         }
     }

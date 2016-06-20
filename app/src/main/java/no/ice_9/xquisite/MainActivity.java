@@ -19,7 +19,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.IBinder;
 
+import android.preference.EditTextPreference;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -55,6 +57,7 @@ public class MainActivity extends Activity {
 
     //database
     DeviceData mDeviceData;
+    private DBmanager mDBmanager;
 
 
 
@@ -77,7 +80,7 @@ public class MainActivity extends Activity {
 
 
     //SERVER
-    private Server mServer;
+    //private Server mServer;
     private boolean mSync=false;
 
     public int mParent=-1;
@@ -233,32 +236,32 @@ public class MainActivity extends Activity {
         switch(mCurrentAction)
         {
             case 0:
-                currentSubActivity=new InitClass(this,mAscii,mServer);//,appData);
+                currentSubActivity=new InitClass(this,mAscii,mDBmanager);//,appData);
                 //currentSubActivity.Create(this,mAscii,mServer);
                 //initClass=new InitClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 1:
-                currentSubActivity=new InterviewClass(this,mAscii,mServer);
+                currentSubActivity=new InterviewClass(this,mAscii,mDBmanager);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 2:
-                currentSubActivity=new PlayerClass(this,mAscii,mServer,mParent,mParentParts);
+                currentSubActivity=new PlayerClass(this,mAscii,mDBmanager,mParent,mParentParts);
                 //currentSubActivity=new PlayerClass(this,mAscii,mServer,1,14);
                 //playerClass=new PlayerClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 3:
-                currentSubActivity=new StoryRecClass(this,mAscii,mServer,mParent,mReservedStory,mPartOffset);
+                currentSubActivity=new StoryRecClass(this,mAscii,mDBmanager,mParent,mReservedStory,mPartOffset);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
             case 4:
-                currentSubActivity=new FinalizeClass(this,mAscii,mServer);
+                currentSubActivity=new FinalizeClass(this,mAscii,mDBmanager);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
@@ -386,6 +389,7 @@ public class MainActivity extends Activity {
 
         //DATABASE
         mDeviceData=new DeviceData(this);
+        mDBmanager = new DBmanager(mDeviceData);
 
         //CURRENT ACTION
         mCurrentAction=0;
@@ -411,7 +415,7 @@ public class MainActivity extends Activity {
 
 
         //SERVER
-        mServer=new Server(this,mDeviceData);
+        //mServer=new Server(this,mDeviceData);
 
 
 
@@ -428,7 +432,9 @@ public class MainActivity extends Activity {
         LinearLayout ll=new LinearLayout(this);
         inputField=new EditText(this);
         //inputField.clearFocus();
-        inputField.setInputType(inputField.getInputType() | EditorInfo.TYPE_TEXT_FLAG_NO_SUGGESTIONS | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+        Log.d("MAIN","inpFlags:"+inputField.getInputType());
+
+
         inputField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -437,13 +443,17 @@ public class MainActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()<=0)return;
+                if(inputField.getText().length()<=0)return;
                 if((int)inputField.getText().charAt(inputField.getText().length()-1)==10)
                 {
+                    glTouch(4);
                     Log.d("ASCII","NL");
                     mAscii.mGLView.mRenderer.inpRow++;
                 }
-                Log.d("ASCII","CHA"+s+";"+start+";"+before+";"+count+";CD-"+(int)inputField.getText().charAt(inputField.getText().length()-1));
-                mAscii.mGLView.mRenderer.inputBox.setText(s);
+                //Log.d("ASCII","CHA"+s+";"+start+";"+before+";"+count+";CD-"+(int)inputField.getText().charAt(inputField.getText().length()-1));
+                //mAscii.mGLView.mRenderer.inputBox.setText(s);
+                mAscii.mGLView.mRenderer.inputBox.setText(inputField.getText());
             }
 
             @Override
@@ -458,7 +468,15 @@ public class MainActivity extends Activity {
         //setContentView(mAscii.mGLView);
         setContentView(ll);
 
-
+        Log.d("MAIN","inpFlags:"+inputField.getInputType());
+        inputField.setInputType(inputField.getInputType() |
+                //InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE |
+                //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
+                EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
+        Log.d("MAIN","inpFlags:"+inputField.getInputType());
+        //inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
+        //inputField.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         mAscii.mGLView.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -578,8 +596,8 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         super.onBackPressed();
         //UNCOMMENT TO GET DATABASE ON BACK PRESSED
-        /*Intent intent = new Intent(this, BrowserActivity.class);
-        startActivity(intent);*/
+        Intent intent = new Intent(this, BrowserActivity.class);
+        startActivity(intent);
         return;
 
 

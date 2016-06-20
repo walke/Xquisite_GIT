@@ -18,7 +18,8 @@ import java.util.TimerTask;
 public class InitClass extends SubAct{
 
     ASCIIscreen mAscii;
-    Server mServer;
+    //Server mServer;
+    DBmanager mDBmanager;
     int mServerConnection=0;
     int mReconnectTime=-1;
     boolean mScreenSaver=false;
@@ -30,7 +31,7 @@ public class InitClass extends SubAct{
     boolean loading=true;
 
     //@Override
-    public InitClass(final Activity activity,ASCIIscreen ascii,Server server)//,Data data)
+    public InitClass(final Activity activity,ASCIIscreen ascii,DBmanager dBman)//,Data data)
     {
         mLoadingDialog = ProgressDialog.show(activity, "",
                       "Loading. Please wait...", true);
@@ -54,7 +55,8 @@ public class InitClass extends SubAct{
         loadingWait.start();
 
         //appData=data;
-        mServer=server;
+        //mServer=server;
+        mDBmanager=dBman;
         mAscii = ascii;
         mTime=0;
 
@@ -126,7 +128,7 @@ public class InitClass extends SubAct{
                     if(mTime==2 && !mAscii.isRage())
                     {
 
-                        if(mServer.checkConnection())
+                        /*if(mServer.checkConnection())
                         {
 
                             /*if(appData.sync())
@@ -139,11 +141,11 @@ public class InitClass extends SubAct{
                             }*/
                             mServerConnection=1;
 
-                        }
-                        else
+                        //}
+                        /*else
                         {
                             mServerConnection=1;
-                        }
+                        }*/
                         Log.d("MAIN", "servResp" + mServerConnection);
                         mTime++;
                     }

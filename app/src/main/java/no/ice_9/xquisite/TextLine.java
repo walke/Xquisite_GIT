@@ -188,7 +188,7 @@ public class TextLine {
 
             //Draw the shape
 
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, drorder, GLES20.GL_UNSIGNED_SHORT, indexBuffer);
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, drorder, GLES20.GL_UNSIGNED_SHORT, indexBuffer);//TODO: out of bounds controll textlines
 
             GLES20.glDisable(GLES20.GL_BLEND);
 

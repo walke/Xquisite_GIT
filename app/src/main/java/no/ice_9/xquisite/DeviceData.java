@@ -13,17 +13,20 @@ import java.util.Calendar;
 public class DeviceData {
 
     //BLOCK TYPES
-    static public int BLOCKTYPE_DEVICE      = 0;
-    static public int BLOCKTYPE_STORY       = 1;
-    static public int BLOCKTYPE_STORY_PART  = 2;
-    static public int BLOCKTYPE_STRING      = 3;
+    static public int BLOCKTYPE_DEVICE          = 0;
+    static public int BLOCKTYPE_STORY           = 1;
+    static public int BLOCKTYPE_STORY_PART      = 2;
+    static public int BLOCKTYPE_STRING          = 3;
+    static public int BLOCKTYPE_LANGUAGE_LIST   = 4;
+    static public int BLOCKTYPE_LANGUAGE        = 5;
 
     //BLOCK SIZES
     static public int BLOCKSIZE_DEVICE      =28;
     static public int BLOCKSIZE_STORY       =52;
-    static public int BLOCKSIZE_PART        =52;
+    static public int BLOCKSIZE_PART        =60;
 
     //OFFSETS
+    //global
     static public int BLOCKOFFSET_GLOBAL_block_id=0;
     static public int BLOCKOFFSET_GLOBAL_block_created=4;
     static public int BLOCKOFFSET_GLOBAL_block_modified=8;
@@ -32,6 +35,7 @@ public class DeviceData {
     static public int BLOCKOFFSET_GLOBAL_id=20;
     static public int BLOCKOFFSET_DEVICE_id = 20;
 
+    //story
     static public int BLOCKOFFSET_STORY_id=20;
     static public int BLOCKOFFSET_STORY_parent=24;
     static public int BLOCKOFFSET_STORY_on_server=28;
@@ -41,6 +45,7 @@ public class DeviceData {
     static public int BLOCKOFFSET_STORY_last_part=44;
     static public int BLOCKOFFSET_STORY_date_added=48;
 
+    //part
     static public int BLOCKOFFSET_PART_id=20;
     static public int BLOCKOFFSET_PART_story=24;
     static public int BLOCKOFFSET_PART_on_server=28;
@@ -49,8 +54,24 @@ public class DeviceData {
     static public int BLOCKOFFSET_PART_next_part=40;
     static public int BLOCKOFFSET_PART_previous_part=44;
     static public int BLOCKOFFSET_PART_file_size=48;
+    static public int BLOCKOFFSET_PART_text=52;
+    static public int BLOCKOFFSET_PART_type=56;
 
+    //string
     static public int BLOCKOFFSET_STRING_id=20;
+
+    //language list
+    static public int BLOCKOFFSET_LANGLIST_id=20;
+    static public int BLOCKOFFSET_LANGLIST_first=24;
+    static public int BLOCKOFFSET_LANGLIST_last=28;
+
+    //language
+    static public int BLOCKOFFSET_LANGUAGE_id=20;
+    static public int BLOCKOFFSET_LANGUAGE_next=24;
+    static public int BLOCKOFFSET_LANGUAGE_previous=28;
+    static public int BLOCKOFFSET_LANGUAGE_title=32;
+    static public int BLOCKOFFSET_LANGUAGE_last_story=36;
+
 
 
     DataBase mDataBase;
@@ -218,6 +239,7 @@ public class DeviceData {
 
         DataBase.Block questionBlock=addStringBlock(part.getQuestion());
         DataBase.Block fnameBlock=addStringBlock(part.getFilePath());
+        DataBase.Block textBlock=addStringBlock(part.mText);//TODO: NULL STRING
 
         int emptyId=mDataBase.getEmptyId();
         int emptyPartId=getEmptyTypeId(BLOCKTYPE_STORY_PART);
@@ -232,6 +254,8 @@ public class DeviceData {
         XQUtils.Int2ByteArr(buffer, fnameBlock.mId, BLOCKOFFSET_PART_fname);//FILENAME STRING BLOCK ID
         XQUtils.Int2ByteArr(buffer,0,BLOCKOFFSET_PART_next_part);//NEXT PART BLOCK ID
         XQUtils.Int2ByteArr(buffer,0,BLOCKOFFSET_PART_previous_part);//PREVIOUS PART BLOCK ID
+        XQUtils.Int2ByteArr(buffer,textBlock.mId,BLOCKOFFSET_PART_text);//TEXT INPUT
+        XQUtils.Int2ByteArr(buffer,part.mType,BLOCKOFFSET_PART_type);//TYPE OF INPUT
 
         //assign pointer to this part from previous
         DataBase.Block thisBlock=mDataBase.addBlock(buffer);
@@ -333,11 +357,17 @@ public class DeviceData {
         //for (int i=12;i<questionBlock.mBuffer.length;i++){question+=questionBlock.mBuffer[i];}
         question=new String(questionBlock.mBuffer,24,questionBlock.mBuffer.length-24);
         DataBase.Block fnameBlock=mDataBase.getBlocksByBlockId((int)XQUtils.ByteArr2Int(partBlock.mBuffer,BLOCKOFFSET_PART_fname));
+
         String fname="";
         //for (int i=12;i<fnameBlock.mBuffer.length;i++){fname+=fnameBlock.mBuffer[i];}
         fname=new String(fnameBlock.mBuffer,24,fnameBlock.mBuffer.length-24);
 
-        storyPart.populate("", question, fname,StoryPart.PART_TYPE_VIDEO,"",0);
+        DataBase.Block textBlock=mDataBase.getBlocksByBlockId((int)XQUtils.ByteArr2Int(partBlock.mBuffer,BLOCKOFFSET_PART_text));
+        String text="";
+
+        text=new String(textBlock.mBuffer,24,textBlock.mBuffer.length-24);
+
+        storyPart.populate("", question, fname,StoryPart.PART_TYPE_VIDEO,text,0);
 
         return storyPart;
     }
@@ -484,10 +514,14 @@ public class DeviceData {
                 int fnameblockid=(int)XQUtils.ByteArr2Int(partBlock.mBuffer,BLOCKOFFSET_PART_fname);
                 DataBase.Block fnameblock=mDataBase.getBlocksByBlockId(fnameblockid);
                 String fname=new String(fnameblock.mBuffer,24,fnameblock.mBuffer.length-24);
+                int textblockid=(int)XQUtils.ByteArr2Int(partBlock.mBuffer,BLOCKOFFSET_PART_text);
+                DataBase.Block textblock=mDataBase.getBlocksByBlockId(textblockid);
+                String text=new String(textblock.mBuffer,24,textblock.mBuffer.length-24);
 
                 part.addLeaf(new dataleaf("story id: "+storyid));
                 part.addLeaf(new dataleaf("question: "+question));
                 part.addLeaf(new dataleaf("filename: "+fname));
+                part.addLeaf(new dataleaf("text:     "+text));
 
                 /*ret+="\t"+"\t"+"part\n";
 

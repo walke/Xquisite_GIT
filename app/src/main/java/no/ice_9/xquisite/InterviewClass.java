@@ -13,7 +13,7 @@ import android.view.WindowManager;
 public class InterviewClass extends RecorderBase {
 
 
-    public InterviewClass(MainActivity activity,ASCIIscreen ascii,Server server)
+    public InterviewClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman)
     {
         NPARTS=12;
         activity.inputField.clearFocus();
@@ -22,7 +22,8 @@ public class InterviewClass extends RecorderBase {
 
         mAscii=ascii;
         tAct=activity;
-        mServer=server;
+        //mServer=server;
+        mDBmanager=dBman;
 
         lastRecorder=false;
         mEndMessege="Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old";

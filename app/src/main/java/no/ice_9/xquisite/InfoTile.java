@@ -49,9 +49,9 @@ public class InfoTile {
     static final int COORDS_PER_VERTEX = 3;
     float tileCoords[] = {   // in counterclockwise order:
             -1.0f, -1.0f, 0.1f, // top
-            -1.0f,  1.0f, 0.1f, // bottom left
+            -1.0f,  0.0f, 0.1f, // bottom left
              1.0f, -1.0f, 0.1f, // bottom left
-             1.0f,  1.0f, 0.1f  // bottom right
+             1.0f,  0.0f, 0.1f  // bottom right
     };
 
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
@@ -64,9 +64,9 @@ public class InfoTile {
         midx=0.0f;
         midy=-1.0f;
         sizx=1.0f;
-        sizy=0.4f;
+        sizy=1.4f;
         midTx=0.0f;
-        midTy=-1.0f;
+        midTy=-0.6f;
         sizTx=1.0f;
         sizTy=0.4f;
 

@@ -9,6 +9,7 @@ import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -59,7 +60,8 @@ public class RecorderBase extends SubAct{
     int NPARTS= 0;
 
     ASCIIscreen mAscii;
-    Server mServer;
+    //Server mServer;
+    DBmanager mDBmanager;
     MainActivity tAct;
 
     Camera mCamera;//Deprecated.. don't know yet what to do about it
@@ -210,6 +212,15 @@ public class RecorderBase extends SubAct{
                     forceStartCapture();
                 }
                 break;
+
+            case 4:
+                if(mQuestion[mCurrentPart].type==PART_TYPE_TEXT)
+                {
+                    submitInput();
+                    nextPart();
+
+                }
+                break;
         }
 
         if (mCurrentPart >= mQuestion.length && act==3)//if(mMainDone)
@@ -294,7 +305,8 @@ public class RecorderBase extends SubAct{
             public void run() {
 
                 //Looper.prepare();
-                int res[] = mServer.getLastStoryNdx();
+                //int res[] = mServer.getLastStoryNdx();
+                int res[]=mDBmanager.getLastStoryNdx();
                 int storyindx = res[0];
                 int storyParts= res[1];
                 mCurrentParent=storyindx;
@@ -318,7 +330,8 @@ public class RecorderBase extends SubAct{
             @Override
             public void run() {
                 while(mCurrentParent==-2);
-                mServerReserved=mServer.reserveNdx(mCurrentParent);
+                //mServerReserved=mServer.reserveNdx(mCurrentParent);
+                mServerReserved=mDBmanager.reserveNdx(mCurrentParent);
                 boolean done=false;
                 int allDone=0;
                 while(!done)
@@ -328,7 +341,8 @@ public class RecorderBase extends SubAct{
                     {
                         if(mPartReady[i]==1)
                         {
-                            mServer.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
+                            //mServer.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
+                            mDBmanager.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
                             mPartReady[i]=2;
                             Log.d("RECORDER to SERVER", "uploaded part " + i);
                         }
@@ -346,7 +360,8 @@ public class RecorderBase extends SubAct{
                     }
                     if(allDone>=NPARTS)
                     {
-                        if(lastRecorder)mServer.completeNdx(mServerReserved);
+                        //if(lastRecorder)mServer.completeNdx(mServerReserved);
+                        if(lastRecorder)mDBmanager.completeNdx(mServerReserved);
                         done=true;
                         Log.d("RECORDER to SERVER", "all done completing ");
 
@@ -361,32 +376,56 @@ public class RecorderBase extends SubAct{
         mAscii.mAsciiStartUpdater(100);
         mAscii.clear();
 
+        //TIMER1
+        /*new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                //Log.d("RECORDER", "TIMER: cdown" + mWorking + " " + mTimeLeft);
+                //if(mTime>2)mTimeLeft--;
+                if (mTimeLeft < 0 || !mWorking) {
+
+                    this.cancel();
+                }
+                Log.d("RECORDER","mtime"+mTime);
+                if (tAct != null && mTime>2) {
+                    tAct.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            //mRecorderTimeText.setText(""+mTimeLeft);
+                            mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1);
+                            //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
+                            //mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
+
+                            mAscii.modLine("***************", 2, -1);
+                            mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
+                            mAscii.modLine("", 4, 0);
+                            //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
+                                /*if (mTimeLeft <= 0) {
+                                    mTimeElapsed=0;
+                                    mTimeElapsedPq=0;
+                                    //forceStopCapture();
+                                    forceStartCapture();
+                                }*/
+                        /*}
+                    });
+                }
+
+                Log.d("RECORDER", "TIMER: cdown end" + mWorking);
+
+
+            }
+        }, 0, 1000);*/
+
         mFilePath = tAct.getExternalFilesDir("VID").getPath();
 
         mCurrentPart=0;
         mTimeLeft = mQuestion[mCurrentPart].time;
         //INIT CAMERA AND ALL IT DEPENDS ON
         Log.d("RECORDER","partType:"+mQuestion[mCurrentPart].type);
-        if (mQuestion[mCurrentPart].type == PART_TYPE_VIDEO)
-        {
-            initCamera(1);//for now camId = 1; asuming front facing camera.
-        }
-        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
-        {
-            mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
-            tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        initCamera(1);
+        initPart();
 
-            Log.d("RECORDER","TEXT INPUT");
-
-            InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
-
-
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-            imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
-
-            //imm.viewClicked(tAct.inputField);
-            tAct.inputField.requestFocus();
-        }
 
 
         return true;
@@ -430,7 +469,7 @@ public class RecorderBase extends SubAct{
             //try to get preview
             //result = initPreview();
             result=true;
-            try{
+            /*try{
 
 
 
@@ -458,48 +497,11 @@ public class RecorderBase extends SubAct{
 
             //mCamera.setParameters(new Camera.Parameters());
             mCamera.startPreview();
-            mTimeLeft=10;
+            mTimeLeft=10;*/
 
 
             //COUNT DOWN TIMER BEFORE RECORDING
-            new Timer().scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    Log.d("RECORDER", "TIMER: cdown" + mWorking + " " + mTimeLeft);
-                    //if(mTime>2)mTimeLeft--;
-                    if (mTimeLeft <= 0 || !mWorking) {
-                        this.cancel();
-                    }
-                    Log.d("RECORDER","mtime"+mTime);
-                    if (tAct != null && mTime>2) {
-                        tAct.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
 
-                                //mRecorderTimeText.setText(""+mTimeLeft);
-                                mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1);
-                                //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
-                                //mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
-
-                                mAscii.modLine("***************", 2, -1);
-                                mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
-                                mAscii.modLine("", 4, 0);
-                                //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
-                                /*if (mTimeLeft <= 0) {
-                                    mTimeElapsed=0;
-                                    mTimeElapsedPq=0;
-                                    //forceStopCapture();
-                                    forceStartCapture();
-                                }*/
-                            }
-                        });
-                    }
-
-                    Log.d("RECORDER", "TIMER: cdown end" + mWorking);
-
-
-                }
-            }, 0, 1000);
 
 
 
@@ -718,118 +720,209 @@ public class RecorderBase extends SubAct{
 
     }
 
+    private boolean initPart()
+    {
+        boolean result=true;
+
+        new Thread( new Runnable() {
+            @Override
+            public void run() {
+                tAct.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        Log.d("RECORDER","asciiready"+mAscii.mReady);
+                        while(!mAscii.mReady);
+                        mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
+                        //mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
+                        //mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
+                        mAscii.modLine("***************", 2, -1);
+                       // mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
+                    }
+                });
+
+
+
+            }
+        }).start();
+
+
+        if (mQuestion[mCurrentPart].type == PART_TYPE_VIDEO)
+        {
+            //initCamera(1);//for now camId = 1; asuming front facing camera.
+            try{
+
+
+
+                mCamera.setPreviewTexture(mAscii.mGLView.mRenderer.mSurface);
+
+            }catch (IOException ioe)
+            {
+                Log.d("RECORDER","ERROR SETTING TEXTURE");
+                result=false;
+            }
+
+            if(!result){return false;}
+            else
+            {
+                Log.d("RECORDER", "got Preview1");
+                Camera.Parameters parm=mCamera.getParameters();
+                Log.d("RECORDER", "PARM:" + parm.getPreviewSize().height + "," + parm.getPreviewSize().width);
+                //parm.setPreviewSize(1280, 720);
+                //parm.setVideoStabilization(true);
+
+                //parm.setAutoExposureLock(true);
+                //mCamera.setParameters(parm);
+
+            }
+
+            //mCamera.setParameters(new Camera.Parameters());
+            mCamera.startPreview();
+            mTimeLeft=10;
+        }
+        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
+        {
+            mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
+            tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+            Log.d("RECORDER","TEXT INPUT");
+
+            InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+            imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
+
+
+
+            //imm.viewClicked(tAct.inputField);
+            tAct.inputField.requestFocus();
+            //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_FILTER);
+        }
+
+        return true;
+    }
+
     private void nextPart()
     {
+
+        initPart();
 
         mTimeLeft = mQuestion[mCurrentPart].time;
         mAscii.mGLView.mRenderer.setProgress(0.0f,1);
         mAscii.mGLView.mRenderer.setRecording(false);
         mAscii.mGLView.mRenderer.setAudio(0);
 
-        if((mCurrentPart)<mQuestion.length)
-        {
+        if((mCurrentPart)<mQuestion.length) {
 
-            //TODO: if one subPart copy it to VID folder
-            File f=getOutputMediaFile(MEDIA_TYPE_VIDEO);
+            if(mQuestion[mCurrentPart].type==PART_TYPE_VIDEO)
+            {
+                //TODO: if one subPart copy it to VID folder
+                File f = getOutputMediaFile(MEDIA_TYPE_VIDEO);
 
 
-            fileToUpload=f.toString();
-            OutputStream os = null;
-            try {
+                fileToUpload = f.toString();
+                OutputStream os = null;
+                try {
 
-                Movie[] _clips=new Movie[mTmpPart.filearr.length];
-                for(int i=0; i<mTmpPart.filearr.length;i++){
+                    Movie[] _clips = new Movie[mTmpPart.filearr.length];
+                    for (int i = 0; i < mTmpPart.filearr.length; i++) {
 
-                    //Movie tm=MovieCreator.
-                    Log.d("RECORDER","trying!!!");
-                    Movie tm = MovieCreator.build(mTmpPart.filearr[i]);
+                        //Movie tm=MovieCreator.
+                        Log.d("RECORDER", "trying!!!");
+                        Movie tm = MovieCreator.build(mTmpPart.filearr[i]);
 
-                    _clips[i]=tm;
+                        _clips[i] = tm;
 
-                    Log.d("RECORDER","TM:"+tm.toString());
+                        Log.d("RECORDER", "TM:" + tm.toString());
 
-                }
+                    }
 
-                List<Track> videoTracks = new LinkedList<Track>();
-                List<Track> audioTracks = new LinkedList<Track>();
+                    List<Track> videoTracks = new LinkedList<Track>();
+                    List<Track> audioTracks = new LinkedList<Track>();
 
-                for (Movie m : _clips) {
-                    for (Track t : m.getTracks()) {
-                        if (t.getHandler().equals("soun")) {
+                    for (Movie m : _clips) {
+                        for (Track t : m.getTracks()) {
+                            if (t.getHandler().equals("soun")) {
 
-                            audioTracks.add(t);
-                        }
-                        if (t.getHandler().equals("vide")) {
-                            videoTracks.add(t);
+                                audioTracks.add(t);
+                            }
+                            if (t.getHandler().equals("vide")) {
+                                videoTracks.add(t);
+                            }
                         }
                     }
+
+                    Movie result = new Movie();
+                    Track[] vidtrarr = new Track[videoTracks.size()];
+                    Track[] audtrarr = new Track[videoTracks.size()];
+
+                    for (int i = 0; i < videoTracks.size(); i++) {
+                        vidtrarr[i] = videoTracks.get(i);
+                        //result.addTrack(videoTracks.get(i));
+
+                        //Log.d("RECORDER","durtrV "+i+"-"+vidtrarr[i].getDuration());
+                    }
+                    for (int i = 0; i < audioTracks.size(); i++) {
+                        audtrarr[i] = audioTracks.get(i);
+                        //result.addTrack(audioTracks.get(i));
+                        //Log.d("RECORDER","durtrA "+i+"-"+vidtrarr[i].getDuration());
+                    }
+
+
+                    Track vidTot = new AppendTrack(vidtrarr);
+                    Track audTot = new AppendTrack(audtrarr);
+                    //Log.d("RECORDER","durtrV "+"-"+vidTot.getDuration());
+                    //Log.d("RECORDER","durtrA "+"-"+audTot.getDuration());
+
+                    result.addTrack(vidTot);
+                    result.addTrack(audTot);
+
+
+                    /*if (videoTracks.size() > 0) {
+                        result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
+                    }
+                    if (audioTracks.size() > 0) {
+                        result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+                    }*/
+
+                    Log.d("RECORDER", "result" + result.toString());
+
+                    Container out = new DefaultMp4Builder().build(result);
+                    //IsoFile out = new DefaultMp4Builder().build(result);
+
+                    FileChannel fc = new RandomAccessFile(String.format(f.toString()), "rw").getChannel();
+                    //FileChannel fc2 =new FileOutputStream(f).getChannel();
+                    out.writeContainer(fc);
+
+                    fc.close();
+
+                    if (os != null) {
+                        os.close();
+                    }
+                } catch (Exception io) {
+                    Log.e("RECORDER", "err:" + io.getMessage());
                 }
 
-                Movie result = new Movie();
-                Track[] vidtrarr=new Track[videoTracks.size()];
-                Track[] audtrarr=new Track[videoTracks.size()];
-
-                for(int i=0;i<videoTracks.size();i++)
-                {
-                    vidtrarr[i]=videoTracks.get(i);
-                    //result.addTrack(videoTracks.get(i));
-
-                    //Log.d("RECORDER","durtrV "+i+"-"+vidtrarr[i].getDuration());
-                }
-                for(int i=0;i<audioTracks.size();i++)
-                {
-                    audtrarr[i]=audioTracks.get(i);
-                    //result.addTrack(audioTracks.get(i));
-                    //Log.d("RECORDER","durtrA "+i+"-"+vidtrarr[i].getDuration());
-                }
+                mTmpPart.clear();
 
 
-                Track vidTot=new AppendTrack(vidtrarr);
-                Track audTot=new AppendTrack(audtrarr);
-                //Log.d("RECORDER","durtrV "+"-"+vidTot.getDuration());
-                //Log.d("RECORDER","durtrA "+"-"+audTot.getDuration());
+                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload, StoryPart.PART_TYPE_VIDEO, "", 0);
+                Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
+                Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
 
-                result.addTrack(vidTot);
-                result.addTrack(audTot);
-
-
-                /*if (videoTracks.size() > 0) {
-                    result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
-                }
-                if (audioTracks.size() > 0) {
-                    result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
-                }*/
-
-                Log.d("RECORDER","result"+result.toString());
-
-                Container out = new DefaultMp4Builder().build(result);
-                //IsoFile out = new DefaultMp4Builder().build(result);
-
-                FileChannel fc = new RandomAccessFile(String.format(f.toString()), "rw").getChannel();
-                //FileChannel fc2 =new FileOutputStream(f).getChannel();
-                out.writeContainer(fc);
-
-                fc.close();
-
-                if (os != null) {
-                    os.close();
-                }
-            }catch (Exception io){Log.e("RECORDER","err:" +io.getMessage());}
-
-            mTmpPart.clear();
-
-
-
-
-
-
-            mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload,StoryPart.PART_TYPE_VIDEO,"",0);
-            Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
-            Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
-
-            if((mCurrentPart+1)<mQuestion.length)
+            }
+            else if(mQuestion[mCurrentPart].type==PART_TYPE_TEXT)
             {
-                mAscii.modLine("" + mQuestion[mCurrentPart+1].question, 0, -1);
+                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, "", StoryPart.PART_TYPE_TEXT, mAscii.mGLView.mRenderer.inputBox.getLine(0), 0);
+                tAct.inputField.setText("");
+                //mAscii.clear();
+                mAscii.mGLView.mRenderer.inputBox.clear();
+                tAct.inputField.clearComposingText();
+            }
+
+            if ((mCurrentPart + 1) < mQuestion.length) {
+                mAscii.modLine("" + mQuestion[mCurrentPart + 1].question, 0, -1);
                 //mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
                 //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
@@ -847,12 +940,12 @@ public class RecorderBase extends SubAct{
                     }
                 }).start();*/
             Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
-            mPartReady[mCurrentPart]=1;
+            mPartReady[mCurrentPart] = 1;
             Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
             mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
 
             mCurrentSubPart = 0;
-            mTimeElapsedPq=0;
+            mTimeElapsedPq = 0;
 
         }
         if((mCurrentPart)>=mQuestion.length)
@@ -885,6 +978,11 @@ public class RecorderBase extends SubAct{
             mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0);
         }
         mTimeLimit=PART_TIME_LIMIT;
+    }
+
+    private void submitInput()
+    {
+
     }
 
     //WHEN TIME IS OUT

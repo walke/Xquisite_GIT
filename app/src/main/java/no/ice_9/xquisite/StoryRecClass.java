@@ -9,13 +9,14 @@ import android.app.Activity;
  */
 public class StoryRecClass extends RecorderBase {
 
-    public StoryRecClass(MainActivity activity,ASCIIscreen ascii,Server server,int parent, int reserved, int offset)
+    public StoryRecClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman,int parent, int reserved, int offset)
     {
         NPARTS=3;
 
         mAscii=ascii;
         tAct=activity;
-        mServer=server;
+        //mServer=server;
+        mDBmanager=dBman;
 
         lastRecorder=true;
         mEndMessege="PUSH BUTTON FINISH ";
