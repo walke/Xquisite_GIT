@@ -25,6 +25,8 @@ public class InterviewClass extends RecorderBase {
         //mServer=server;
         mDBmanager=dBman;
 
+
+
         lastRecorder=false;
         mEndMessege="Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old";
 
@@ -46,10 +48,10 @@ public class InterviewClass extends RecorderBase {
         mQuestion=new Question[NPARTS];
         mQuestion[0]=new Question("What is your name?" ,5,PART_TYPE_TEXT);//OLD 8
         mQuestion[1]=new Question("What is your email? (spell if needed)",60,PART_TYPE_TEXT);//OLD 8
-        mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60,PART_TYPE_CHOOSE);//OLD 8
-        mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60,PART_TYPE_CHOOSE);//OLD 8
+        mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[4]=new Question("Describe briefly your earliest memory",60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[5]=new Question("Would your close friends call you an optimist or pessimist about the future?",60,PART_TYPE_CHOOSE);//OLD 8
+        mQuestion[5]=new Question("Would your close friends call you an optimist or pessimist about the future?",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[6]=new Question("What is your favorite science fiction story?",60,PART_TYPE_TEXT);//OLD 8
         mQuestion[7]=new Question("Briefly describe your work and your research themes.",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[8]=new Question("What is the most exciting element of your research? ",60,PART_TYPE_VIDEO);//OLD 8

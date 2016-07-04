@@ -255,7 +255,7 @@ public class ASCIIscreen implements Serializable{
         int i;
         if(mLinePointer<lineCount)
         {
-            mGLView.mRenderer.putMsgString(line, mLinePointer);
+            mGLView.mRenderer.putMsgString(line, mLinePointer,true);
             //mGLView.putString(line,mLinePointer,0);
             mLine[mLinePointer]=line;
             mLinePointer++;
@@ -264,12 +264,12 @@ public class ASCIIscreen implements Serializable{
         {
             for(i=0;i<lineCount-1;i++)
             {
-                mGLView.mRenderer.putMsgString(line, mLinePointer);
+                mGLView.mRenderer.putMsgString(line, mLinePointer,true);
                 //mGLView.putString(mLine[i+1],i,0);
                 //mLine[i]=mLine[i+1];
             }
             mLine[i]=line;
-            mGLView.mRenderer.putMsgString(line, mLinePointer);
+            mGLView.mRenderer.putMsgString(line, mLinePointer,true);
             //mGLView.putString(line,i,0);
         }
 
@@ -281,8 +281,8 @@ public class ASCIIscreen implements Serializable{
      * @param ndx line index
      * @param pos was used before as offset from first character
      */
-    public void modLine(String line, int ndx,int pos) {
-        mGLView.mRenderer.putMsgString(line, ndx);
+    public void modLine(String line, int ndx,int pos, boolean active) {
+        mGLView.mRenderer.putMsgString(line, ndx, active);
         //mGLView.putString(line,ndx,pos);
         //Log.d("ASCII","mll"+mLine[ndx].length());
         /*if(ndx<mLine.length )
@@ -448,7 +448,7 @@ public class ASCIIscreen implements Serializable{
     public void clear()
     {
 
-        mReady=false;
+        //mReady=false;
 
         //Bitmap
         for(int i=0;i<lineCount;i++)
@@ -464,7 +464,7 @@ public class ASCIIscreen implements Serializable{
         mGLView.putImage(Bitmap.createBitmap(mGLView.mRenderer.asciicols, mGLView.mRenderer.asciirows, Bitmap.Config.ARGB_8888));
 
 
-        mReady=true;
+        //mReady=true;
     }
 
 
@@ -671,7 +671,7 @@ class XQGLSurfaceView extends GLSurfaceView{
         double x = (y / h) * w;*/
 
 
-        mRenderer.putImage(Bitmap.createScaledBitmap(bitmap, nw,nh,true));
+        mRenderer.putImage(Bitmap.createScaledBitmap(bitmap, nw,nh,true),true);
         bitmap.recycle();
     }
 

@@ -214,11 +214,11 @@ public class PlayerClass extends SubAct{
                         //mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
                         if(mParent==0)
                         {
-                            mAscii.modLine("No story found, push the button to start the story",0,0);
+                            mAscii.modLine("No story found, push the button to start the story",0,0,true);
                         }
                         else
                         {
-                            mAscii.modLine("Listen to where we are in X's story. You will invent the next part.", 0, 0);
+                            mAscii.modLine("Listen to where we are in X's story. You will invent the next part.", 0, 0,true);
                         }
                         //mAscii.modLine();
 
@@ -242,10 +242,10 @@ public class PlayerClass extends SubAct{
                     {
                         if(mVideoView.isPlaying() )
                         {
-                            mAscii.modLine("",0,0);
-                            mAscii.modLine("",2,0);
-                            mAscii.modLine("",3,0);
-                            mAscii.modLine("PLAYING..",1,0);
+                            mAscii.modLine("",0,0,true);
+                            mAscii.modLine("",2,0,true);
+                            mAscii.modLine("",3,0,true);
+                            mAscii.modLine("PLAYING..",1,0,true);
 
                             mTime++;
                         }
@@ -319,7 +319,7 @@ public class PlayerClass extends SubAct{
         else
         {
             //mAscii.pushLine("");
-            mAscii.modLine("LOADING...", 3, 0);
+            mAscii.modLine("LOADING...", 3, 0,true);
 
 
 
@@ -343,7 +343,7 @@ public class PlayerClass extends SubAct{
 
 
             //mAscii.pushLine("seems like it is ready");
-            mAscii.modLine("ready", 3, 0);
+            mAscii.modLine("ready", 3, 0,true);
             //Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart].getFilePath());
 
 

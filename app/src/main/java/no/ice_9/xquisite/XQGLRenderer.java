@@ -48,7 +48,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         int mMaxRows;
         TextLine[] mLine;
         InfoTile bg;
-        int mActiveLine=0;
+        float mActiveLine=0;
+        float activeLineTarget=0;
         int visibleLines=4;
         public MsgLines(int maxRows)
         {
@@ -64,10 +65,17 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             }
         }
 
-        public void setLine(String str, int row)
+        public void setLine(String str, int row,boolean active)
         {
             mLine[row].set(str);
-            mActiveLine=row;
+            if(active)
+            {
+                Log.d("ASCII","setline active"+row);
+                //mLine.setTargetLine(row);
+                mActiveLine=row;
+
+            }
+
 
         }
 
@@ -110,15 +118,21 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
             float hoffset=0.0f;
             float tothoffset=0.0f;
-            for(int j=0;j<activeLine+1.0f;j++)
+            for(int j=0;j<mActiveLine+1.0f;j++)
             {tothoffset+=mLine[j].mLineCount*0.07f;}
-            Matrix.translateM(scratch, 0, 0.0f, tothoffset + 0.05f * activeLine - 1.0f, 0.0f);
+            float prevOffset=0.1f;
+            //Log.d("ASCII","act line:"+activeLine);
+            float a1=tothoffset + prevOffset * mActiveLine - 1.0f;
+            Matrix.translateM(scratch, 0, 0.0f, a1, 0.0f);
             for(int j=0;j<mMaxRows;j++)
             {
                 if(!mLine[j].isEmpty())
                 {
+                    float a2=-prevOffset-hoffset*0.07f;
+                    //Log.d("ASCII","Line"+a1+"+"+a2+"="+(a1+a2));
+                    //Log.d("ASCII","Line"+mActiveLine+" "+mLine[0].mLineCount);
+                    Matrix.translateM(scratch, 0, 0f, a2, 0f);
 
-                    Matrix.translateM(scratch, 0, 0f, -0.05f-hoffset*0.07f, 0f);
                     mLine[j].draw(scratch);
                     hoffset=mLine[j].mLineCount;
                 }
@@ -300,6 +314,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     //TEXTURES
     public int[] textures = new int[5];
     Bitmap mBitmap;
+    Bitmap mCleanBitmap;
     public SurfaceTexture mSurface;
 
     public Context actContext;
@@ -421,13 +436,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         if(mMode==MODE_INPT)
         {
             cursBlink++;
-            if(cursBlink<40){curs = (char)cursBlink;}
-            if(cursBlink==40){curs = "X".charAt(0);cursBlink=0;}
+            if(cursBlink==20){curs = "_".charAt(0);}
+            if(cursBlink>40){curs = " ".charAt(0);cursBlink=0;}
             String line=inputBox.getLine(0);
             int c=1;
             while(line!=null)
             {
-                Log.d("ASCII","cl"+line);
+                //Log.d("ASCII","cl"+line);
                 if(inputBox.currentLine==c-1)putString(inputBox.line[c-1]+curs+" ", c, 2);
                 if(line.length()==0)putString("     ", c, 2);
                 line=inputBox.getLine(c);
@@ -610,6 +625,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         {
             case MODE_INIT:
                 break;
+            case MODE_REC:
+                mAsciiTiles.setTargetShape(0.0f,0.0f,1.0f,1.0f);
+                msgLines.setPosition(0);
+                clearAscii();
+                break;
             case MODE_INPT:
                 mAsciiTiles.setTargetShape(inputBox.midx,inputBox.midy,inputBox.siz,inputBox.siz);
                 msgLines.setPosition(1);
@@ -638,7 +658,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         if (activeLine!=activeLineTarget)
         {
-            activeLine+=(activeLineTarget-activeLine)/10.0f;
+            //activeLine+=(activeLineTarget-activeLine)/10.0f;
         }
 
        /* if (progress!=progressTarget)
@@ -672,6 +692,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         //TEXTURE 0
         mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+        mCleanBitmap= Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
 
 
         int textGridTex=loadTexture(actContext,R.drawable.textgrid);
@@ -824,7 +845,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mAngle = angle;
     }
 
-    public void putImage(Bitmap bitmap)
+    public void putImage(Bitmap bitmap,boolean erase)
     {
         //Random r = new Random();
         for(int i=0;i<asciicols;i++)
@@ -841,15 +862,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 }
             }
         }
-        bitmap.recycle();
+        if(erase)bitmap.recycle();
         //mBitmap=bitmap.copy(Bitmap.Config.ARGB_8888,true);
 
         upAval=true;
     }
 
-    public void putMsgString(String str, int row)
+    public void putMsgString(String str, int row,boolean active)
     {
-        msgLines.setLine(str,row);
+        Log.d("ASCII","putting string: "+str);
+        msgLines.setLine(str,row,active);
         /*if(row<mTextLine.length)
         {
             mTextLine[row].set(str);
@@ -916,6 +938,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void clearAscii()
     {
+        putImage(mCleanBitmap,false);
         /*clearDone=false;
         TimerTask clearTrhead=new TimerTask() {
             @Override
@@ -1069,6 +1092,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void setMode(int mode)
     {
+        clearAscii();
         mMode=mode;
         //inputBox.clear();
     }

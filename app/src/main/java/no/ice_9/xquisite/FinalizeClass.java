@@ -61,7 +61,7 @@ public class FinalizeClass extends SubAct{
 
                     mAscii.mGLView.mRenderer.setProgress(0.0f,1);
                     mAscii.mGLView.mRenderer.setProgress(0.0f,0);
-                    mAscii.modLine("THANK YOU!",0,0);
+                    mAscii.modLine("THANK YOU!",0,0,true);
                 }
 
             }

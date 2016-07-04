@@ -113,8 +113,12 @@ public class InitClass extends SubAct{
 
                        // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
                         //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
-                        mAscii.modLine("", 1, 0);
-                        mAscii.modLine("Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min. ",0,0);
+                        //mAscii.modLine("", 1, 0,false);
+                        mAscii.modLine("Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min. ",0,0,true);
+
+                        //mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
+                        //for(int g=0;g<3;g++)mAscii.modLine("ll"+g, g, 0,true);
+
                         //mAscii.pushLine("Try and center your face in the window,");
                         //mAscii.pushLine("and speak directly into the device.");
                         mTime++;
@@ -154,7 +158,7 @@ public class InitClass extends SubAct{
                     {
                         //mAscii.pushLine("Connection succesed");
                         //mAscii.pushLine("");
-                        mAscii.modLine("!PRESS THE RED BUTTON TO CONTINUE!",2,0);
+                        mAscii.modLine("!PRESS THE RED BUTTON TO CONTINUE!",2,0,false);
                         //mAscii.pushLine("");
                         mInitDone=true;
 

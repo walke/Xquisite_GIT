@@ -206,7 +206,7 @@ public class TextLine {
 
         int vertCount=str.length()*12;
 
-        tileCoords=new float[str.length()*12];
+        float tileCoords[]=new float[str.length()*12];
         drawOrder=new short[str.length()*6];
         tileTextureCoords=new float[str.length()*8];
 
@@ -222,6 +222,7 @@ public class TextLine {
         int charpos=0;
         for(int i=0;i<str.length();i++)
         {
+            if(drawOrder.length==0)break;
 
             tileCoords[(i*12)]=sx+(charpos*0.04f);
             tileCoords[(i*12)+1]=sy-(sh+0.01f)*mLineCount;

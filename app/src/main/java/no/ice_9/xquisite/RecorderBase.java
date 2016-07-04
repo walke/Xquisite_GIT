@@ -100,7 +100,7 @@ public class RecorderBase extends SubAct{
 
     String mEndMessege="";
 
-    class Question
+    public class Question
     {
         public String question;
         public int time;
@@ -249,7 +249,7 @@ public class RecorderBase extends SubAct{
                     if(mTime==0)
                     {
                         mAscii.mGLView.mRenderer.setRecSequence(true);
-                        mAscii.clear();
+                        //mAscii.clear();
 
                         mTime++;
 
@@ -260,9 +260,9 @@ public class RecorderBase extends SubAct{
 
                     if(mTime==1)
                     {
-                        mAscii.modLine("",2,0);
-                        mAscii.modLine("",1,0);
-                        mAscii.modLine("",0,0);
+                        mAscii.modLine("",2,0,false);
+                        mAscii.modLine("",1,0,false);
+                        mAscii.modLine("",0,0,false);
                         mTime++;
 
                     }
@@ -270,8 +270,8 @@ public class RecorderBase extends SubAct{
                     if(mTime==2)
                     {
                         mAscii.minimizeInfo();
-                        mAscii.modLine("", 2, 0);
-                        mAscii.modLine("",1,0);
+                        mAscii.modLine("", 2, 0,false);
+                        mAscii.modLine("", 1, 0,false);
 
                         mTime++;
                     }
@@ -436,7 +436,7 @@ public class RecorderBase extends SubAct{
         releaseCamera();
         releasePreview();
 
-        mAscii.modLine("DONE!", 0, -1);
+        mAscii.modLine("DONE!", 0, -1,false);
         return true;
     }
 
@@ -602,9 +602,9 @@ public class RecorderBase extends SubAct{
                             public void run() {
                                 //mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                                mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
+                                //mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
                                 //mAscii.modLine("RECORDING", 1, -1);
-                                mAscii.modLine("-" + (mTimeLimit / 60 + ":" + (mTimeLimit % 60)), 3, -1);
+                                mAscii.modLine("-" + (mTimeLimit / 60 + ":" + (mTimeLimit % 60)), 3, -1,false);
                                 //mAscii.modLine("-" + mTmpPart.filearr.length+":"+mCurrentSubPart, 3, -1);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
@@ -722,21 +722,25 @@ public class RecorderBase extends SubAct{
 
     private boolean initPart()
     {
+        Log.d("RECORDER","initpart");
         boolean result=true;
 
         new Thread( new Runnable() {
             @Override
             public void run() {
+                Log.d("RECORDER","initpart thread");
                 tAct.runOnUiThread(new Runnable() {
                     @Override
                     public void run()
                     {
                         Log.d("RECORDER","asciiready"+mAscii.mReady);
                         while(!mAscii.mReady);
-                        mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
+                        Log.d("ASCII","fr rec: qmod 3");
+                        mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1,true);
+                        Log.d("ASCII","fr rec: qmod 3 aftere");
                         //mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
                         //mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
-                        mAscii.modLine("***************", 2, -1);
+                        //mAscii.modLine("***************", 2, -1);
                        // mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
                     }
                 });
@@ -746,14 +750,14 @@ public class RecorderBase extends SubAct{
             }
         }).start();
 
-
+        //Log.d("RECORDER", "INIT PART"+mQuestion[mCurrentPart].type+" "+mCurrentPart);
         if (mQuestion[mCurrentPart].type == PART_TYPE_VIDEO)
         {
             //initCamera(1);//for now camId = 1; asuming front facing camera.
             try{
 
-
-
+                while(mCamera==null);
+                Log.d("RECORDER"," "+mCamera+","+mAscii.mGLView.mRenderer.mSurface);
                 mCamera.setPreviewTexture(mAscii.mGLView.mRenderer.mSurface);
 
             }catch (IOException ioe)
@@ -779,25 +783,51 @@ public class RecorderBase extends SubAct{
             //mCamera.setParameters(new Camera.Parameters());
             mCamera.startPreview();
             mTimeLeft=10;
-        }
-        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
-        {
-            mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
-            tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-
-            Log.d("RECORDER","TEXT INPUT");
-
+            tAct.inputField.clearComposingText();
             InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-            imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
+            //imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, InputMethodManager.HIDE_NOT_ALWAYS);
+            //imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
 
+            mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_REC);
+            //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+            Log.d("RECORDER","VIDEO INPUT");
+
+
+            imm.hideSoftInputFromWindow(tAct.inputField.getWindowToken(),0);
 
 
             //imm.viewClicked(tAct.inputField);
-            tAct.inputField.requestFocus();
-            //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_FILTER);
+            tAct.inputField.clearFocus();
+            mAscii.mGLView.requestFocus();
+
+
+        }
+        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
+        {
+            if(mAscii.mGLView.mRenderer.mMode!=mAscii.mGLView.mRenderer.MODE_INPT)
+            {
+                mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
+                //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+                Log.d("RECORDER", "TEXT INPUT");
+
+                InputMethodManager imm = (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                //if(!imm.isAcceptingText())
+                //{
+                imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                //}
+                //imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
+
+
+                //imm.viewClicked(tAct.inputField);
+                tAct.inputField.requestFocus();
+                //tAct.inputField.setText("_");
+                //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_FILTER);
+            }
         }
 
         return true;
@@ -805,10 +835,14 @@ public class RecorderBase extends SubAct{
 
     private void nextPart()
     {
+        mCurrentPart++;
+        if((mCurrentPart)<mQuestion.length)
+        {
+            initPart();
+            mTimeLeft = mQuestion[mCurrentPart].time;
+        }
 
-        initPart();
 
-        mTimeLeft = mQuestion[mCurrentPart].time;
         mAscii.mGLView.mRenderer.setProgress(0.0f,1);
         mAscii.mGLView.mRenderer.setRecording(false);
         mAscii.mGLView.mRenderer.setAudio(0);
@@ -922,12 +956,13 @@ public class RecorderBase extends SubAct{
             }
 
             if ((mCurrentPart + 1) < mQuestion.length) {
-                mAscii.modLine("" + mQuestion[mCurrentPart + 1].question, 0, -1);
+                Log.d("ASCII","fr rec: qmod 4");
+                mAscii.modLine("" + mQuestion[mCurrentPart + 1].question, 0, -1,true);
                 //mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
                 //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
-                mAscii.modLine("***************", 2, -1);
-                mAscii.modLine("", 4, 0);
+                //mAscii.modLine("***************", 2, -1);
+                mAscii.modLine("", 4, 0,false);
                 //mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
 
             }
@@ -942,7 +977,7 @@ public class RecorderBase extends SubAct{
             Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
             mPartReady[mCurrentPart] = 1;
             Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
-            mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
+            //mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
 
             mCurrentSubPart = 0;
             mTimeElapsedPq = 0;
@@ -965,17 +1000,17 @@ public class RecorderBase extends SubAct{
                 }).start();*/
             mCurrentPart++;
         }
-        mAscii.modLine("",1 , -1);
-        mAscii.modLine("***************", 2, -1);
+        mAscii.modLine("",1 , -1,false);
+        //mAscii.modLine("***************", 2, -1);
         //mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
         if(mCurrentPart<mQuestion.length){}//mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
         else
         {
             mAscii.mGLView.mRenderer.setRecSequence(false);
             //mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0);
-            mAscii.modLine(mEndMessege,0,0);
-            mAscii.modLine("",1,0);
-            mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0);
+            mAscii.modLine(mEndMessege,0,0,false);
+            mAscii.modLine("",1,0,false);
+            mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0,false);
         }
         mTimeLimit=PART_TIME_LIMIT;
     }
@@ -1023,12 +1058,13 @@ public class RecorderBase extends SubAct{
 
                 if((mCurrentPart+1)<mQuestion.length)
                 {
-                    mAscii.modLine("" + mQuestion[mCurrentPart+1].question, 0, -1);
+                    Log.d("ASCII","fr rec: qmod 2");
+                    mAscii.modLine("" + mQuestion[mCurrentPart+1].question, 0, -1,true);
                     //mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
                     //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
-                    mAscii.modLine("***************", 2, -1);
-                    mAscii.modLine("", 4, 0);
+                    //mAscii.modLine("***************", 2, -1);
+                    //mAscii.modLine("", 4, 0);
                     //mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
 
                 }
@@ -1064,15 +1100,15 @@ public class RecorderBase extends SubAct{
                 }).start();*/
                 mCurrentPart++;
             }
-            mAscii.modLine("",1 , -1);
-            mAscii.modLine("***************", 2, -1);
+            mAscii.modLine("",1 , -1,false);
+            mAscii.modLine("***************", 2, -1,false);
             //mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
-            if(mCurrentPart<mQuestion.length)mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
+            if(mCurrentPart<mQuestion.length)mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1,false);
             else
             {
-                mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0);
-                mAscii.modLine("",1,0);
-                mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0);
+                mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0,false);
+                mAscii.modLine("",1,0,false);
+                mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0,false);
             }
 
             //mPreview.setAlpha(0.0f);

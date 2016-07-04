@@ -317,9 +317,9 @@ public class PreRecorderClass extends SubAct{
 
                     if(mTime==1)
                     {
-                        mAscii.modLine("",2,0);
-                        mAscii.modLine("",1,0);
-                        mAscii.modLine("",0,0);
+                        mAscii.modLine("",2,0,true);
+                        mAscii.modLine("",1,0,true);
+                        mAscii.modLine("",0,0,true);
                         mTime++;
 
                     }
@@ -327,8 +327,8 @@ public class PreRecorderClass extends SubAct{
                     if(mTime==2)
                     {
                         mAscii.minimizeInfo();
-                        mAscii.modLine("", 2, 0);
-                        mAscii.modLine("",1,0);
+                        mAscii.modLine("", 2, 0,true);
+                        mAscii.modLine("",1,0,true);
 
                         mTime++;
                     }
@@ -469,13 +469,13 @@ public class PreRecorderClass extends SubAct{
                             public void run() {
 
                                 //mRecorderTimeText.setText(""+mTimeLeft);
-                                mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1);
+                                mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1,true);
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 //mAscii.modLine("recording time: " + mQuestion[mCurrentPart].time + " seconds", 1, -1);
 
-                                mAscii.modLine("***************", 2, -1);
-                                mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
-                                mAscii.modLine("", 4, 0);
+                                mAscii.modLine("***************", 2, -1,false);
+                                mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1,true);
+                                mAscii.modLine("", 4, 0,false);
                                 //mAscii.modLine("recording will start in " + mTimeLeft + "seconds", 0, -1);
                                 if (mTimeLeft <= 0) {
                                     mTimeElapsed=0;
@@ -639,9 +639,9 @@ public class PreRecorderClass extends SubAct{
                             public void run() {
                                 //mPreview.setAlpha(1.0f);
                                 // mRecorderTimeText.setText("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)));
-                                mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1);
+                                mAscii.modLine(mQuestion[mCurrentPart].question, 0, -1,false);
                                 //mAscii.modLine("RECORDING", 1, -1);
-                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 3, -1);
+                                mAscii.modLine("-" + (mTimeLeft / 60 + ":" + (mTimeLeft % 60)), 3, -1,true);
 
                                 //mAscii.modLine("current part:" + mCurrentPart, 1, -1);
                                 if (mCurrentPart >= 0) {
@@ -773,13 +773,13 @@ public class PreRecorderClass extends SubAct{
 
                 if((mCurrentPart+1)<mQuestion.length)
                 {
-                    mAscii.modLine("" + mQuestion[mCurrentPart+1].question, 0, -1);
+                    mAscii.modLine("" + mQuestion[mCurrentPart+1].question, 0, -1,true);
                     //mAscii.modLine("recording time: " + mQuestion[mCurrentPart+1].time + " seconds", 1, -1);
                     //mAscii.modLine("current part:" + (mCurrentPart+1), 1, -1);
 
-                    mAscii.modLine("***************", 2, -1);
-                    mAscii.modLine("", 4, 0);
-                    mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
+                    mAscii.modLine("***************", 2, -1,false);
+                    mAscii.modLine("", 4, 0,false);
+                    mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1,true);
 
                 }
 
@@ -814,15 +814,15 @@ public class PreRecorderClass extends SubAct{
                 }).start();*/
                 mCurrentPart++;
             }
-            mAscii.modLine("",1 , -1);
-            mAscii.modLine("***************", 2, -1);
+            mAscii.modLine("",1 , -1,false);
+            mAscii.modLine("***************", 2, -1,false);
             //mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
-            if(mCurrentPart<mQuestion.length)mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
+            if(mCurrentPart<mQuestion.length)mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1,false);
             else
             {
-                mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0);
-                mAscii.modLine("",1,0);
-                mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0);
+                mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0,false);
+                mAscii.modLine("",1,0,false);
+                mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0,true);
             }
 
             //mPreview.setAlpha(0.0f);
@@ -892,7 +892,7 @@ public class PreRecorderClass extends SubAct{
         releaseCamera();
         releasePreview();
 
-        mAscii.modLine("DONE!", 0, -1);
+        mAscii.modLine("DONE!", 0, -1,true);
 
 
         //TODO: do cleanup on device, print some messages to user.
