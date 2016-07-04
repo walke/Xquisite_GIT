@@ -38,13 +38,14 @@ import javax.microedition.khronos.opengles.GL10;
 public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public static final int MODE_INIT=0;
-    public static final int MODE_REC=1;
+    public static final int MODE_REC =1;
     public static final int MODE_PLAY=2;
     public static final int MODE_INPT=3;
     public static final int MODE_CHOS=4;
 
     class MsgLines
     {
+        int maxChars=0;
         int mMaxRows;
         TextLine[] mLine;
         InfoTile bg;
@@ -67,6 +68,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         public void setLine(String str, int row,boolean active)
         {
+            if(maxChars<str.length())
+            {
+                maxChars=str.length();
+            }
+
+            if(str.length()<maxChars){for(int i=0;i<(maxChars-str.length());i++){str=str+(char)0;}}
             mLine[row].set(str);
             if(active)
             {
@@ -180,6 +187,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         public void setText(CharSequence text)
         {
+            Log.d("ASCII","setting text");
             ready=false;
             int linecounter=1;
             for(int i=0;i<text.length();i++)
@@ -218,7 +226,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             float LvsCH= (float)maxchars/(float)linecounter;
             float ScrAsp= (float)mMaxCols/((float)mMaxRows/3.0f);
 
-            Log.d("ASCII", "aspectratios:"+LvsCH+","+ScrAsp);
+            Log.d("ASCII", "aspectratios:"+LvsCH+","+ScrAsp+line[0]);
 
             if(LvsCH<ScrAsp){siz=((float)mMaxRows/3.0f)/(float)(linecounter+4);}
             else{siz=(float)mMaxCols/(float)(maxchars+4);}
@@ -448,6 +456,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 line=inputBox.getLine(c);
                 c++;
             }
+            if(inputBox.getLine(0)==null)putString(curs+" ", 1, 2);
+            else if(inputBox.getLine(0).length()==0)putString(curs+" ", 1, 2);
         }
 
         /*if(!inputBox.isEmpty())
@@ -870,7 +880,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void putMsgString(String str, int row,boolean active)
     {
-        Log.d("ASCII","putting string: "+str);
+        Log.d("ASCII","putting string: "+str+","+row+" "+active);
         msgLines.setLine(str,row,active);
         /*if(row<mTextLine.length)
         {

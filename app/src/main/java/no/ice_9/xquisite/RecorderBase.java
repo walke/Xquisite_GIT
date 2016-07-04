@@ -47,6 +47,13 @@ import java.util.TimerTask;
  */
 public class RecorderBase extends SubAct{
 
+    public static final char NB_UO=(char)128;
+    public static final char NB_AE=(char)129;
+    public static final char NB_OY=(char)130;
+    public static final char NB_uo=(char)131;
+    public static final char NB_ae=(char)132;
+    public static final char NB_oy=(char)133;
+
     //ENUMS
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -227,7 +234,7 @@ public class RecorderBase extends SubAct{
         {
             finishRecording();
 
-            mAscii.clear();//?
+            //mAscii.clear();//?
             result[0] = mCurrentParent;
             result[1] = mParentStoryParts;
             result[2] = mServerReserved;
@@ -262,7 +269,7 @@ public class RecorderBase extends SubAct{
                     {
                         mAscii.modLine("",2,0,false);
                         mAscii.modLine("",1,0,false);
-                        mAscii.modLine("",0,0,false);
+                        //mAscii.modLine("",0,0,false);
                         mTime++;
 
                     }
@@ -290,6 +297,12 @@ public class RecorderBase extends SubAct{
     @Override
     public void destroy() {
 
+    }
+
+    @Override
+    public void onPause()
+    {
+        releaseCamera();
     }
 
     public boolean init()
@@ -342,6 +355,7 @@ public class RecorderBase extends SubAct{
                         if(mPartReady[i]==1)
                         {
                             //mServer.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
+                            Log.d("RECORDER","part to up"+mVideoPart[i]);
                             mDBmanager.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
                             mPartReady[i]=2;
                             Log.d("RECORDER to SERVER", "uploaded part " + i);
@@ -374,7 +388,7 @@ public class RecorderBase extends SubAct{
         recThread.start();
 
         mAscii.mAsciiStartUpdater(100);
-        mAscii.clear();
+        //mAscii.clear();
 
         //TIMER1
         /*new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -795,7 +809,6 @@ public class RecorderBase extends SubAct{
 
             Log.d("RECORDER","VIDEO INPUT");
 
-
             imm.hideSoftInputFromWindow(tAct.inputField.getWindowToken(),0);
 
 
@@ -847,9 +860,9 @@ public class RecorderBase extends SubAct{
         mAscii.mGLView.mRenderer.setRecording(false);
         mAscii.mGLView.mRenderer.setAudio(0);
 
-        if((mCurrentPart)<mQuestion.length) {
+        if((mCurrentPart-1)<mQuestion.length) {
 
-            if(mQuestion[mCurrentPart].type==PART_TYPE_VIDEO)
+            if(mQuestion[mCurrentPart-1].type==PART_TYPE_VIDEO)
             {
                 //TODO: if one subPart copy it to VID folder
                 File f = getOutputMediaFile(MEDIA_TYPE_VIDEO);
@@ -941,18 +954,19 @@ public class RecorderBase extends SubAct{
                 mTmpPart.clear();
 
 
-                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, fileToUpload, StoryPart.PART_TYPE_VIDEO, "", 0);
-                Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart].getFilePath());
-                Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart].getQuestion());
+                mVideoPart[mCurrentPart-1].populate("", mQuestion[mCurrentPart-1].question, fileToUpload, StoryPart.PART_TYPE_VIDEO, "", 0);
+                Log.d("RECORDER", "filename:" + mVideoPart[mCurrentPart-1].getFilePath());
+                Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart-1].getQuestion());
 
             }
-            else if(mQuestion[mCurrentPart].type==PART_TYPE_TEXT)
+            else if(mQuestion[mCurrentPart-1].type==PART_TYPE_TEXT)
             {
-                mVideoPart[mCurrentPart].populate("", mQuestion[mCurrentPart].question, "", StoryPart.PART_TYPE_TEXT, mAscii.mGLView.mRenderer.inputBox.getLine(0), 0);
+                mVideoPart[mCurrentPart-1].populate("", mQuestion[mCurrentPart-1].question, "", StoryPart.PART_TYPE_TEXT, mAscii.mGLView.mRenderer.inputBox.getLine(0), 0);
                 tAct.inputField.setText("");
                 //mAscii.clear();
                 mAscii.mGLView.mRenderer.inputBox.clear();
                 tAct.inputField.clearComposingText();
+                mAscii.mGLView.mRenderer.clearAscii();
             }
 
             if ((mCurrentPart + 1) < mQuestion.length) {
@@ -974,9 +988,9 @@ public class RecorderBase extends SubAct{
 
                     }
                 }).start();*/
-            Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
-            mPartReady[mCurrentPart] = 1;
-            Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
+            //Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
+            mPartReady[mCurrentPart-1] = 1;
+            //Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
             //mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
 
             mCurrentSubPart = 0;
@@ -1106,9 +1120,9 @@ public class RecorderBase extends SubAct{
             if(mCurrentPart<mQuestion.length)mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1,false);
             else
             {
-                mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0,false);
+                mAscii.modLine("Takk. Gj"+NB_oy+"r deg klar til "+NB_uo+" spille Xquisite! "+NB_UO+"ret er 2062. V"+NB_uo+"r hovedkarakter X er 17 "+NB_uo+"r gammel. ",0,0,false);
                 mAscii.modLine("",1,0,false);
-                mAscii.modLine("PUSH BUTTON TO CONTINUE",3,0,false);
+                mAscii.modLine("Trykk p\"+NB_uo+\" den r\"+NB_oy+\"de knappen for \"+NB_uo+\" fortsette!",3,0,false);
             }
 
             //mPreview.setAlpha(0.0f);

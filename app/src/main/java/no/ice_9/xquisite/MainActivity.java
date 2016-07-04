@@ -319,6 +319,8 @@ public class MainActivity extends Activity {
 
         mAscii.mGLView.onPause();
 
+        currentSubActivity.onPause();
+
     }
 
     @Override
@@ -442,9 +444,12 @@ public class MainActivity extends Activity {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length()<=0)return;
-                if(inputField.getText().length()<=0)return;
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                if(mAscii.mGLView.mRenderer.inputBox==null)return;
+                Log.d("ASCII",""+mAscii.mGLView.mRenderer);
+                if(s.length()<=0){mAscii.mGLView.mRenderer.inputBox.setText("");return;}
+                if(inputField.getText().length()<=0){mAscii.mGLView.mRenderer.inputBox.setText("");return;}
                 if((int)inputField.getText().charAt(inputField.getText().length()-1)==10)
                 {
                     glTouch(4);
@@ -643,13 +648,13 @@ public class MainActivity extends Activity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("If you are here for the first time, we would like you to answer few questions first, but you can skip it if you want!")
+            builder.setMessage("Hvis du er her for første gang vil vi gjerne at du svarer på noen spørsmål først, men du må gjerne hoppe over dette hvis du ønsker. ")
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             ((MainActivity)getActivity()).diaBut(false);
                         }
                     })
-                    .setNegativeButton("skip", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("hopp over", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
                             ((MainActivity)getActivity()).diaBut(true);
@@ -696,6 +701,11 @@ class SubAct
     }
 
     public void destroy()
+    {
+
+    }
+
+    public void onPause()
     {
 
     }

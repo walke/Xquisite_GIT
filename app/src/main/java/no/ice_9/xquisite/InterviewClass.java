@@ -12,10 +12,17 @@ import android.view.WindowManager;
  */
 public class InterviewClass extends RecorderBase {
 
+    public static final char NB_UO=(char)128;
+    public static final char NB_AE=(char)129;
+    public static final char NB_OY=(char)130;
+    public static final char NB_uo=(char)131;
+    public static final char NB_ae=(char)132;
+    public static final char NB_oy=(char)133;
+
 
     public InterviewClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman)
     {
-        NPARTS=12;
+        NPARTS=11;
         activity.inputField.clearFocus();
         activity.mAscii.mGLView.requestFocus();
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -46,9 +53,25 @@ public class InterviewClass extends RecorderBase {
         //mQuestionTime=QTIME;
 
         mQuestion=new Question[NPARTS];
-        mQuestion[0]=new Question("What is your name?" ,5,PART_TYPE_TEXT);//OLD 8
+        mQuestion[0]=new Question("Hva er ditt navn?" ,60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[1]=new Question("Hva er din e-postadresse?" ,60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[2]=new Question(NB_OY+"nsker du "+NB_uo+" bli kreditert for ditt bidrag? (svar ja eller nei)" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[3]=new Question("Har du mulighet til "+NB_uo+" ha dialog med unge mennesker eller kunstnere, over nett eller direkte, p"+NB_uo+" et senere tidspunkt? (svar ja eller nei)" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[4]=new Question("Beskriv kort ditt f"+NB_oy+"rste minne" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[5]=new Question("Vil dine venner si at du er en optimist eller en pessimist n"+NB_uo+"r det gjelder framtiden?" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[6]=new Question("Hva er din favoritt science fiction-historie? " ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[7]=new Question("Hva er din beste feiltakelse?" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[8]=new Question("Hva tror du er de mest betydelige endringene de neste 50 "+NB_uo+"rene?" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[9]=new Question("Hvis du kunne reise i tid, hvilket "+NB_uo+"r ville du dratt til?" ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[10]=new Question(" Da du var liten, hva ville du (eller vil du) bli n"+NB_uo+"r du ble voksen? " ,60,PART_TYPE_VIDEO);//OLD 8
+
+        /*mQuestion[0]=new Question("What is your name?" ,5,PART_TYPE_TEXT);//OLD 8
         mQuestion[1]=new Question("What is your email? (spell if needed)",60,PART_TYPE_TEXT);//OLD 8
-        mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[2]=new Question("what's your best mistake?",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[3]=new Question("what's the most significant change you think will happen in the next 50 years?",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[4]=new Question("if you could time travel, what year would you go to? ",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[5]=new Question("what did (or what do) you want to be when you grow up?",60,PART_TYPE_VIDEO);//OLD 8*/
+        /*mQuestion[2]=new Question("Are you happy to be credited for your contribution? (answer yes or no)",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[3]=new Question("Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[4]=new Question("Describe briefly your earliest memory",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[5]=new Question("Would your close friends call you an optimist or pessimist about the future?",60,PART_TYPE_VIDEO);//OLD 8
@@ -57,7 +80,7 @@ public class InterviewClass extends RecorderBase {
         mQuestion[8]=new Question("What is the most exciting element of your research? ",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[9]=new Question("What is the most challenging element of your work?",60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[10]=new Question("What are the most important environmental changes likely to happen in your field in the next 100 years?",60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[11]=new Question("How might this change affect human lives?",60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[11]=new Question("How might this change affect human lives?",60,PART_TYPE_VIDEO);//OLD 8*/
 
         for (int i=0;i<mQuestion.length;i++)
         {

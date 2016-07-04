@@ -17,6 +17,13 @@ import java.util.TimerTask;
  */
 public class InitClass extends SubAct{
 
+    public static final char NB_UO=(char)128;
+    public static final char NB_AE=(char)129;
+    public static final char NB_OY=(char)130;
+    public static final char NB_uo=(char)131;
+    public static final char NB_ae=(char)132;
+    public static final char NB_oy=(char)133;
+
     ASCIIscreen mAscii;
     //Server mServer;
     DBmanager mDBmanager;
@@ -114,7 +121,7 @@ public class InitClass extends SubAct{
                        // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
                         //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
                         //mAscii.modLine("", 1, 0,false);
-                        mAscii.modLine("Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min. ",0,0,true);
+                        mAscii.modLine("Velkommen til Xquisite! Sp"+NB_oy+"rsm"+NB_uo+"l dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.  ",0,0,true);
 
                         //mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
                         //for(int g=0;g<3;g++)mAscii.modLine("ll"+g, g, 0,true);
@@ -158,7 +165,7 @@ public class InitClass extends SubAct{
                     {
                         //mAscii.pushLine("Connection succesed");
                         //mAscii.pushLine("");
-                        mAscii.modLine("!PRESS THE RED BUTTON TO CONTINUE!",2,0,false);
+                        mAscii.modLine("Trykk p"+NB_uo+" den r"+NB_oy+"de knappen for "+NB_uo+" fortsette!",2,0,false);
                         //mAscii.pushLine("");
                         mInitDone=true;
 

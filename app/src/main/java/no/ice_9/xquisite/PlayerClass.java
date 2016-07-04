@@ -33,6 +33,13 @@ import java.util.TimerTask;
  */
 public class PlayerClass extends SubAct{
 
+    public static final char NB_UO=(char)128;
+    public static final char NB_AE=(char)129;
+    public static final char NB_OY=(char)130;
+    public static final char NB_uo=(char)131;
+    public static final char NB_ae=(char)132;
+    public static final char NB_oy=(char)133;
+
     ASCIIscreen mAscii;
     //Server mServer;
     DBmanager mDBmanager;
@@ -167,7 +174,7 @@ public class PlayerClass extends SubAct{
         result[0]=-1;
         if(mError)
         {
-            mAscii.clear();
+            //mAscii.clear();
             Log.d("PLAYER","EXIT");
             result[0]=finishVideo();
             result[1]=mParent;
@@ -205,7 +212,7 @@ public class PlayerClass extends SubAct{
                 {
                     if(mTime==0)
                     {
-                        mAscii.clear();
+                        //mAscii.clear();
                         //mAscii.maximizeInfo();
                         //mAscii.pushLine("loading video..");
 
@@ -242,9 +249,9 @@ public class PlayerClass extends SubAct{
                     {
                         if(mVideoView.isPlaying() )
                         {
-                            mAscii.modLine("",0,0,true);
-                            mAscii.modLine("",2,0,true);
-                            mAscii.modLine("",3,0,true);
+                            mAscii.modLine("",0,0,false);
+                            mAscii.modLine("",2,0,false);
+                            mAscii.modLine("",3,0,false);
                             mAscii.modLine("PLAYING..",1,0,true);
 
                             mTime++;
@@ -308,9 +315,9 @@ public class PlayerClass extends SubAct{
         if(mParent==0)
         {
             Log.d("PLAYER", "no video ");
-            mAscii.pushLine("no video found");
-            mAscii.pushLine("****************************************");
-            mAscii.pushLine("PUSH THE BUTTON TO RECORD THE FIRST VIDEO");
+            mAscii.modLine("no video found",0,0,true);
+            //mAscii.pushLine("****************************************");
+            mAscii.modLine("PUSH THE BUTTON TO RECORD THE FIRST VIDEO",1,0,false);
             Log.d("PLAYER", "no video1 ");
 
             mError=true;
@@ -529,9 +536,9 @@ public class PlayerClass extends SubAct{
         if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
         {
-            mAscii.pushLine("Close your eyes for a moment and think about what you just heard.");
-            mAscii.pushLine("");
-            mAscii.pushLine("PRESS BUTTON TO CONTINUE..");
+            mAscii.modLine("Lukk "+NB_oy+"ynene et "+NB_oy+"yeblikk og tenk p"+NB_uo+" hva du nettopp h"+NB_oy+"rte. ",0,0,true);
+            //mAscii.pushLine("");
+            mAscii.modLine("Trykk p"+NB_uo+" den r"+NB_oy+"de knappen for "+NB_uo+" fortsette!",1,0,false);
             Log.d("PLAYER","LAST");
             mCurrentPart=16;
             mError=true;
