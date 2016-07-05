@@ -58,7 +58,7 @@ public class RecorderBase extends SubAct{
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
-    public static final int PART_TIME_LIMIT = 10;
+    public static final int PART_TIME_LIMIT = 180;
 
     public static final int PART_TYPE_TEXT =  0;
     public static final int PART_TYPE_CHOOSE= 1;
