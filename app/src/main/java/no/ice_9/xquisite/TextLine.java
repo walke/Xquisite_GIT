@@ -222,7 +222,7 @@ public class TextLine {
         int charpos=0;
         for(int i=0;i<str.length();i++)
         {
-            if(drawOrder.length==0)break;
+            if(drawOrder.length==0 || drawOrder.length<(i*6))break;
 
             tileCoords[(i*12)]=sx+(charpos*0.04f);
             tileCoords[(i*12)+1]=sy-(sh+0.01f)*mLineCount;

@@ -323,6 +323,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public int[] textures = new int[5];
     Bitmap mBitmap;
     Bitmap mCleanBitmap;
+    Bitmap[] mCountDownBitmap=new Bitmap[3];
     public SurfaceTexture mSurface;
 
     public Context actContext;
@@ -350,6 +351,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private final float[] mViewMatrix = new float[16];
     private final float[] mProjectionMatrix = new float[16];
     private final float[] mTranslationMatrix = new float[16];
+
+    int mCDown=0;
+    boolean mCDonting=false;
 
     @Override
     public void onSurfaceCreated(GL10 gl, javax.microedition.khronos.egl.EGLConfig config) {
@@ -638,7 +642,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             case MODE_REC:
                 mAsciiTiles.setTargetShape(0.0f,0.0f,1.0f,1.0f);
                 msgLines.setPosition(0);
-                clearAscii();
+                //clearAscii();
                 break;
             case MODE_INPT:
                 mAsciiTiles.setTargetShape(inputBox.midx,inputBox.midy,inputBox.siz,inputBox.siz);
@@ -703,6 +707,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //TEXTURE 0
         mBitmap = Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
         mCleanBitmap= Bitmap.createBitmap(asciicols,asciirows, Bitmap.Config.ARGB_8888 );
+
+        mCountDownBitmap[0]=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.bc1);
+        mCountDownBitmap[1]=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.bc2);
+        mCountDownBitmap[2]=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.bc3);
+
 
 
         int textGridTex=loadTexture(actContext,R.drawable.textgrid);
@@ -1081,7 +1090,51 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void setRecording(boolean isRec)
     {
+
+
         mContinueButton.isRecording=isRec;
+    }
+
+    public void countDown()
+    {
+        if(mCDonting)return;
+        mCDonting=true;
+
+        Log.d("ASCII","countdown");
+        //putImage(mCountDownBitmap[mCDown], false);
+        TimerTask cdown= new TimerTask() {
+            @Override
+            public void run() {
+
+                if(mCDown<0)
+                {
+                    clearAscii();
+                    this.cancel();
+                    mCDonting=false;
+                }
+                if(mCDown>=0) {
+                    putImage(mCountDownBitmap[mCDown], false);
+                    mCDown--;
+                }
+
+                /*((MainActivity )actContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run()
+                    {
+
+                    }
+                });*/
+
+
+
+
+
+
+
+            }};
+
+        mCDown=2;
+        new Timer().scheduleAtFixedRate(cdown, 0, 500);
     }
 
     public void setLed(boolean onin,boolean load)
@@ -1102,6 +1155,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void setMode(int mode)
     {
+
         clearAscii();
         mMode=mode;
         //inputBox.clear();

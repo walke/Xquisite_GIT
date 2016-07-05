@@ -178,6 +178,7 @@ public class RecorderBase extends SubAct{
                     mUserReady = false;
 
                     pauseRecording();
+                    mAscii.mGLView.mRenderer.setRecording(false);
 
                 }
                 else {mPauseRequest=true;}
@@ -204,6 +205,7 @@ public class RecorderBase extends SubAct{
                 //RECORD
                 if (!isRecording && mTimeLimit>0) {
                     Log.d("RECORDER","push_record");
+                    mAscii.mGLView.mRenderer.countDown();
                     mPauseRequest=false;
                     mUserReady = true;
                     result[0] = -1;
@@ -216,6 +218,7 @@ public class RecorderBase extends SubAct{
                     Log.d("RECORDER","mtiome");
                     mTime++;
                     mTimeLeft = 0;
+
                     forceStartCapture();
                 }
                 break;
@@ -551,6 +554,7 @@ public class RecorderBase extends SubAct{
 
     private void startRecordingSequence()
     {
+
         //if(mTimeLimit<=0)return;
         UItimer=new Timer();
         UItimer.scheduleAtFixedRate(new TimerTask() {
