@@ -25,6 +25,7 @@ public class InitClass extends SubAct{
     public static final char NB_oy=(char)133;
 
     ASCIIscreen mAscii;
+    MainActivity tAct;
     //Server mServer;
     DBmanager mDBmanager;
     int mServerConnection=0;
@@ -36,10 +37,12 @@ public class InitClass extends SubAct{
     public boolean mInitDone=false;
     Dialog mLoadingDialog;
     boolean loading=true;
+    boolean mFromIntro;
 
     //@Override
-    public InitClass(final Activity activity,ASCIIscreen ascii,DBmanager dBman)//,Data data)
+    public InitClass(final MainActivity activity,ASCIIscreen ascii,DBmanager dBman,boolean fromintro)//,Data data)
     {
+        tAct=activity;
         mLoadingDialog = ProgressDialog.show(activity, "",
                       "Loading. Please wait...", true);
         loading=true;
@@ -67,16 +70,24 @@ public class InitClass extends SubAct{
         mAscii = ascii;
         mTime=0;
 
+        mFromIntro=fromintro;
+
+
     }
 
     @Override
     public int[] action(int act)
     {
+        Log.d("MAIN","initact"+act+","+mInitDone);
         int[]result=new int[1];
         result[0]=-1;
         if(act==3)
         {
             if(mInitDone)result[0]=1;
+        }
+        if(act==5)
+        {
+            result[0]=2;
         }
 
 
@@ -98,6 +109,17 @@ public class InitClass extends SubAct{
                 if(mAscii.mReady)
                 {
 
+                    if(mFromIntro && mInitDone){
+                        Log.d("MAIN","INIT");
+                        tAct.glTouch(3);
+                        mAscii.modLine("",0,0,false);
+                        mAscii.modLine("",1,0,false);
+                        mAscii.mGLView.mRenderer.clearAscii();
+                        this.cancel();
+                        return;
+
+
+                    }
                     //if(mTime>=0 && mTime<20){mAscii.fillTrash();/*mAscii.setRage(true);*/mTime++;}
 
                     /*if(mTime==20)
@@ -108,21 +130,22 @@ public class InitClass extends SubAct{
                     }*/
                     if(mTime==0 && !mAscii.isRage())
                     {
-                        Log.d("ASCII", "toclear");
-                        //mAscii.clear();
-                        //mLoadingDialog.dismiss();
-                        mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
-                        //mAscii.pushLine("########################");
-                        //mAscii.pushLine("#scienceFuture xquisite#");
-                        //mAscii.pushLine("########################");
-                        //mAscii.pushLine("Initializing sequence...");
+                        if(!mFromIntro) {
+                            Log.d("ASCII", "toclear");
+                            //mAscii.clear();
+                            //mLoadingDialog.dismiss();
+                            mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
+                            //mAscii.pushLine("########################");
+                            //mAscii.pushLine("#scienceFuture xquisite#");
+                            //mAscii.pushLine("########################");
+                            //mAscii.pushLine("Initializing sequence...");
 
 
-                       // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
-                        //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
-                        //mAscii.modLine("", 1, 0,false);
-                        mAscii.modLine("Velkommen til Xquisite! Sp"+NB_oy+"rsm"+NB_uo+"l dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.  ",0,0,true);
-
+                            // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
+                            //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
+                            //mAscii.modLine("", 1, 0,false);
+                            mAscii.modLine("Velkommen til Xquisite! Sp" + NB_oy + "rsm" + NB_uo + "l dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.  ", 0, 0, true);
+                        }
                         //mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
                         //for(int g=0;g<3;g++)mAscii.modLine("ll"+g, g, 0,true);
 
@@ -163,10 +186,12 @@ public class InitClass extends SubAct{
 
                     if(mServerConnection==1  && !mAscii.isRage() && !mInitDone)
                     {
-                        //mAscii.pushLine("Connection succesed");
-                        //mAscii.pushLine("");
-                        mAscii.modLine("Trykk p"+NB_uo+" den r"+NB_oy+"de knappen for "+NB_uo+" fortsette!",2,0,false);
-                        //mAscii.pushLine("");
+                        if(!mFromIntro) {
+                            //mAscii.pushLine("Connection succesed");
+                            //mAscii.pushLine("");
+                            mAscii.modLine("Trykk p" + NB_uo + " den r" + NB_oy + "de knappen for " + NB_uo + " fortsette!", 2, 0, false);
+                            //mAscii.pushLine("");
+                        }
                         mInitDone=true;
 
                         //this.cancel();

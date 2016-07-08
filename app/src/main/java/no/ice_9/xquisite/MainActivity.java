@@ -92,6 +92,7 @@ public class MainActivity extends Activity {
     boolean mUserWait=true;
    boolean interSkip=false;
     boolean interInit=false;
+    boolean fromIntro=false;
 
 
 
@@ -104,6 +105,7 @@ public class MainActivity extends Activity {
      */
     public void diaBut(boolean skip)
     {
+        Log.d("MAIN","dia");
         mUserWait=false;
         interSkip=skip;
         interInit=false;
@@ -118,6 +120,7 @@ public class MainActivity extends Activity {
      */
     public void glTouch(int extra)
     {
+        boolean playIntro=false;
         Log.d("GL","TOUCH");
         //CreateNewStory();
         int[] result;
@@ -132,15 +135,33 @@ public class MainActivity extends Activity {
             return;
             //while(mUserWait);
          }
-        if(interInit){return;}
+        if(interInit && mCurrentAction!=-1){return;}
+        Log.d("GL","TOUCH CHECK");
         switch(mCurrentAction)
         {
             /** init class initializes the application
              */
+            case -1:
+                result=currentSubActivity.action(extra);
+                res=result[0];
+                if(result[0]!=-1){interInit=false;}
+                mAscii.mGLView.mRenderer.hideShowButton(0,true);
+                //mAscii.mGLView.mRenderer.hideShowButton(1,true);
+                break;
             case 0:
                 result=currentSubActivity.action(extra);
                 res=result[0];
                 if(res==-1)return;
+                if(res==2)
+                {
+
+                    playIntro=true;
+                    fromIntro=true;
+                    interInit=true;
+                    //mAscii.mGLView.mRenderer.hideShowButton(0,false);
+                    mAscii.mGLView.mRenderer.hideShowButton(1,false);
+                    break;
+                }
                 if(interSkip) {
                     mCurrentAction++;
                     interSkip=false;
@@ -191,6 +212,7 @@ public class MainActivity extends Activity {
                 mReservedStory=-1;
                 mPartOffset=-1;
                 break;
+
         }
 
         /**
@@ -214,14 +236,16 @@ public class MainActivity extends Activity {
             currentSubActivity.destroy();
             currentSubActivity=null;
 
-            mCurrentAction++;
+            if(playIntro)mCurrentAction=-1;
+            else mCurrentAction++;
+            playIntro=false;
             createTimerTask();
 
 
             mTimer=new Timer();
 
             //mAscii.mGLView.onPause();
-            mTimer.scheduleAtFixedRate(mTimerLoop, 0, 60);
+            mTimer.scheduleAtFixedRate(mTimerLoop, 0, 50);
             //mAscii.mGLView.onResume();
 
 
@@ -235,8 +259,15 @@ public class MainActivity extends Activity {
     {
         switch(mCurrentAction)
         {
+            case -1:
+                currentSubActivity=new IntoPlayingClass(this,mAscii,mDBmanager,mParent,mParentParts);//,appData);
+                //currentSubActivity.Create(this,mAscii,mServer);
+                //initClass=new InitClass(this,mAscii,mServer);
+                mTimerLoop=currentSubActivity.getTimerTask();
+                break;
+
             case 0:
-                currentSubActivity=new InitClass(this,mAscii,mDBmanager);//,appData);
+                currentSubActivity=new InitClass(this,mAscii,mDBmanager,fromIntro);//,appData);
                 //currentSubActivity.Create(this,mAscii,mServer);
                 //initClass=new InitClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
@@ -249,7 +280,7 @@ public class MainActivity extends Activity {
                 break;
 
             case 2:
-                currentSubActivity=new PlayerClass(this,mAscii,mDBmanager,mParent,mParentParts);
+                currentSubActivity=new StoryPlayingClass(this,mAscii,mDBmanager,mParent,mParentParts);
                 //currentSubActivity=new PlayerClass(this,mAscii,mServer,1,14);
                 //playerClass=new PlayerClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();

@@ -179,6 +179,7 @@ public class RecorderBase extends SubAct{
 
                     pauseRecording();
                     mAscii.mGLView.mRenderer.setRecording(false);
+                    mAscii.mGLView.mRenderer.setIdleRec(true);
 
                 }
                 else {mPauseRequest=true;}
@@ -391,6 +392,7 @@ public class RecorderBase extends SubAct{
         recThread.start();
 
         mAscii.mAsciiStartUpdater(100);
+
         //mAscii.clear();
 
         //TIMER1
@@ -645,7 +647,7 @@ public class RecorderBase extends SubAct{
                         mTimeElapsed++;
                         mTimeElapsedPq++;
                     }
-                    if(mPauseRequest){pauseRecording();}
+                    if(mPauseRequest){mAscii.mGLView.mRenderer.setIdleRec(true);pauseRecording();}
                 } else {
                     this.cancel();//TODO: or make destroying sequence if user panics
                 }
@@ -852,6 +854,7 @@ public class RecorderBase extends SubAct{
 
     private void nextPart()
     {
+
         mCurrentPart++;
         if((mCurrentPart)<mQuestion.length)
         {
@@ -1019,6 +1022,7 @@ public class RecorderBase extends SubAct{
             mCurrentPart++;
         }
         mAscii.modLine("",1 , -1,false);
+        mAscii.mGLView.mRenderer.setIdleRec(true);
         //mAscii.modLine("***************", 2, -1);
         //mAscii.modLine("PUSH THE BUTTON TO CONTINUE", 3, -1);
         if(mCurrentPart<mQuestion.length){}//mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);

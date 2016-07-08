@@ -614,10 +614,17 @@ class XQGLSurfaceView extends GLSurfaceView{
                     Log.d("ASCII","ACT0");
                     actContext.onTouchEvent(e);
                 }
-                if(mRenderer.getClick(x,y) && !mMotionEngaged)
+                int clickres=mRenderer.getClick(x,y);
+                if(clickres==1 && !mMotionEngaged)
                 {
                     e.setAction(3);
                     Log.d("ASCII","ACT0");
+                    actContext.onTouchEvent(e);
+                }
+                else if(clickres==2)
+                {
+                    e.setAction(5);
+                    Log.d("ASCII","ACT5");
                     actContext.onTouchEvent(e);
                 }
                 break;

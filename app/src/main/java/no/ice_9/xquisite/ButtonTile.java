@@ -1,6 +1,7 @@
 package no.ice_9.xquisite;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -22,6 +23,8 @@ public class ButtonTile {
     private float recBlink=0.0f;
     private boolean recBlinkUp=true;
 
+    private boolean hidden=false;
+
     public  boolean isDown=false;
 
     public float midx;
@@ -29,8 +32,15 @@ public class ButtonTile {
     public float sizx;
     public float sizy;
 
+    public float midTx;
+    public float midTy;
+    public float sizTx;
+    public float sizTy;
+
     private int textureRef = -1;
     private int fsTexture;
+
+
 
     /**
      * Shader here takes texture of the button and mixes it with dynamical color data
@@ -97,6 +107,11 @@ public class ButtonTile {
         sizx=sx;
         sizy=sy;
 
+        midTx=mx;
+        midTy=my;
+        sizTx=sx;
+        sizTy=sy;
+
         textureRef = texture;
 
         int vertexInfoShader = XQGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
@@ -152,6 +167,16 @@ public class ButtonTile {
      */
     public void draw(float[] mvpMatrix)
     {
+        float dif=Math.abs(midx-midTx)+Math.abs(midy-midTy)+Math.abs(sizx-sizTx)+Math.abs(sizy-sizTy);
+        //Log.d("ASCII","dif"+dif);
+        if(dif>0.01)
+        {
+            midx+=(midTx-midx)/10.0f;
+            midy+=(midTy-midy)/10.0f;
+            sizx+=(sizTx-sizx)/10.0f;
+            sizy+=(sizTy-sizy)/10.0f;
+        }
+
         if(isRecording)
         {
 
@@ -280,5 +305,35 @@ public class ButtonTile {
 
 
 
+    }
+
+    public void hideShow(boolean show)
+    {
+
+        if(show)
+        {
+            hidden = false;
+            setTargetShape(0.0f,midy,0,0);
+        }
+        else
+        {
+            Log.d("ASCII","hsh");
+            hidden = true;
+            setTargetShape(-1.5f,midy,0,0);
+
+        }
+    }
+
+    public void setTargetShape(float x,float y,float w,float h)
+    {
+        midTx=x;
+        midTy=y;
+        //sizTx=w;
+        //sizTy=h;
+    }
+
+    public boolean isHidden() {
+
+        return hidden;
     }
 }

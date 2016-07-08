@@ -298,6 +298,9 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     float[] scratch4;// = new float[16];
     float[] scratch5;// = new float[16];
     float[] scratch6;// = new float[16];
+    float[] scratch7;// = new float[16];
+    float[] scratch8;// = new float[16];
+    float[] scratch9;// = new float[16];
 
     float[] mtx = new float[16];
 
@@ -313,10 +316,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     private InfoTile mInfoTile;
     //private TextLine[] mTextLine;
     private ButtonTile mContinueButton;
+    private ButtonTile mExtraButton;
     private AudioTile mAudioTile;
     private ProgressTile mProgressTile;
     private NetworkLed mNetworkLed;
     private SliderInfoTile mSliderInfo;
+    private TextBoxTile mContButText;
+    private TextBoxTile mExtButText;
 
 
     //TEXTURES
@@ -324,6 +330,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     Bitmap mBitmap;
     Bitmap mCleanBitmap;
     Bitmap[] mCountDownBitmap=new Bitmap[3];
+    Bitmap mIdleBitmap;
     public SurfaceTexture mSurface;
 
     public Context actContext;
@@ -397,6 +404,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         msgLines=           new MsgLines(sy);
 
         mContinueButton =   new ButtonTile(0.0f,-0.45f,0.2f,0.2f*mRatio,textures[3]);
+
+        mContButText =      new TextBoxTile(textures[0],"skip");
+
+        mExtraButton =      new ButtonTile(0.0f,-0.20f,0.2f,0.2f*mRatio,textures[3]);
+
+        mExtButText =      new TextBoxTile(textures[0],"intro");
 
         mAudioTile =        new AudioTile();
 
@@ -500,6 +513,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //scratch4=mTranslationMatrix.clone();
         scratch5=mTranslationMatrix.clone();//NETLED
         scratch6=mTranslationMatrix.clone();//ASCII
+        scratch7=mTranslationMatrix.clone();//EXTRA BUTTON
 
 
         //Matrix.multiplyMM(scratch, 0, mMVPMatrix, 0, mTranslationMatrix, 0);
@@ -561,12 +575,30 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
         //BUTTON
+        if(!mContinueButton.isHidden()){
         mContinueButton.midx=slider;
+        mContinueButton.midTx=slider;}
         Matrix.translateM(scratch2, 0, mContinueButton.midx, mContinueButton.midy, 1.0f);
+
         Matrix.scaleM(scratch2, 0, mContinueButton.sizx, mContinueButton.sizy, 0.0f);
-
+        scratch8=scratch2.clone();//AUDIO BAR
+        Matrix.scaleM(scratch8, 0, 5.0f, 5.0f, 0.0f);
         mContinueButton.draw(scratch2);
+        mContButText.draw(scratch8);
 
+        //BUTTON EXTRA
+        if(!mExtraButton.isHidden()){
+            mExtraButton.midx=0.0f;
+            //mExtraButton.midTx=0.0f;
+        }
+        Matrix.translateM(scratch7, 0, mExtraButton.midx, mExtraButton.midy, 1.0f);
+
+        Matrix.scaleM(scratch7, 0, mExtraButton.sizx, mExtraButton.sizy, 0.0f);
+        scratch9=scratch7.clone();//AUDIO BAR
+        Matrix.scaleM(scratch9, 0, 5.0f, 5.0f, 0.0f);
+
+        mExtraButton.draw(scratch7);
+        mExtButText.draw(scratch9);
 
 
         //AUDIO BAR
@@ -711,6 +743,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mCountDownBitmap[0]=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.bc1);
         mCountDownBitmap[1]=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.bc2);
         mCountDownBitmap[2]=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.bc3);
+
+        mIdleBitmap=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.idle);
 
 
 
@@ -1002,6 +1036,16 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             mSlidGrub=true;
         }
 
+        if (x>mExtraButton.midx-(mExtraButton.sizx/1.0f) &&
+                x<mExtraButton.midx+(mExtraButton.sizx/1.0f) &&
+                y>mExtraButton.midy-(mExtraButton.sizy/1.0f) &&
+                y<mExtraButton.midy+(mExtraButton.sizy/1.0f))
+        {
+            Log.d("ASCII","render setclick");
+            mExtraButton.setDown();
+
+        }
+
     }
     public  boolean releaseClick(float x, float y)
     {
@@ -1012,7 +1056,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         return false;
     }
 
-    public boolean getClick(float x, float y)
+    public int getClick(float x, float y)
     {
 
         if(mContinueButton.isDown)
@@ -1023,11 +1067,26 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                     y < mContinueButton.midy + (mContinueButton.sizy / 1.0f))
             {
                 mContinueButton.setUp();
-                return true;
+                return 1;
             }
             mContinueButton.setUp();
         }
-        return false;
+
+        if(mExtraButton.isDown)
+        {
+            Log.d("ASCII","extra down");
+            if (x > mExtraButton.midx - (mExtraButton.sizx / 1.0f) &&
+                    x < mExtraButton.midx + (mExtraButton.sizx / 1.0f) &&
+                    y > mExtraButton.midy - (mExtraButton.sizy / 1.0f) &&
+                    y < mExtraButton.midy + (mExtraButton.sizy / 1.0f))
+            {
+                Log.d("ASCII","extra down");
+                mExtraButton.setUp();
+                return 2;
+            }
+            mExtraButton.setUp();
+        }
+        return 0;
     }
 
     public int holdAndMove(float x,float y)
@@ -1086,6 +1145,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //mProgressTile.color[1]=0.0f;
         }
 
+    }
+
+    public void setIdleRec(boolean isIdle)
+    {
+        if(isIdle)
+        {
+            putImage(mIdleBitmap, false);
+        }
     }
 
     public void setRecording(boolean isRec)
@@ -1148,6 +1215,21 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
+    public void hideShowButton(int button,boolean show)
+    {
+
+        switch (button)
+        {
+            case 0:
+
+                mContinueButton.hideShow(show);
+                break;
+            case 1:
+                mExtraButton.hideShow(show);
+                break;
+        }
+    }
+
     public void setRecSequence(boolean rec)
     {
         mRecSequence=rec;
@@ -1155,7 +1237,29 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void setMode(int mode)
     {
+        if(mode==MODE_INIT)
+        {
+            mContButText.set("");
+        }
+        if(mode==MODE_INPT)
+        {
+            hideShowButton(0,false);
+            hideShowButton(1,false);
 
+        }
+        if(mode==MODE_REC){
+            hideShowButton(0,true);
+            hideShowButton(1,false);
+            mContButText.set("");
+
+        }
+        if(mode==MODE_PLAY)
+        {
+            hideShowButton(0,true);
+            hideShowButton(1,false);
+            mContButText.set("play");
+
+        }
         clearAscii();
         mMode=mode;
         //inputBox.clear();

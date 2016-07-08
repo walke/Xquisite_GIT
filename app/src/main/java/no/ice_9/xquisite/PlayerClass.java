@@ -51,11 +51,11 @@ public class PlayerClass extends SubAct{
 
     private Thread mTask;
     private boolean mVideoReady;
-    Activity tAct;
-    private boolean mError;
+    MainActivity tAct;
+    public boolean mError;
 
     private Uri mVideoUri;
-    private int mParent;
+    public int mParent;
     private int mCurrentPart;
     private static int mStartPart=13;
 
@@ -63,11 +63,115 @@ public class PlayerClass extends SubAct{
 
 
     private StoryPart[] mVideoPart;
-    private int mStoryParts;
+    int mStoryParts;
+
+    public boolean init()
+    {
+        //mVideoView = new VideoView(tAct);
+        //mFrame=new FrameLayout(tAct);
 
 
 
-    public PlayerClass(Activity activity,ASCIIscreen ascii,DBmanager dBman, int parent, int parentParts)
+
+
+        mStartPart=mStoryParts-1;
+
+        Log.d("PLAYER","parent:"+mParent);
+        if(mParent==-2)
+        {
+
+        }
+        else if(mParent<1 )
+        {
+            Log.d("ASCII","parent chaeck"+mParent);
+            Thread mTask = new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    //Looper.prepare();
+
+                    int res[] = mDBmanager.getLastStoryNdx();
+                    int storyindx = res[0];
+                    int storyParts= res[1];
+                    mParent=storyindx;
+                    mStoryParts=storyParts;
+                    Log.d("PLAYER","parent:"+mParent+","+mStoryParts);
+                    mStartPart=mStoryParts-1;
+                    if(mParent==0 || mParent==-1){mStartPart=0;}
+
+
+                }
+            });
+
+            mTask.start();
+        }
+        while(mStartPart<0){Log.d("PLAYER","wait"+mStartPart+" "+mStoryParts+" "+mParent);}
+        Log.d("PLAYER","startpart:"+mStartPart);
+
+        mError=false;
+
+        mCurrentPart=mStartPart;
+        mVideoPart=new StoryPart[16];
+        for(int i=0;i<16;i++){mVideoPart[i]=new StoryPart();}
+
+        mQuestion =new String[7];
+        initQuestions();
+
+        mVideoReady=false;
+
+        mAscii.mAsciiStartUpdater(100);
+        mAscii.clear();
+
+        mTask = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("PLAYER", "getting list ");
+                Looper.prepare();
+
+                //TODO:TMP
+                if(mParent!=-2)
+                {
+                    int res[] = mDBmanager.getLastStoryNdx();
+                    int storyindx = res[0];
+                    int storyParts= res[1];
+                    mParent=storyindx;
+                    mStoryParts=storyParts;
+                }
+
+                //boolean result=loadVideo();
+                boolean result=loadStoryData();
+                Log.d("PLAYER","RES SD"+result);
+                if(result)
+                {
+
+                    tAct.runOnUiThread(new Runnable() {
+                        public void run() {
+
+                            Log.d("PLAYER", "got list");
+                            preparePlayer();
+
+                            //playVideo();
+
+                        }
+                    });
+                }
+                else
+                {
+                    //mAscii.clear();
+                    //mAscii.pushLine("NO VIDEO FOUND, PUSH THE BUTTON TO RECORD NEW");
+                    mAscii.mAsciiStopUpdater(100);
+                }
+
+
+            }
+        });
+
+        mTask.start();
+
+        return true;
+    }
+
+    /*public PlayerClass(Activity activity,ASCIIscreen ascii,DBmanager dBman, int parent, int parentParts)
     {
         tAct=activity;
         //mServer=server;
@@ -165,13 +269,17 @@ public class PlayerClass extends SubAct{
 
         mTask.start();
 
-    }
+    }*/
 
     @Override
     public int[] action(int act)
     {
+        Log.d("PLAYER","actino"+act+" "+mError);
         int[] result=new int[5];
         result[0]=-1;
+
+        if(mParent==-2)mError=true;
+
         if(mError)
         {
             //mAscii.clear();
@@ -212,6 +320,7 @@ public class PlayerClass extends SubAct{
                 {
                     if(mTime==0)
                     {
+                        mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_PLAY);
                         //mAscii.clear();
                         //mAscii.maximizeInfo();
                         //mAscii.pushLine("loading video..");
@@ -259,12 +368,14 @@ public class PlayerClass extends SubAct{
                     }
                     if(mVideoView!=null && mTime>1)
                     {
+                        int pos=mVideoView.getCurrentPosition();
+                        int dur=mVideoView.getDuration();
                         if(mVideoView.isPlaying() )
                         {
-                            int pos=mVideoView.getCurrentPosition();
-                            int dur=mVideoView.getDuration();
+
                             mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur,1);
                         }
+
                     }
 
                     /*if(mVideoView!=null)
@@ -322,6 +433,13 @@ public class PlayerClass extends SubAct{
 
             mError=true;
             return false;
+        }
+        else if(mParent==-2)
+        {
+            Log.d("PLAYER", "loading intro file");
+            String FilePath=tAct.getExternalFilesDir("").getPath();
+            File mediaStorageDir = new File(FilePath, "");
+            mVideoPart[0].populate("appintro.mp4","",mediaStorageDir.getPath()+File.separator+"appintro.mp4",StoryPart.PART_TYPE_VIDEO,"",0);
         }
         else
         {
@@ -509,10 +627,10 @@ public class PlayerClass extends SubAct{
 
 
 
-        mAscii.pushLine("#########################");
-        mAscii.pushLine("PUSH BUTTON TO PLAY STORY");
+        //mAscii.pushLine("#########################");
+        //mAscii.pushLine("PUSH BUTTON TO PLAY STORY");
 
-        if(mCurrentPart>mStartPart)
+        if(mCurrentPart>mStartPart || mParent==-2)
         {
 
             //mAscii.clear();
@@ -536,10 +654,12 @@ public class PlayerClass extends SubAct{
         if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
         {
+            mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_INIT);
             mAscii.modLine("Lukk "+NB_oy+"ynene et "+NB_oy+"yeblikk og tenk p"+NB_uo+" hva du nettopp h"+NB_oy+"rte. ",0,0,true);
             //mAscii.pushLine("");
             mAscii.modLine("Trykk p"+NB_uo+" den r"+NB_oy+"de knappen for "+NB_uo+" fortsette!",1,0,false);
             Log.d("PLAYER","LAST");
+
             mCurrentPart=16;
             mError=true;
             //finishVideo();
