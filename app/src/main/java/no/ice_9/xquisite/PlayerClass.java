@@ -302,7 +302,7 @@ public class PlayerClass extends SubAct{
         }*/
         else
         {
-            mAscii.pushLine("You look a bit impatient");
+            //mAscii.pushLine("You look a bit impatient");
         }
         Log.d("PLAYER","ACTION");
         return result;
@@ -325,7 +325,7 @@ public class PlayerClass extends SubAct{
                         //mAscii.maximizeInfo();
                         //mAscii.pushLine("loading video..");
 
-                        mAscii.pushLine("");
+                        //mAscii.pushLine("");
                         //mAscii.pushLine("Get ready to play!");
                         //mAscii.pushLine("The year is 2062, and our main character X is 17 years old.");
                         if(mParent==0)
@@ -334,6 +334,7 @@ public class PlayerClass extends SubAct{
                         }
                         else
                         {
+                            //mAscii.modLine("", 4, 0,true);
                             mAscii.modLine(tAct.getResources().getString(R.string.Play_initMsg), 0, 0,true);
                         }
                         //mAscii.modLine();
@@ -341,7 +342,7 @@ public class PlayerClass extends SubAct{
                         //mAscii.pushLine("PRESS THE BUTTON TO PLAY");
 
 
-                        mAscii.pushLine("");
+                        //mAscii.pushLine("");
                         mTime++;
 
 
@@ -444,7 +445,7 @@ public class PlayerClass extends SubAct{
         else
         {
             //mAscii.pushLine("");
-            mAscii.modLine("LOADING...", 3, 0,true);
+            mAscii.modLine("", 3, 0,false);
 
 
 
@@ -468,7 +469,7 @@ public class PlayerClass extends SubAct{
 
 
             //mAscii.pushLine("seems like it is ready");
-            mAscii.modLine("ready", 3, 0,true);
+            //mAscii.modLine("ready", 3, 0,true);
             //Log.d("PLAYER", "file path:" + mVideoPart[mCurrentPart].getFilePath());
 
 
@@ -552,7 +553,7 @@ public class PlayerClass extends SubAct{
                 } else {
                     //mVideoView.release();
                     mError = true;
-                    mAscii.pushLine("START RECORDING");
+                    //mAscii.pushLine("START RECORDING");
                     //finishVideo();
                 }
 
@@ -649,7 +650,7 @@ public class PlayerClass extends SubAct{
         {
             if(mCurrentPart>mStartPart){break;}
         }
-        mAscii.pushLine("");
+        //mAscii.pushLine("");
         Log.d("PLAYER","loaded");
         if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
@@ -657,7 +658,7 @@ public class PlayerClass extends SubAct{
             mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_IDLE);
             mAscii.modLine(tAct.getResources().getString(R.string.Play_endMsg),0,0,true);
             //mAscii.pushLine("");
-            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),1,0,false);
+            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),2,0,false);
             Log.d("PLAYER","LAST");
 
             mCurrentPart=16;

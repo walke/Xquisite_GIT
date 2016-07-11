@@ -68,7 +68,7 @@
     </string>
 
     <string name="IntroMsg_line5">
-    we encourage you to be funny, provocative, and dramatic
+    Let your own experiences inspire your scene in the life of X.
     </string>
 
     <string name="IntroMsg_line6">
@@ -126,11 +126,11 @@
     </string>
 
     <string name="RecInterview_EndMsg">
-    Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old
+    Thanks. Get ready to play Xquisite!
     </string>
 
     <string name="Play_initMsg">
-    Listen to where we are in X's story. You will invent the next part.
+    X = woman born 2045. She lives in the Arctic. Temperatures have risen. Almost 10billion humans on earth. Listen to the last part of X’s story.
     </string>
 
     <string name="Play_playMsg">
@@ -215,7 +215,7 @@
     </string>
 
     <string name="IntroMsg_line5">
-    Vi oppmuntrer deg til å være morsom, provoserende og dramatisk
+    La dine egne opplevelser inspirere din scene fra X sitt liv.
     </string>
 
     <string name="IntroMsg_line6">
@@ -235,11 +235,11 @@
     </string>
 
     <string name="RecInterview_Question3">
-    Ønsker du å bli kreditert for ditt bidrag? (svar ja eller nei)
+    Ønsker du å bli kreditert for ditt bidrag?
     </string>
 
     <string name="RecInterview_Question4">
-    Har du mulighet til å ha dialog med unge mennesker eller kunstnere, over nett eller direkte, på et senere tidspunkt? (svar ja eller nei)
+    Har du mulighet til å ha dialog med unge mennesker eller kunstnere, over nett eller direkte, på et senere tidspunkt?
     </string>
 
     <string name="RecInterview_Question5">
@@ -273,15 +273,15 @@
     </string>
 
     <string name="RecInterview_EndMsg">
-    Takk. Gjør deg klar til å spille Xquisite! Året er 2062. Vår hovedkarakter X er 17 år gammel.
+    Takk. Gjør deg klar til å spille Xquisite!
     </string>
 
     <string name="Play_initMsg">
-    Listen to where we are in X\'s story. You will invent the next part.
+    X= en kvinne født i år 2045. Hun bor i Arktis. Temperaturene har steget. Nesten 10 milliarder menneser lever på jorden. Lytt til den siste delen av X sin historie
     </string>
 
     <string name="Play_playMsg">
-    …
+    Lytt..
     </string>
 
     <string name="Play_endMsg">
@@ -293,7 +293,7 @@
     </string>
 
     <string name="RecStory_Question2">
-    Tenk på hva X muligens gjør videre. Plasser deg i hennes ståsted og vår dramatisk
+    Tenk på hva X muligens gjør videre. Plasser deg i hennes ståsted og vær dramatisk
     </string>
 
     <string name="RecStory_Question3">

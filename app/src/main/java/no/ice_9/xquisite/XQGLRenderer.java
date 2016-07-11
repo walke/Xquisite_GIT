@@ -97,11 +97,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         {
             if(top==0)
             {
-                bg.setTargetShape(0.0f,-0.6f,1.0f,0.4f);
+                bg.setTargetShape(0.0f,-0.6f,1.0f,0.42f);
             }
             else if(top==1)
             {
-                bg.setTargetShape(0.0f,1.0f,1.0f,0.4f);
+                bg.setTargetShape(0.0f,1.0f,1.0f,0.42f);
             }
         }
 
@@ -128,10 +128,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             float hoffset=0.0f;
             float tothoffset=0.0f;
             for(int j=0;j<mActiveLine+1.0f;j++)
-            {tothoffset+=mLine[j].mLineCount*0.07f;}
+            {tothoffset+=mLine[j].mLineCount*0.07f*0f;}
             float prevOffset=0.1f;
             //Log.d("ASCII","act line:"+activeLine);
-            float a1=tothoffset + prevOffset * mActiveLine - 1.0f;
+            float a1=tothoffset + prevOffset * mActiveLine - 0.85f;
             Matrix.translateM(scratch, 0, 0.0f, a1, 0.0f);
             for(int j=0;j<mMaxRows;j++)
             {
