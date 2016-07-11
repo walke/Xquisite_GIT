@@ -26,7 +26,7 @@ public class StoryRecClass extends RecorderBase {
         mDBmanager=dBman;
 
         lastRecorder=true;
-        mEndMessege="PUSH BUTTON FINISH ";
+        mEndMessege=tAct.getResources().getString(R.string.RecStory_endMsg);
 
 
         initQuestions();
@@ -44,9 +44,9 @@ public class StoryRecClass extends RecorderBase {
         mQuestion[1]=new Question("Think of what X might do next. Put yourself in her shoes, and challenge yourself to be dramatic. ",120,PART_TYPE_VIDEO);
         mQuestion[2]=new Question("You now have one more minute to add to your story, or summarise for the next player. ",60,PART_TYPE_VIDEO);
 */
-        mQuestion[0]=new Question("Hva er n"+NB_oy+"kkelordene til det du nettopp h"+NB_oy+"rte?" ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[1]=new Question("Tenk p"+NB_uo+" hva X muligens gj"+NB_oy+"r videre. Plasser deg i hennes st"+NB_uo+"sted og v"+NB_uo+"r dramatisk" ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[2]=new Question("Du har et minutt til "+NB_uo+" legge til noe til din historie eller oppsummere historien til neste spiller. " ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[0]=new Question(tAct.getResources().getString(R.string.RecStory_Question1) ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[1]=new Question(tAct.getResources().getString(R.string.RecStory_Question2) ,60,PART_TYPE_VIDEO);//OLD 8
+        mQuestion[2]=new Question(tAct.getResources().getString(R.string.RecStory_Question3) ,60,PART_TYPE_VIDEO);//OLD 8
 
         for (int i=0;i<mQuestion.length;i++)
         {

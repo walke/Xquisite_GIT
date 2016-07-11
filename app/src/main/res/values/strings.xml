@@ -13,4 +13,303 @@
     <string name="title_activity_recorder">RecorderActivity</string>
     <string name="title_activity_browser">BrowserActivity</string>
 
+    <string name="LogMain">MAIN</string>
+    <string name="LogGL">GL</string>
+
+    <!--APP TEXT -->
+    <!--English:
+
+    <string name="LoadingMsg">
+    Loading. Please wait
+    </string>
+
+    <string name="Button_intro">
+    intro
+    </string>
+
+    <string name="Button_skip">
+    skip
+    </string>
+
+    <string name="InitMsg_welcome">
+    Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min.
+     </string>
+
+    <string name="GlobMsg_continue">
+    PRESS THE RED BUTTON TO CONTINUE!
+     </string>
+
+    <string name="MainMsg_SkipInterview">
+    If you are here for the first time, we would like you to answer few questions first, but you can skip it if you want!
+    </string>
+
+    <string name="MainBut_Ok">
+    OK
+    </string>
+
+    <string name="MainBut_Skip">
+    Skip
+    </string>
+
+    <string name="IntroMsg_line1">
+    ICE-9 invites you to help invent the life of X
+    </string>
+
+    <string name="IntroMsg_line2">
+    you will hear part of X\'s story
+    </string>
+
+    <string name="IntroMsg_line3">
+    you make up what X does next
+    </string>
+
+    <string name="IntroMsg_line4">
+    this will be passed to the next player
+    </string>
+
+    <string name="IntroMsg_line5">
+    we encourage you to be funny, provocative, and dramatic
+    </string>
+
+    <string name="IntroMsg_line6">
+    your ideas will be reworked and recombined by kids and artists
+    </string>
+
+    <string name="IntroMsg_line7">
+    REMEMBER THAT XQUISITE IS A FICTION GAME. THE STORIES COME FROM YOU, AS A PRIVATE PERSON, AND ARE NOT A PROFESSIONAL STATEMENT.
+    </string>
+
+    <string name="RecInterview_Question1">
+    What is your name?
+    </string>
+
+    <string name="RecInterview_Question2">
+    What is your e-mail?
+    </string>
+
+    <string name="RecInterview_Question3">
+    Are you happy to be credited for your contribution? (answer yes or no)
+    </string>
+
+    <string name="RecInterview_Question4">
+    Are you willing to engage in online or live dialogue with young people and artists? (answer yes or no)
+    </string>
+
+    <string name="RecInterview_Question5">
+    Describe briefly your earliest memory.
+    </string>
+
+    <string name="RecInterview_Question6">
+    Would your close friends call you an optimist or pessimist about the future?
+    </string>
+
+
+
+    <string name="RecInterview_Question7">
+    What is your favorite science fiction story?
+    </string>
+
+    <string name="RecInterview_Question8">
+    what's your best mistake?
+    </string>
+
+    <string name="RecInterview_Question9">
+    what's the most significant change you think will happen in the next 50 years?
+    </string>
+
+    <string name="RecInterview_Question10">
+    if you could time travel, what year would you go to?
+    </string>
+
+    <string name="RecInterview_Question11">
+    what did (or what do) you want to be when you grow up?
+    </string>
+
+    <string name="RecInterview_EndMsg">
+    Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old
+    </string>
+
+    <string name="Play_initMsg">
+    Listen to where we are in X's story. You will invent the next part.
+    </string>
+
+    <string name="Play_playMsg">
+    PLAYING...
+    </string>
+
+    <string name="Play_endMsg">
+    Close your eyes for a moment and think about what you just heard
+    </string>
+
+    <string name="RecStory_Question1">
+    What are the key words from what you just heard?
+    </string>
+
+    <string name="RecStory_Question2">
+    Think of what X might do next. Put yourself in her shoes, and challenge yourself to be dramatic.
+    </string>
+
+    <string name="RecStory_Question3">
+    You now have one more minute to add to your story, or summarise for the next player.
+    </string>
+
+
+    <string name="RecStory_endMsg">
+    PUSH BUTTON TO FINISH
+    </string>
+
+    <string name="RecStory_endMsg">
+    Thank you!
+    </string>
+
+    -->
+
+    <!--Nowegian:-->
+    <string name="LoadingMsg">
+    Laster…
+    </string>
+
+    <string name="Button_intro">
+    Intro
+    </string>
+
+    <string name="Button_skip">
+    Skip
+    </string>
+
+    <string name="InitMsg_welcome">
+    Velkommen til Xquisite! Spørsmål dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.
+     </string>
+
+    <string name="GlobMsg_continue">
+    Trykk på den røde knappen for å fortsette!
+     </string>
+
+    <string name="MainMsg_SkipInterview">
+    Hvis du er her for første gang vil vi gjerne at du svarer på noen spørsmål først, men du må gjerne hoppe over dette hvis du ønsker.
+    </string>
+
+    <string name="MainBut_Ok">
+    OK
+    </string>
+
+    <string name="MainBut_Skip">
+    Hopp over
+    </string>
+
+    <string name="IntroMsg_line1">
+    Ice-9 inviterer deg til å skape livet til X
+
+    </string>
+
+    <string name="IntroMsg_line2">
+    Du vil høre en del av X sin historie
+    </string>
+
+    <string name="IntroMsg_line3">
+    Du finner på hva X gjør videre
+    </string>
+
+    <string name="IntroMsg_line4">
+    Din historie gis videre til den neste spilleren
+    </string>
+
+    <string name="IntroMsg_line5">
+    Vi oppmuntrer deg til å være morsom, provoserende og dramatisk
+    </string>
+
+    <string name="IntroMsg_line6">
+    Dine ideer blir omarbeidet og kombinert med andre historier av barn og kunstnere
+    </string>
+
+    <string name="IntroMsg_line7">
+    Husk at Xquisite er et fiksjonsspill. Historiene som kommer fra deg, som en privatperson, er ikke en profesjonell uttalelse.
+    </string>
+
+    <string name="RecInterview_Question1">
+    Hva er ditt navn?
+    </string>
+
+    <string name="RecInterview_Question2">
+    Hva er din e-postadresse?
+    </string>
+
+    <string name="RecInterview_Question3">
+    Ønsker du å bli kreditert for ditt bidrag? (svar ja eller nei)
+    </string>
+
+    <string name="RecInterview_Question4">
+    Har du mulighet til å ha dialog med unge mennesker eller kunstnere, over nett eller direkte, på et senere tidspunkt? (svar ja eller nei)
+    </string>
+
+    <string name="RecInterview_Question5">
+    Beskriv kort ditt første minne
+    </string>
+
+    <string name="RecInterview_Question6">
+    Vil dine venner si at du er en optimist eller en pessimist når det gjelder framtiden?
+    </string>
+
+    <string name="RecInterview_Question7">
+    Hva er din favoritt science fiction-historie?
+    </string>
+
+
+
+    <string name="RecInterview_Question8">
+    Hva er din beste feiltakelse?
+    </string>
+
+    <string name="RecInterview_Question9">
+    Hva tror du er de mest betydelige endringene de neste 50 årene?
+    </string>
+
+    <string name="RecInterview_Question10">
+    Hvis du kunne reise i tid, hvilket år ville du dratt til?
+    </string>
+
+    <string name="RecInterview_Question11">
+    Da du var liten, hva ville du (eller vil du) bli når du ble voksen?
+    </string>
+
+    <string name="RecInterview_EndMsg">
+    Takk. Gjør deg klar til å spille Xquisite! Året er 2062. Vår hovedkarakter X er 17 år gammel.
+    </string>
+
+    <string name="Play_initMsg">
+    Listen to where we are in X\'s story. You will invent the next part.
+    </string>
+
+    <string name="Play_playMsg">
+    …
+    </string>
+
+    <string name="Play_endMsg">
+    Lukk øynene et øyeblikk og tenk på hva du nettopp hørte.
+    </string>
+
+    <string name="RecStory_Question1">
+    Hva er nøkkelordene til det du nettopp hørte?
+    </string>
+
+    <string name="RecStory_Question2">
+    Tenk på hva X muligens gjør videre. Plasser deg i hennes ståsted og vår dramatisk
+    </string>
+
+    <string name="RecStory_Question3">
+    Du har et minutt til å legge til noe til din historie eller oppsummere historien til neste spiller.
+    </string>
+
+
+    <string name="RecStory_endMsg">
+    PUSH BUTTON TO FINISH
+    </string>
+
+
+    <string name="Fin_Msg">
+    Tusen takk!
+    </string>
+
+
+
 </resources>

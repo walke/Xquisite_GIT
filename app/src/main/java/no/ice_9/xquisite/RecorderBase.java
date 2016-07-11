@@ -6,6 +6,7 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -104,6 +105,8 @@ public class RecorderBase extends SubAct{
     int mCurrentUser;
 
     int mTotalTime=0;
+
+    String choose="";
 
     String mEndMessege="";
 
@@ -231,6 +234,15 @@ public class RecorderBase extends SubAct{
                     nextPart();
 
                 }
+                break;
+
+            case 6:
+                choose="yes";
+                nextPart();
+                break;
+            case 7:
+                choose="no";
+                nextPart();
                 break;
         }
 
@@ -737,11 +749,32 @@ public class RecorderBase extends SubAct{
             mPauseRequest=false;
 
         }catch(Exception e){mPauseRequest=true;}
-
+        if(mCurrentSubPart>0)mAscii.mGLView.mRenderer.hideShowNext(true);
     }
 
     private boolean initPart()
     {
+        tAct.inputField.clearComposingText();
+        InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+
+        //imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, InputMethodManager.HIDE_NOT_ALWAYS);
+        //imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
+
+        mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_REC);
+        //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+        Log.d("RECORDER","VIDEO INPUT");
+
+        imm.hideSoftInputFromWindow(tAct.inputField.getWindowToken(),0);
+
+
+        //imm.viewClicked(tAct.inputField);
+        tAct.inputField.clearFocus();
+        mAscii.mGLView.requestFocus();
+        //_________________
+
+        mAscii.mGLView.mRenderer.hideShowNext(false);
         Log.d("RECORDER","initpart");
         boolean result=true;
 
@@ -803,7 +836,7 @@ public class RecorderBase extends SubAct{
             //mCamera.setParameters(new Camera.Parameters());
             mCamera.startPreview();
             mTimeLeft=10;
-            tAct.inputField.clearComposingText();
+            /*tAct.inputField.clearComposingText();
             InputMethodManager imm =  (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
 
 
@@ -820,20 +853,45 @@ public class RecorderBase extends SubAct{
 
             //imm.viewClicked(tAct.inputField);
             tAct.inputField.clearFocus();
-            mAscii.mGLView.requestFocus();
+            mAscii.mGLView.requestFocus();*/
 
 
         }
         else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
         {
+            if(mCurrentPart==0)
+            {
+                tAct.inputField.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+                tAct.inputField.setInputType(//tAct.inputField.getInputType() |
+                        InputType.TYPE_CLASS_TEXT|
+                        //InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                        //InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                        //EditorInfo.IME_ACTION_GO|
+                        //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
+                        InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+            }
+            else if(mCurrentPart==1)
+            {
+                tAct.inputField.setInputType(//tAct.inputField.getInputType() |
+                        InputType.TYPE_CLASS_TEXT|
+                        //InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                        //InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                        //EditorInfo.IME_ACTION_GO|
+                        //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
+                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            }
+
+            //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
             if(mAscii.mGLView.mRenderer.mMode!=mAscii.mGLView.mRenderer.MODE_INPT)
             {
+
+
                 mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
                 //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
                 Log.d("RECORDER", "TEXT INPUT");
 
-                InputMethodManager imm = (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm = (InputMethodManager) tAct.getSystemService(Context.INPUT_METHOD_SERVICE);
 
                 //if(!imm.isAcceptingText())
                 //{
@@ -845,7 +903,25 @@ public class RecorderBase extends SubAct{
                 //imm.viewClicked(tAct.inputField);
                 tAct.inputField.requestFocus();
                 //tAct.inputField.setText("_");
-                //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_FILTER);
+
+            }
+        }
+        else if(mQuestion[mCurrentPart].type == PART_TYPE_CHOOSE)
+        {
+
+
+            //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
+            if(mAscii.mGLView.mRenderer.mMode!=mAscii.mGLView.mRenderer.MODE_CHOS)
+            {
+
+
+                mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_CHOS);
+                //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+                Log.d("RECORDER", "CHOOSE");
+
+
+
             }
         }
 
@@ -975,6 +1051,10 @@ public class RecorderBase extends SubAct{
                 tAct.inputField.clearComposingText();
                 mAscii.mGLView.mRenderer.clearAscii();
             }
+            else if(mQuestion[mCurrentPart-1].type==PART_TYPE_CHOOSE)
+            {
+                mVideoPart[mCurrentPart-1].populate("",mQuestion[mCurrentPart-1].question,"",StoryPart.PART_TYPE_CHOOSE,choose,0);
+            }
 
             if ((mCurrentPart + 1) < mQuestion.length) {
                 Log.d("ASCII","fr rec: qmod 4");
@@ -1028,6 +1108,7 @@ public class RecorderBase extends SubAct{
         if(mCurrentPart<mQuestion.length){}//mAscii.modLine("PUSH BUTTON TO RECORD ("+mQuestion[mCurrentPart].time+" sec)", 3, -1);
         else
         {
+            mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_IDLE);
             mAscii.mGLView.mRenderer.setRecSequence(false);
             //mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0);
             mAscii.modLine(mEndMessege,0,0,false);

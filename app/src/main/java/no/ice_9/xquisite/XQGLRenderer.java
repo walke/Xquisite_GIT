@@ -42,6 +42,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public static final int MODE_PLAY=2;
     public static final int MODE_INPT=3;
     public static final int MODE_CHOS=4;
+    public static final int MODE_FIN =5;
+    public static final int MODE_IDLE=6;
 
     class MsgLines
     {
@@ -404,12 +406,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         msgLines=           new MsgLines(sy);
 
         mContinueButton =   new ButtonTile(0.0f,-0.45f,0.2f,0.2f*mRatio,textures[3]);
+        mContinueButton.hideShowChoose(1);
 
-        mContButText =      new TextBoxTile(textures[0],"skip");
+        mContButText =      new TextBoxTile(textures[0],"skip");//actContext.getResources().getString(R.string.Button_skip));
 
         mExtraButton =      new ButtonTile(0.0f,-0.20f,0.2f,0.2f*mRatio,textures[3]);
+        mExtraButton.hideShowChoose(1);
 
-        mExtButText =      new TextBoxTile(textures[0],"intro");
+        mExtButText =      new TextBoxTile(textures[0],"intro");//actContext.getResources().getString(R.string.Button_intro));
 
         mAudioTile =        new AudioTile();
 
@@ -565,7 +569,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }*/
 
         //SLIDER INFO
-        if(mRecSequence)
+
+        if(mMode==MODE_REC)
         {
             Matrix.translateM(scratch5, 0, mSliderInfo.midx, mSliderInfo.midy, 1.0f);
             Matrix.scaleM(scratch5, 0, mSliderInfo.sizx, mSliderInfo.sizy, 0.0f);
@@ -573,11 +578,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             mSliderInfo.draw(scratch5);
         }
 
+        //Log.d("ASCII","mode"+mContinueButton.midTx+","+mExtraButton.midTx);
 
         //BUTTON
-        if(!mContinueButton.isHidden()){
-        mContinueButton.midx=slider;
-        mContinueButton.midTx=slider;}
+        if(mContinueButton.getMode()==1)
+        {
+            mContinueButton.midx=slider;
+            mContinueButton.midTx=slider;
+        }
         Matrix.translateM(scratch2, 0, mContinueButton.midx, mContinueButton.midy, 1.0f);
 
         Matrix.scaleM(scratch2, 0, mContinueButton.sizx, mContinueButton.sizy, 0.0f);
@@ -587,7 +595,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         mContButText.draw(scratch8);
 
         //BUTTON EXTRA
-        if(!mExtraButton.isHidden()){
+        if(mExtraButton.getMode()==0){
             mExtraButton.midx=0.0f;
             //mExtraButton.midTx=0.0f;
         }
@@ -900,7 +908,6 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void putImage(Bitmap bitmap,boolean erase)
     {
-        //Random r = new Random();
         for(int i=0;i<asciicols;i++)
         {
             if(i<bitmap.getWidth())
@@ -1058,22 +1065,28 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public int getClick(float x, float y)
     {
-
+        int mode=0;
         if(mContinueButton.isDown)
         {
+            mode=mContinueButton.getMode();
+            Log.d("ASCII","click"+mode);
             if (x > mContinueButton.midx - (mContinueButton.sizx / 1.0f) &&
                     x < mContinueButton.midx + (mContinueButton.sizx / 1.0f) &&
                     y > mContinueButton.midy - (mContinueButton.sizy / 1.0f) &&
                     y < mContinueButton.midy + (mContinueButton.sizy / 1.0f))
             {
                 mContinueButton.setUp();
-                return 1;
+                if(mode==1)return 1;
+                else if(mode==2)return 6;
             }
             mContinueButton.setUp();
         }
 
         if(mExtraButton.isDown)
         {
+
+            mode=mExtraButton.getMode();
+            Log.d("ASCII","click"+mode);
             Log.d("ASCII","extra down");
             if (x > mExtraButton.midx - (mExtraButton.sizx / 1.0f) &&
                     x < mExtraButton.midx + (mExtraButton.sizx / 1.0f) &&
@@ -1082,7 +1095,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             {
                 Log.d("ASCII","extra down");
                 mExtraButton.setUp();
-                return 2;
+                if(mode==1)return 2;
+                else if(mode==3)return 7;
             }
             mExtraButton.setUp();
         }
@@ -1152,7 +1166,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         if(isIdle)
         {
             putImage(mIdleBitmap, false);
+            mCDown=-1;
         }
+    }
+
+    public void hideShowNext(boolean show)
+    {
+        mSliderInfo.hideShowNext(show);
     }
 
     public void setRecording(boolean isRec)
@@ -1215,17 +1235,17 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }
     }
 
-    public void hideShowButton(int button,boolean show)
+    public void hideShowChooseButton(int button,int mode)
     {
 
         switch (button)
         {
             case 0:
 
-                mContinueButton.hideShow(show);
+                mContinueButton.hideShowChoose(mode);
                 break;
             case 1:
-                mExtraButton.hideShow(show);
+                mExtraButton.hideShowChoose(mode);
                 break;
         }
     }
@@ -1237,29 +1257,63 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void setMode(int mode)
     {
+
+        Log.d("ASCII","mode"+mContinueButton.getMode()+","+mExtraButton.getMode());
         if(mode==MODE_INIT)
         {
             mContButText.set("");
+            mContinueButton.hideShowChoose(0);
+            mExtraButton.hideShowChoose(0);
         }
         if(mode==MODE_INPT)
         {
-            hideShowButton(0,false);
-            hideShowButton(1,false);
+            mContinueButton.hideShowChoose(0);
+            mExtraButton.hideShowChoose(0);
+            //hideShowChooseButton(0,0);
+            //hideShowChooseButton(1,0);
 
         }
+        if(mode==MODE_CHOS)
+        {
+            mContinueButton.hideShowChoose(2);
+            mExtraButton.hideShowChoose(3);
+            //hideShowChooseButton(0,2);
+            //hideShowChooseButton(1,3);
+            mContButText.set("yes");
+            mExtButText.set("no");
+        }
         if(mode==MODE_REC){
-            hideShowButton(0,true);
-            hideShowButton(1,false);
+            mContinueButton.hideShowChoose(1);
+            mExtraButton.hideShowChoose(0);
+            //hideShowChooseButton(0,1);
+            //hideShowChooseButton(1,0);
             mContButText.set("");
 
         }
+        if(mode==MODE_IDLE)
+        {
+            mContinueButton.hideShowChoose(1);
+            mExtraButton.hideShowChoose(0);
+            //hideShowChooseButton(0,1);
+            //hideShowChooseButton(1,0);
+            mContButText.set("");
+        }
         if(mode==MODE_PLAY)
         {
-            hideShowButton(0,true);
-            hideShowButton(1,false);
+            mContinueButton.hideShowChoose(1);
+            mExtraButton.hideShowChoose(0);
+            //hideShowChooseButton(0,1);
+            //hideShowChooseButton(1,0);
             mContButText.set("play");
 
         }
+        if(mode==MODE_FIN)
+        {
+            hideShowChooseButton(0,1);
+            hideShowChooseButton(1,0);
+            mContButText.set("quit");
+        }
+        Log.d("ASCII","mode"+mContinueButton.getMode()+","+mExtraButton.getMode());
         clearAscii();
         mMode=mode;
         //inputBox.clear();

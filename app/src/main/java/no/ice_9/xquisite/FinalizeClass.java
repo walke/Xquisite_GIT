@@ -25,11 +25,14 @@ public class FinalizeClass extends SubAct{
     int mTime;
     public boolean mInitDone=false;
 
+    MainActivity tAct;
 
 
-    public FinalizeClass(Activity activity,ASCIIscreen ascii,DBmanager dBman)
+
+    public FinalizeClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman)
     {
 
+        tAct=activity;
         mDBmanager=dBman;
         //mServer=server;
         mAscii = ascii;
@@ -42,6 +45,7 @@ public class FinalizeClass extends SubAct{
     {
         int[] result=new int[1];
         System.gc();//garbage collector, maybe not necessary
+
         result[0]=1;
         return result;
     }
@@ -58,10 +62,10 @@ public class FinalizeClass extends SubAct{
 
                 if(mAscii.mReady)
                 {
-
+                    mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_FIN);
                     mAscii.mGLView.mRenderer.setProgress(0.0f,1);
                     mAscii.mGLView.mRenderer.setProgress(0.0f,0);
-                    mAscii.modLine("THANK YOU!",0,0,true);
+                    mAscii.modLine(tAct.getResources().getString(R.string.Fin_Msg),0,0,true);
                 }
 
             }

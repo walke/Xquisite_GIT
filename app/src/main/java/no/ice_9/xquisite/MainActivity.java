@@ -55,6 +55,8 @@ import java.util.TimerTask;
  */
 public class MainActivity extends Activity {
 
+    //final String LogTag = getResources().getString(R.string.LogMain);
+
     //database
     DeviceData mDeviceData;
     private DBmanager mDBmanager;
@@ -94,6 +96,8 @@ public class MainActivity extends Activity {
     boolean interInit=false;
     boolean fromIntro=false;
 
+    int inpPrevLength=0;
+
 
 
 
@@ -121,7 +125,7 @@ public class MainActivity extends Activity {
     public void glTouch(int extra)
     {
         boolean playIntro=false;
-        Log.d("GL","TOUCH");
+        Log.d("ASCII","TOUCH"+extra);
         //CreateNewStory();
         int[] result;
         int res=-1;
@@ -145,7 +149,7 @@ public class MainActivity extends Activity {
                 result=currentSubActivity.action(extra);
                 res=result[0];
                 if(result[0]!=-1){interInit=false;}
-                mAscii.mGLView.mRenderer.hideShowButton(0,true);
+                mAscii.mGLView.mRenderer.hideShowChooseButton(0,1);
                 //mAscii.mGLView.mRenderer.hideShowButton(1,true);
                 break;
             case 0:
@@ -159,7 +163,7 @@ public class MainActivity extends Activity {
                     fromIntro=true;
                     interInit=true;
                     //mAscii.mGLView.mRenderer.hideShowButton(0,false);
-                    mAscii.mGLView.mRenderer.hideShowButton(1,false);
+                    mAscii.mGLView.mRenderer.hideShowChooseButton(1,0);
                     break;
                 }
                 if(interSkip) {
@@ -211,7 +215,10 @@ public class MainActivity extends Activity {
                 mParentParts=-1;
                 mReservedStory=-1;
                 mPartOffset=-1;
-                break;
+
+                System.exit(0);
+                return;
+                //break;
 
         }
 
@@ -464,6 +471,7 @@ public class MainActivity extends Activity {
         mAscii=new ASCIIscreen(this,"MAIN");
         LinearLayout ll=new LinearLayout(this);
         inputField=new EditText(this);
+
         //inputField.clearFocus();
         Log.d("MAIN","inpFlags:"+inputField.getInputType());
 
@@ -471,21 +479,24 @@ public class MainActivity extends Activity {
         inputField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                inpPrevLength=inputField.getText().length();
+                if(inputField.getText().length()>0)Log.d("ASCII",s+" ch1:"+((int)inputField.getText().charAt(inputField.getText().length()-1))+";"+inputField.getText().length());
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
+
                 if(mAscii.mGLView.mRenderer.inputBox==null)return;
-                Log.d("ASCII",""+mAscii.mGLView.mRenderer);
+                if(inputField.getText().length()>0)Log.d("ASCII",s+" ch2:"+((int)inputField.getText().charAt(inputField.getText().length()-1))+";"+inputField.getText().length());
+
                 if(s.length()<=0){mAscii.mGLView.mRenderer.inputBox.setText("");return;}
                 if(inputField.getText().length()<=0){mAscii.mGLView.mRenderer.inputBox.setText("");return;}
                 if((int)inputField.getText().charAt(inputField.getText().length()-1)==10)
                 {
-                    glTouch(4);
+                    /*glTouch(4);
                     Log.d("ASCII","NL");
-                    mAscii.mGLView.mRenderer.inpRow++;
+                    mAscii.mGLView.mRenderer.inpRow++;*/
                 }
                 //Log.d("ASCII","CHA"+s+";"+start+";"+before+";"+count+";CD-"+(int)inputField.getText().charAt(inputField.getText().length()-1));
                 //mAscii.mGLView.mRenderer.inputBox.setText(s);
@@ -494,6 +505,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if(inputField.getText().length()>0)Log.d("ASCII",s+" ch3:"+(s.charAt(s.length()-1))+";"+inputField.getText().length());
 
             }
         });
@@ -505,11 +517,14 @@ public class MainActivity extends Activity {
         setContentView(ll);
 
         Log.d("MAIN","inpFlags:"+inputField.getInputType());
+        //inputField.setImeActionLabel("1",EditorInfo.IME_ACTION_NEXT);
+        inputField.setImeOptions(EditorInfo.IME_ACTION_NEXT);
         inputField.setInputType(inputField.getInputType() |
                 //InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
-                EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE |
+                //InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                //EditorInfo.IME_ACTION_GO|
                 //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
-                EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
+                InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         Log.d("MAIN","inpFlags:"+inputField.getInputType());
         //inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_PASSWORD);
         //inputField.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -519,6 +534,17 @@ public class MainActivity extends Activity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 Log.d("ASCII","KEY!!!");
                 return true;
+            }
+        });
+
+        inputField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                glTouch(4);
+                Log.d("ASCII","NL"+actionId);
+                mAscii.mGLView.mRenderer.inpRow++;
+                Log.d("ASCII","KEY!!!");
+                return false;
             }
         });
 
@@ -679,13 +705,13 @@ public class MainActivity extends Activity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Hvis du er her for første gang vil vi gjerne at du svarer på noen spørsmål først, men du må gjerne hoppe over dette hvis du ønsker. ")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setMessage(getResources().getString(R.string.MainMsg_SkipInterview))
+                    .setPositiveButton(getResources().getString(R.string.MainBut_Ok), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             ((MainActivity)getActivity()).diaBut(false);
                         }
                     })
-                    .setNegativeButton("hopp over", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getResources().getString(R.string.MainBut_Skip), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
                             ((MainActivity)getActivity()).diaBut(true);

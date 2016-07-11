@@ -334,7 +334,7 @@ public class PlayerClass extends SubAct{
                         }
                         else
                         {
-                            mAscii.modLine("Listen to where we are in X's story. You will invent the next part.", 0, 0,true);
+                            mAscii.modLine(tAct.getResources().getString(R.string.Play_initMsg), 0, 0,true);
                         }
                         //mAscii.modLine();
 
@@ -361,7 +361,7 @@ public class PlayerClass extends SubAct{
                             mAscii.modLine("",0,0,false);
                             mAscii.modLine("",2,0,false);
                             mAscii.modLine("",3,0,false);
-                            mAscii.modLine("PLAYING..",1,0,true);
+                            mAscii.modLine(tAct.getResources().getString(R.string.Play_playMsg),1,0,true);
 
                             mTime++;
                         }
@@ -654,10 +654,10 @@ public class PlayerClass extends SubAct{
         if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
         {
-            mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_INIT);
-            mAscii.modLine("Lukk "+NB_oy+"ynene et "+NB_oy+"yeblikk og tenk p"+NB_uo+" hva du nettopp h"+NB_oy+"rte. ",0,0,true);
+            mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_IDLE);
+            mAscii.modLine(tAct.getResources().getString(R.string.Play_endMsg),0,0,true);
             //mAscii.pushLine("");
-            mAscii.modLine("Trykk p"+NB_uo+" den r"+NB_oy+"de knappen for "+NB_uo+" fortsette!",1,0,false);
+            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),1,0,false);
             Log.d("PLAYER","LAST");
 
             mCurrentPart=16;

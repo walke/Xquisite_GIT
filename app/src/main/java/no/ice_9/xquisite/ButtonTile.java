@@ -23,7 +23,7 @@ public class ButtonTile {
     private float recBlink=0.0f;
     private boolean recBlinkUp=true;
 
-    private boolean hidden=false;
+    private int mMode=0;
 
     public  boolean isDown=false;
 
@@ -31,6 +31,11 @@ public class ButtonTile {
     public float midy;
     public float sizx;
     public float sizy;
+
+    public float midOx;
+    public float midOy;
+    public float sizOx;
+    public float sizOy;
 
     public float midTx;
     public float midTy;
@@ -106,6 +111,11 @@ public class ButtonTile {
         midy=my;
         sizx=sx;
         sizy=sy;
+
+        midOx=mx;
+        midOy=my;
+        sizOx=sx;
+        sizOy=sy;
 
         midTx=mx;
         midTy=my;
@@ -307,22 +317,37 @@ public class ButtonTile {
 
     }
 
-    public void hideShow(boolean show)
+    public void hideShowChoose(int mode)
     {
-
-        if(show)
+        mMode=mode;
+        Log.d("ASCII","hsh"+mode);
+        switch(mMode)
         {
-            hidden = false;
-            setTargetShape(0.0f,midy,0,0);
+            case 0:
+                Log.d("ASCII","hsh"+0);
+                //mMode = 0;
+                setTargetShape(0.0f,-2.0f,0,0);
+                break;
+            case 1:
+                Log.d("ASCII","hsh"+1);
+                //mMode = 1;
+                setTargetShape(0.0f,midOy,0,0);
+                break;
+            case 2:
+                Log.d("ASCII","hsh"+2);
+                //mMode = 2;
+                setTargetShape(0.5f,0.0f,0,0);
+                break;
+            case 3:
+                Log.d("ASCII","hsh"+3);
+                //mMode = 3;
+                setTargetShape(-0.5f,0.0f,0,0);
+                break;
         }
-        else
-        {
-            Log.d("ASCII","hsh");
-            hidden = true;
-            setTargetShape(-1.5f,midy,0,0);
 
-        }
     }
+
+
 
     public void setTargetShape(float x,float y,float w,float h)
     {
@@ -332,8 +357,8 @@ public class ButtonTile {
         //sizTy=h;
     }
 
-    public boolean isHidden() {
+    public int getMode() {
 
-        return hidden;
+        return mMode;
     }
 }

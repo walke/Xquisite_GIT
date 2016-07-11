@@ -1,6 +1,7 @@
 package no.ice_9.xquisite;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -268,6 +269,34 @@ public class SliderInfoTile {
 
 
 
+
+    }
+
+    public void hideShowNext(boolean show)
+    {
+        Log.d("ASCII","hide next");
+
+        if(!show)
+        {
+            tileCoords[18]=0f;
+            tileCoords[21]=0f;
+        }
+        else
+        {
+            tileCoords[18]=1f;
+            tileCoords[21]=1f;
+        }
+
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(tileCoords.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        vertexBuffer = byteBuffer.asFloatBuffer();
+        vertexBuffer.put(tileCoords);
+        vertexBuffer.position(0);
+        byteBuffer = ByteBuffer.allocateDirect(drawOrder.length * 4);
+        byteBuffer.order(ByteOrder.nativeOrder());
+        indexBuffer = byteBuffer.asShortBuffer();
+        indexBuffer.put(drawOrder);
+        indexBuffer.position(0);
 
     }
 }

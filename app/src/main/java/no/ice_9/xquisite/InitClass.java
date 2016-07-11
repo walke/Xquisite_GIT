@@ -42,9 +42,11 @@ public class InitClass extends SubAct{
     //@Override
     public InitClass(final MainActivity activity,ASCIIscreen ascii,DBmanager dBman,boolean fromintro)//,Data data)
     {
+        String ldMsg=activity.getResources().getString(R.string.LoadingMsg);
+
         tAct=activity;
         mLoadingDialog = ProgressDialog.show(activity, "",
-                      "Loading. Please wait...", true);
+                ldMsg, true);
         loading=true;
 
         Thread loadingWait=new Thread(new Runnable() {
@@ -144,7 +146,7 @@ public class InitClass extends SubAct{
                             // mAscii.pushLine("Xquisite takes roughly 5 minutes to play.");
                             //mAscii.pushLine("Before you play, we'd like to do a 3-minute interview which helps us develop the project further.");
                             //mAscii.modLine("", 1, 0,false);
-                            mAscii.modLine("Velkommen til Xquisite! Sp" + NB_oy + "rsm" + NB_uo + "l dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.  ", 0, 0, true);
+                            mAscii.modLine(tAct.getResources().getString(R.string.InitMsg_welcome), 0, 0, true);
                         }
                         //mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
                         //for(int g=0;g<3;g++)mAscii.modLine("ll"+g, g, 0,true);
@@ -189,7 +191,7 @@ public class InitClass extends SubAct{
                         if(!mFromIntro) {
                             //mAscii.pushLine("Connection succesed");
                             //mAscii.pushLine("");
-                            mAscii.modLine("Trykk p" + NB_uo + " den r" + NB_oy + "de knappen for " + NB_uo + " fortsette!", 2, 0, false);
+                            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue), 2, 0, false);
                             //mAscii.pushLine("");
                         }
                         mInitDone=true;
