@@ -170,7 +170,7 @@ public class RecorderBase extends SubAct{
 
         int[] result=new int[4];
         result[0]=-1;
-        Log.d("RECORDER","ACT"+act+"."+mTimeLimit);
+        //Log.d("RECORDER","ACT"+act+"."+mTimeLimit);
         switch(act)
         {
             case 0:
@@ -181,8 +181,7 @@ public class RecorderBase extends SubAct{
                     mUserReady = false;
 
                     pauseRecording();
-                    mAscii.mGLView.mRenderer.setRecording(false);
-                    mAscii.mGLView.mRenderer.setIdleRec(true);
+
 
                 }
                 else {mPauseRequest=true;}
@@ -594,7 +593,7 @@ public class RecorderBase extends SubAct{
             @Override
             public void run() {
 
-                Log.d("RECORDER", "TIMER: rec");
+                //Log.d("RECORDER", "TIMER: rec");
                 if (mMainDone && mWorking) {
                     Log.d("RECORDER", "TIMER: exiting");
                     this.cancel();
@@ -629,6 +628,7 @@ public class RecorderBase extends SubAct{
                         }
                     } else if (isRecording) {
                         Log.d("RECORDER", "recording");
+
                         tAct.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -744,12 +744,25 @@ public class RecorderBase extends SubAct{
 
             releaseMediaRecorder(); // release the MediaRecorder object
             mCamera.lock();         // take camera access back from MediaRecorder
-            mCurrentSubPart++;
+            if(checkSubpart(mCurrentSubPart))
+            {
+                mCurrentSubPart++;
+            }
             mAscii.mGLView.mRenderer.setRecording(false);
             mPauseRequest=false;
 
         }catch(Exception e){mPauseRequest=true;}
         if(mCurrentSubPart>0)mAscii.mGLView.mRenderer.hideShowNext(true);
+
+        mAscii.mGLView.mRenderer.setRecording(false);
+        mAscii.mGLView.mRenderer.setIdleRec(true);
+    }
+
+    private boolean checkSubpart(int part)
+    {
+        Log.d("RECORDER",part+":sprt:"+mTmpPart.filearr[part]);
+
+        return true;
     }
 
     private boolean initPart()
@@ -956,22 +969,33 @@ public class RecorderBase extends SubAct{
                 try {
 
                     Movie[] _clips = new Movie[mTmpPart.filearr.length];
+                    int j=0;
                     for (int i = 0; i < mTmpPart.filearr.length; i++) {
+                    //for (int i = 0; i < mCurrentSubPart; i++) {
 
                         //Movie tm=MovieCreator.
-                        Log.d("RECORDER", "trying!!!");
-                        Movie tm = MovieCreator.build(mTmpPart.filearr[i]);
 
-                        _clips[i] = tm;
+                        Log.d("RECORDER", "trying!!!"+mTmpPart.filearr.length+","+mCurrentSubPart);
+                        try
+                        {
+                            Movie tm = MovieCreator.build(mTmpPart.filearr[i]);
+                            _clips[j] = tm;
+                            j++;
 
-                        Log.d("RECORDER", "TM:" + tm.toString());
+                            Log.d("RECORDER", "TM:" + tm.toString());
+                        }catch (Exception io){}
+
+
+
 
                     }
-
+                    Movie[] _clips2=new Movie[j];
+                    for(int i=0;i<j;i++){_clips2[i]=_clips[i];}
+                    Log.d("RECORDER", "chk1");
                     List<Track> videoTracks = new LinkedList<Track>();
                     List<Track> audioTracks = new LinkedList<Track>();
 
-                    for (Movie m : _clips) {
+                    for (Movie m : _clips2) {
                         for (Track t : m.getTracks()) {
                             if (t.getHandler().equals("soun")) {
 
@@ -1257,7 +1281,14 @@ public class RecorderBase extends SubAct{
                     "SUB_"+ mCurrentSubPart + ".mp4");
             String fname = mediaStorageDir.getPath() + File.separator +
                     "SUB_"+ mCurrentSubPart + ".mp4";
-            mTmpPart.newSubPart(fname);
+            if(mTmpPart.filearr.length==0)
+            {
+                mTmpPart.newSubPart(fname);
+            }
+            else if(!mTmpPart.filearr[mTmpPart.filearr.length-1].equals(fname))
+            {
+                mTmpPart.newSubPart(fname);
+            }
             Log.d("RECORDER","fpath:"+fname);
             //mediaFile = new File(mediaStorageDir.getPath() + File.separator +
             //      "tmp.mp4");
