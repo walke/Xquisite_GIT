@@ -390,7 +390,7 @@ public class RecorderBase extends SubAct{
                     if(allDone>=NPARTS)
                     {
                         //if(lastRecorder)mServer.completeNdx(mServerReserved);
-                        if(lastRecorder)mDBmanager.completeNdx(mServerReserved);
+                        if(lastRecorder)mDBmanager.completeNdx(mServerReserved,1);
                         done=true;
                         Log.d("RECORDER to SERVER", "all done completing ");
 

@@ -3,6 +3,7 @@ package no.ice_9.xquisite;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -32,6 +33,8 @@ public class InitClass extends SubAct{
     int mReconnectTime=-1;
     boolean mScreenSaver=false;
     //Data appData;
+
+    int toDB=0;
 
     int mTime;
     public boolean mInitDone=false;
@@ -243,6 +246,27 @@ public class InitClass extends SubAct{
 
             }
         };
+    }
+
+    @Override
+    public void onBack() {
+
+
+        //super.onBack();
+
+
+
+        if(toDB>10)
+        {
+
+            Intent intent = new Intent(tAct, BrowserActivity.class);
+            tAct.startActivity(intent);
+            toDB=0;
+        }
+        else
+        {
+            toDB++;
+        }
     }
 
     @Override

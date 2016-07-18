@@ -172,7 +172,7 @@ public class Server {
 
         if(offline)
         {
-            return mData.completeStory(ndx,true);
+            return mData.completeStory(ndx,1);
         }
 
         byte[] ndxStr = new byte[4];

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Xquisite</string>
+    <string name="app_name">XQ_ENG_PUB</string>
 
     <string name="hello_world">scienceFuture \n xquisite</string>
     <string name="action_settings">Settings</string>
@@ -17,7 +17,7 @@
     <string name="LogGL">GL</string>
 
     <!--APP TEXT -->
-    <!--English:
+    <!--English:-->
 
     <string name="LoadingMsg">
     Loading. Please wait
@@ -110,11 +110,11 @@
     </string>
 
     <string name="RecInterview_Question8">
-    what's your best mistake?
+    what\'s your best mistake?
     </string>
 
     <string name="RecInterview_Question9">
-    what's the most significant change you think will happen in the next 50 years?
+    what\'s the most significant change you think will happen in the next 50 years?
     </string>
 
     <string name="RecInterview_Question10">
@@ -130,7 +130,7 @@
     </string>
 
     <string name="Play_initMsg">
-    X = woman born 2045. She lives in the Arctic. Temperatures have risen. Almost 10billion humans on earth. Listen to the last part of X’s story.
+    X = woman born 2045. She lives in the Arctic. Temperatures have risen. Almost 10billion humans on earth. Listen to the last part of X\’s story.
     </string>
 
     <string name="Play_playMsg">
@@ -158,14 +158,14 @@
     PUSH BUTTON TO FINISH
     </string>
 
-    <string name="RecStory_endMsg">
+    <string name="Fin_Msg">
     Thank you!
     </string>
 
-    -->
+
 
     <!--Nowegian:-->
-    <string name="LoadingMsg">
+    <!--<string name="LoadingMsg">
     Laster…
     </string>
 
@@ -309,6 +309,8 @@
     <string name="Fin_Msg">
     Tusen takk!
     </string>
+
+    -->
 
 
 

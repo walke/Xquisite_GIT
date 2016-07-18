@@ -38,10 +38,11 @@ public class DBmanager {
         return true;
     }
 
-    public int completeNdx(int ndx)
+    public int completeNdx(int ndx,int flag)
     {
 
-        return mDevData.completeStory(ndx,true);
+
+        return mDevData.completeStory(ndx,flag);
     }
 
     public StoryPart loadPart(int ndx, int storyPart)
