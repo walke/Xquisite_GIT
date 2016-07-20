@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
-import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
 
@@ -51,7 +50,7 @@ public class PreRecorderClass extends SubAct{
     MediaRecorder mRecorder;
 
     ASCIIscreen mAscii;
-    Server mServer;
+    Server_OLD mServer;
     Activity tAct;
 
     Thread recThread;
@@ -92,7 +91,7 @@ public class PreRecorderClass extends SubAct{
 
     private boolean[] mPartDone;
 
-    public PreRecorderClass(Activity activity,ASCIIscreen ascii,Server server)
+    public PreRecorderClass(Activity activity,ASCIIscreen ascii,Server_OLD server)
     {
         mAscii=ascii;
         mServer=server;
@@ -129,7 +128,7 @@ public class PreRecorderClass extends SubAct{
         }
 
         //SERVER INIT
-        //mServer=new Server(tAct);
+        //mServer=new Server_OLD(tAct);
         mCurrentUser=-1;
         mCurrentNdx=-1;
 

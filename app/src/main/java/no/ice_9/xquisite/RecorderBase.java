@@ -68,7 +68,7 @@ public class RecorderBase extends SubAct{
     int NPARTS= 0;
 
     ASCIIscreen mAscii;
-    //Server mServer;
+    //Server_OLD mServer;
     DBmanager mDBmanager;
     MainActivity tAct;
 

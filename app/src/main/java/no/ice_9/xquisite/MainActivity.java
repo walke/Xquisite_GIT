@@ -6,20 +6,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.hardware.input.InputManager;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.IBinder;
 
-import android.preference.EditTextPreference;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -31,22 +21,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.util.TypedValue;
 
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
-import com.googlecode.mp4parser.boxes.mp4.objectdescriptors.ExtensionDescriptor;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -82,7 +60,7 @@ public class MainActivity extends Activity {
 
 
     //SERVER
-    //private Server mServer;
+    private Server mServer;
     private boolean mSync=false;
 
     public int mParent=-1;
@@ -455,7 +433,7 @@ public class MainActivity extends Activity {
 
 
         //SERVER
-        //mServer=new Server(this,mDeviceData);
+        mServer=new Server(this,mDeviceData);
 
 
 
@@ -567,7 +545,7 @@ public class MainActivity extends Activity {
 
         new Timer().scheduleAtFixedRate(auto, 0, 4000);*/
 
-
+        mServer.Run();
         //CHECK CONNECTION not used in offline version TODO: rewrite to own function
         /*TimerTask conCheck= new TimerTask() {
             @Override
@@ -773,7 +751,7 @@ class SubAct
  */
 /*class Data
 {
-    Server mServer;
+    Server_OLD mServer;
     File mData;
     DevData mDevData;
 
@@ -829,7 +807,7 @@ class SubAct
         }
     }
 
-    public Data(Activity act,Server server)
+    public Data(Activity act,Server_OLD server)
     {
 
         mServer=server;

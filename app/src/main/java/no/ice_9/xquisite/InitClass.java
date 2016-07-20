@@ -26,7 +26,7 @@ public class InitClass extends SubAct{
 
     ASCIIscreen mAscii;
     MainActivity tAct;
-    //Server mServer;
+    //Server_OLD mServer;
     DBmanager mDBmanager;
     int mServerConnection=0;
     int mReconnectTime=-1;

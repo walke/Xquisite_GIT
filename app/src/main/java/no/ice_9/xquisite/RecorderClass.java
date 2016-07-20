@@ -1,17 +1,11 @@
 package no.ice_9.xquisite;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.hardware.Camera;
-import android.hardware.camera2.CameraManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.util.Log;
 import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +49,7 @@ public class RecorderClass extends SubAct{
     MediaRecorder mRecorder;
 
     ASCIIscreen mAscii;
-    Server mServer;
+    Server_OLD mServer;
     Activity tAct;
 
     Thread recThread;
@@ -93,7 +87,7 @@ public class RecorderClass extends SubAct{
 
     private boolean[] mPartDone;
 
-    public RecorderClass(Activity activity,ASCIIscreen ascii,Server server,int parent, int reserved, int offset)
+    public RecorderClass(Activity activity, ASCIIscreen ascii, Server_OLD server, int parent, int reserved, int offset)
     {
         mAscii=ascii;
         mServer=server;
@@ -110,7 +104,7 @@ public class RecorderClass extends SubAct{
         }
 
         //SERVER INIT
-        //mServer=new Server(tAct);
+        //mServer=new Server_OLD(tAct);
         mCurrentUser=-1;
         mCurrentNdx=-1;
 

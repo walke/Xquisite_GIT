@@ -41,7 +41,7 @@ public class PlayerClass extends SubAct{
     public static final char NB_oy=(char)133;
 
     ASCIIscreen mAscii;
-    //Server mServer;
+    //Server_OLD mServer;
     DBmanager mDBmanager;
     int mTime=0;
 

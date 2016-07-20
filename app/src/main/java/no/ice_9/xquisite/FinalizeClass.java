@@ -16,7 +16,7 @@ import java.util.TimerTask;
 public class FinalizeClass extends SubAct{
 
     ASCIIscreen mAscii;
-    //Server mServer;
+    //Server_OLD mServer;
     DBmanager mDBmanager;
     int mServerConnection=0;
     int mReconnectTime=-1;
