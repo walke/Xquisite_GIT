@@ -296,6 +296,7 @@ public class DeviceData {
      */
     private DataBase.Block addStringBlock(String str)
     {
+        if(str==null)str="x";
         byte[] buffer=new byte[24+str.length()];
 
         int emptyId=mDataBase.getEmptyId();
@@ -319,14 +320,14 @@ public class DeviceData {
     /**
      * mark story as complete
      * @param id story id
-     * @param up upload to server on completion TODO:?
+     * @param flag upload to server on completion TODO:?
      * @return returns block id
      */
-    public int completeStory(int id,boolean up)
+    public int completeStory(int id,int flag)
     {
         DataBase.Block storyBlock=getStoryNdx(id);
 
-        XQUtils.Int2ByteArr(storyBlock.mBuffer,1,BLOCKOFFSET_STORY_complete);
+        XQUtils.Int2ByteArr(storyBlock.mBuffer,flag,BLOCKOFFSET_STORY_complete);
 
         mDataBase.save();
 

@@ -1,14 +1,19 @@
 package no.ice_9.xquisite;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
@@ -396,6 +401,50 @@ public class PlayerClass extends SubAct{
         };
     }
 
+    @Override
+    public void onBack() {
+        super.onBack();
+
+        DialogFragment dg= new uncompleteCurrent();
+        dg.show(tAct.getFragmentManager(), "MARK AS LAST?");
+
+
+
+    }
+
+    public static class uncompleteCurrent extends DialogFragment {
+        /*MainActivity acti
+
+        public InterviewSkip(MainActivity activity){}*/
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("would you like to mark this story as last in its branch?")
+                    .setPositiveButton(getResources().getString(R.string.MainBut_Ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    })
+                    .setNegativeButton("yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+
+                            ((MainActivity)getActivity()).currentSubActivity.runFunc();
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    @Override
+    public void runFunc()
+    {
+        mDBmanager.completeNdx(mParent,2);
+    }
+
     private void initQuestions()
     {
 
@@ -633,6 +682,8 @@ public class PlayerClass extends SubAct{
 
         if(mCurrentPart>mStartPart || mParent==-2)
         {
+
+
 
             //mAscii.clear();
             startVideo();

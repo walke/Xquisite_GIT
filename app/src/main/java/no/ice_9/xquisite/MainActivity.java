@@ -74,6 +74,9 @@ public class MainActivity extends Activity {
     boolean interInit=false;
     boolean fromIntro=false;
 
+    int toDB=0;
+
+
     int inpPrevLength=0;
 
 
@@ -242,6 +245,7 @@ public class MainActivity extends Activity {
      */
     private void createTimerTask()
     {
+        toDB=0;
         switch(mCurrentAction)
         {
             case -1:
@@ -634,10 +638,23 @@ public class MainActivity extends Activity {
      */
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        //super.onBackPressed();
+
+        if(toDB>10)
+        {
+
+            Intent intent = new Intent(this, BrowserActivity.class);
+            startActivity(intent);
+            toDB=0;
+        }
+        else
+        {
+            toDB++;
+        }
         //UNCOMMENT TO GET DATABASE ON BACK PRESSED
-        Intent intent = new Intent(this, BrowserActivity.class);
-        startActivity(intent);
+
+
+        currentSubActivity.onBack();
         return;
 
 
@@ -744,6 +761,13 @@ class SubAct
     {
 
     }
+
+    public void onBack()
+    {
+
+    }
+
+    public void runFunc(){}
 }
 
 /**OLD DATABASE CLASS
