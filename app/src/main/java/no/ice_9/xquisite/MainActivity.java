@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
     private DBmanager mDBmanager;
 
 
-
+    Session mSession;
 
 
     //CURRENT ACTION
@@ -249,39 +249,39 @@ public class MainActivity extends Activity {
         switch(mCurrentAction)
         {
             case -1:
-                currentSubActivity=new IntoPlayingClass(this,mAscii,mDBmanager,mParent,mParentParts);//,appData);
+                currentSubActivity=new IntoPlayingClass(this,mAscii,mDBmanager,mParent,mParentParts,mSession);//,appData);
                 //currentSubActivity.Create(this,mAscii,mServer);
                 //initClass=new InitClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 0:
-                currentSubActivity=new InitClass(this,mAscii,mDBmanager,fromIntro);//,appData);
+                currentSubActivity=new InitClass(this,mAscii,mDBmanager,fromIntro,mSession);//,appData);
                 //currentSubActivity.Create(this,mAscii,mServer);
                 //initClass=new InitClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 1:
-                currentSubActivity=new InterviewClass(this,mAscii,mDBmanager);
+                currentSubActivity=new InterviewClass(this,mAscii,mDBmanager,mSession);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 2:
-                currentSubActivity=new StoryPlayingClass(this,mAscii,mDBmanager,mParent,mParentParts);
+                currentSubActivity=new StoryPlayingClass(this,mAscii,mDBmanager,mParent,mParentParts,mSession);
                 //currentSubActivity=new PlayerClass(this,mAscii,mServer,1,14);
                 //playerClass=new PlayerClass(this,mAscii,mServer);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
 
             case 3:
-                currentSubActivity=new StoryRecClass(this,mAscii,mDBmanager,mParent,mReservedStory,mPartOffset);
+                currentSubActivity=new StoryRecClass(this,mAscii,mDBmanager,mParent,mReservedStory,mPartOffset,mSession);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
             case 4:
-                currentSubActivity=new FinalizeClass(this,mAscii,mDBmanager);
+                currentSubActivity=new FinalizeClass(this,mAscii,mDBmanager,mSession);
                 //recorderClass=new RecorderClass(this,mAscii,mServer,mParent);
                 mTimerLoop=currentSubActivity.getTimerTask();
                 break;
@@ -412,6 +412,8 @@ public class MainActivity extends Activity {
         //DATABASE
         mDeviceData=new DeviceData(this);
         mDBmanager = new DBmanager(mDeviceData);
+
+        mSession=new Session();
 
         //CURRENT ACTION
         mCurrentAction=0;
@@ -718,6 +720,39 @@ public class MainActivity extends Activity {
     }
 
 
+}
+
+class Session
+{
+    StoryPart part[];
+
+    public Session()
+    {
+
+    }
+
+    public void addPart(StoryPart prt)
+    {
+        if(part==null)
+        {
+            part=new StoryPart[1];
+        }
+        else
+        {
+            StoryPart tmp[]=new StoryPart[part.length];
+            for(int i=0; i<part.length;i++)
+            {
+                tmp[i]=part[i];
+
+            }
+            part=new StoryPart[tmp.length+1];
+            for(int i=0;i<tmp.length;i++)
+            {
+                part[i]=tmp[i];
+            }
+        }
+        part[part.length-1]=prt;
+    }
 }
 
 /**

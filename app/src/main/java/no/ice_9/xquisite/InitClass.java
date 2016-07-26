@@ -43,7 +43,7 @@ public class InitClass extends SubAct{
     boolean mFromIntro;
 
     //@Override
-    public InitClass(final MainActivity activity,ASCIIscreen ascii,DBmanager dBman,boolean fromintro)//,Data data)
+    public InitClass(final MainActivity activity,ASCIIscreen ascii,DBmanager dBman,boolean fromintro, Session session)//,Data data)
     {
         String ldMsg=activity.getResources().getString(R.string.LoadingMsg);
 

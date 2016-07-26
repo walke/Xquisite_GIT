@@ -29,7 +29,7 @@ public class FinalizeClass extends SubAct{
 
 
 
-    public FinalizeClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman)
+    public FinalizeClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman, Session session)
     {
 
         tAct=activity;

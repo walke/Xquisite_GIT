@@ -7,7 +7,7 @@ import android.app.Activity;
  */
 public class StoryPlayingClass extends PlayerClass {
 
-    public StoryPlayingClass(MainActivity activity, ASCIIscreen ascii, DBmanager dBman, int parent, int parentParts)
+    public StoryPlayingClass(MainActivity activity, ASCIIscreen ascii, DBmanager dBman, int parent, int parentParts, Session session)
     {
         tAct=activity;
         mDBmanager=dBman;

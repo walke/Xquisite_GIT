@@ -16,9 +16,9 @@ public class StoryRecClass extends RecorderBase {
     public static final char NB_ae=(char)132;
     public static final char NB_oy=(char)133;
 
-    public StoryRecClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman,int parent, int reserved, int offset)
+    public StoryRecClass(MainActivity activity,ASCIIscreen ascii,DBmanager dBman,int parent, int reserved, int offset, Session session)
     {
-        NPARTS=3;
+        NPARTS=7;
 
         mAscii=ascii;
         tAct=activity;
@@ -47,6 +47,11 @@ public class StoryRecClass extends RecorderBase {
         mQuestion[0]=new Question(tAct.getResources().getString(R.string.RecStory_Question1) ,60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[1]=new Question(tAct.getResources().getString(R.string.RecStory_Question2) ,60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[2]=new Question(tAct.getResources().getString(R.string.RecStory_Question3) ,60,PART_TYPE_VIDEO);//OLD 8
+
+        mQuestion[3]=new Question(tAct.getResources().getString(R.string.RecInterview_Question1) ,60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[4]=new Question(tAct.getResources().getString(R.string.RecInterview_Question2) ,60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[5]=new Question(tAct.getResources().getString(R.string.RecInterview_Question3) ,60,PART_TYPE_CHOOSE);//OLD 8
+        mQuestion[6]=new Question(tAct.getResources().getString(R.string.RecInterview_Question4) ,60,PART_TYPE_CHOOSE);//OLD 8
 
         for (int i=0;i<mQuestion.length;i++)
         {

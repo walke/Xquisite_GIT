@@ -12,7 +12,7 @@ import java.util.concurrent.RunnableFuture;
  */
 public class IntoPlayingClass extends PlayerClass{
 
-    public IntoPlayingClass(MainActivity activity, ASCIIscreen ascii, DBmanager dBman, int parent, int parentParts)
+    public IntoPlayingClass(MainActivity activity, ASCIIscreen ascii, DBmanager dBman, int parent, int parentParts, Session session)
     {
         tAct=activity;
         mDBmanager=dBman;

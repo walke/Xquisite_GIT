@@ -872,7 +872,7 @@ public class RecorderBase extends SubAct{
         }
         else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
         {
-            if(mCurrentPart==0)
+            if(mCurrentPart==3)
             {
                 tAct.inputField.setImeOptions(EditorInfo.IME_ACTION_NEXT);
                 tAct.inputField.setInputType(//tAct.inputField.getInputType() |
@@ -883,7 +883,7 @@ public class RecorderBase extends SubAct{
                         //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
                         InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
             }
-            else if(mCurrentPart==1)
+            else if(mCurrentPart==4)
             {
                 tAct.inputField.setInputType(//tAct.inputField.getInputType() |
                         InputType.TYPE_CLASS_TEXT|
@@ -901,6 +901,12 @@ public class RecorderBase extends SubAct{
 
                 mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_INPT);
                 //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                /*tAct.inputField.setInputType(tAct.inputField.getInputType() |
+                        //InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
+                        //InputType.TYPE_TEXT_FLAG_MULTI_LINE |
+                        //EditorInfo.IME_ACTION_GO|
+                        //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
+                        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);*/
 
                 Log.d("RECORDER", "TEXT INPUT");
 
@@ -909,6 +915,7 @@ public class RecorderBase extends SubAct{
                 //if(!imm.isAcceptingText())
                 //{
                 imm.toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+
                 //}
                 //imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
 
