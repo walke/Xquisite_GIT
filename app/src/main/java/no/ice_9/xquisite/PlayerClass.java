@@ -50,6 +50,8 @@ public class PlayerClass extends SubAct{
     DBmanager mDBmanager;
     int mTime=0;
 
+    Session mSession;
+
     MediaPlayer mVideoView;
     PlayView surfaceView;
     FrameLayout mFrame;
@@ -292,7 +294,8 @@ public class PlayerClass extends SubAct{
             result[0]=finishVideo();
             result[1]=mParent;
             result[2]=mStoryParts;
-
+            mSession.iterate();
+            mAscii.mGLView.mRenderer.setProgress((float)mSession.currentProgressPart/(float)mSession.totalProgressParts,1);
             //return -1;
         }
         else if(mVideoReady)
@@ -300,6 +303,8 @@ public class PlayerClass extends SubAct{
             //mAscii.minimizeInfo();
             //mAscii.clear();
             startVideo();
+
+
         }
        /* else if(mCurrentPart<mStoryParts)
         {
@@ -326,6 +331,7 @@ public class PlayerClass extends SubAct{
                     if(mTime==0)
                     {
                         mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_PLAY);
+
                         //mAscii.clear();
                         //mAscii.maximizeInfo();
                         //mAscii.pushLine("loading video..");

@@ -30,7 +30,7 @@ public class StoryRecClass extends RecorderBase {
 
 
         initQuestions();
-        init();
+        init(session);
     }
 
     private void initQuestions()

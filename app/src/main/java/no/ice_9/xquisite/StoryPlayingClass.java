@@ -15,6 +15,8 @@ public class StoryPlayingClass extends PlayerClass {
         mParent=parent;
         mStoryParts=parentParts;
 
+        mSession=session;
+
         init();
     }
 

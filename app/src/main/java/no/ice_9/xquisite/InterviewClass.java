@@ -34,11 +34,13 @@ public class InterviewClass extends RecorderBase {
 
 
 
+
+
         lastRecorder=false;
         mEndMessege=tAct.getResources().getString(R.string.RecInterview_EndMsg);
 
         initQuestions();
-        init();
+        init(session);
 
     }
 

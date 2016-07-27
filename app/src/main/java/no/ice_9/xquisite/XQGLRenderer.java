@@ -44,6 +44,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public static final int MODE_CHOS=4;
     public static final int MODE_FIN =5;
     public static final int MODE_IDLE=6;
+    public static final int MODE_RECA_=7;
 
     class MsgLines
     {
@@ -101,7 +102,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             }
             else if(top==1)
             {
-                bg.setTargetShape(0.0f,1.0f,1.0f,0.42f);
+                bg.setTargetShape(0.0f,1.01f,1.0f,0.42f);
             }
         }
 
@@ -333,6 +334,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     Bitmap mCleanBitmap;
     Bitmap[] mCountDownBitmap=new Bitmap[3];
     Bitmap mIdleBitmap;
+    Bitmap mLoadingBitmap;
     public SurfaceTexture mSurface;
 
     public Context actContext;
@@ -381,7 +383,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
 
         /*RENDER INIT*/
-        GLES20.glClearColor(0.0f, 0.3f, 0.0f, 0.5f);
+        GLES20.glClearColor(0.0f, 0.1f, 0.0f, 1.0f);
 
         /*TEXTURES INIT*/
         initTextures();
@@ -405,12 +407,12 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //mTextLine=          new TextLine[sy];
         msgLines=           new MsgLines(sy);
 
-        mContinueButton =   new ButtonTile(0.0f,-0.45f,0.2f,0.2f*mRatio,textures[3]);
+        mContinueButton =   new ButtonTile(0.0f,-0.85f,0.2f,0.2f*mRatio,textures[3]);
         mContinueButton.hideShowChoose(1);
 
         mContButText =      new TextBoxTile(textures[0],"skip");//actContext.getResources().getString(R.string.Button_skip));
 
-        mExtraButton =      new ButtonTile(0.0f,-0.20f,0.2f,0.2f*mRatio,textures[3]);
+        mExtraButton =      new ButtonTile(0.0f,-0.6f,0.2f,0.2f*mRatio,textures[3]);
         mExtraButton.hideShowChoose(1);
 
         mExtButText =      new TextBoxTile(textures[0],"intro");//actContext.getResources().getString(R.string.Button_intro));
@@ -514,7 +516,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         scratch2=mTranslationMatrix.clone();//BUTTON
         scratch3=mTranslationMatrix.clone();//AUDIO BAR
 
-        //scratch4=mTranslationMatrix.clone();
+        scratch4=mTranslationMatrix.clone();
         scratch5=mTranslationMatrix.clone();//NETLED
         scratch6=mTranslationMatrix.clone();//ASCII
         scratch7=mTranslationMatrix.clone();//EXTRA BUTTON
@@ -527,7 +529,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //int k=0;
 
         //ASCII TILES
-        Matrix.translateM(scratch6, 0, mAsciiTiles.midx, mAsciiTiles.midy, 0f);
+        Matrix.translateM(scratch6, 0, mAsciiTiles.midx, mAsciiTiles.midy-0.42f, 0f);
         Matrix.scaleM(scratch6,0,mAsciiTiles.sizx,mAsciiTiles.sizy,1.0f);
         mAsciiTiles.draw(scratch6);
         /*for(int j=0;j<sy;j++)
@@ -545,10 +547,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         //mInfoTile.draw(mTranslationMatrix);
 
         //PROGRESS BAR
-        /*Matrix.translateM(scratch4, 0, mProgressTile.midx, mProgressTile.midy, 1.0f);
+        Matrix.translateM(scratch4, 0, mProgressTile.midx, mProgressTile.midy, 1.0f);
         Matrix.scaleM(scratch4, 0, mProgressTile.sizx+progress*2f, mProgressTile.sizy, 0.0f);
 
-        mProgressTile.draw(scratch4);*/
+        mProgressTile.draw(scratch4);
 
         //TEXT LINES
         msgLines.draw();
@@ -570,13 +572,13 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         //SLIDER INFO
 
-        if(mMode==MODE_REC)
+        /*if(mMode==MODE_REC)
         {
             Matrix.translateM(scratch5, 0, mSliderInfo.midx, mSliderInfo.midy, 1.0f);
             Matrix.scaleM(scratch5, 0, mSliderInfo.sizx, mSliderInfo.sizy, 0.0f);
 
             mSliderInfo.draw(scratch5);
-        }
+        }*/
 
         //Log.d("ASCII","mode"+mContinueButton.midTx+","+mExtraButton.midTx);
 
@@ -678,10 +680,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         switch(mMode)
         {
             case MODE_INIT:
+                msgLines.setPosition(1);
                 break;
             case MODE_REC:
                 mAsciiTiles.setTargetShape(0.0f,0.0f,1.0f,1.0f);
-                msgLines.setPosition(0);
+                msgLines.setPosition(1);
                 //clearAscii();
                 break;
             case MODE_INPT:
@@ -689,6 +692,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 msgLines.setPosition(1);
                 break;
             default:
+                msgLines.setPosition(1);
                 break;
         }
 
@@ -715,10 +719,10 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             //activeLine+=(activeLineTarget-activeLine)/10.0f;
         }
 
-       /* if (progress!=progressTarget)
+        if (progress!=progressTarget)
         {
             progress+=(progressTarget-progress)/10.0f;
-        }*/
+        }
 
         if(slider!=sliderTarget)
         {
@@ -754,7 +758,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         mIdleBitmap=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.idle);
 
-
+        mLoadingBitmap=BitmapFactory.decodeResource(actContext.getResources(),R.drawable.load);
 
         int textGridTex=loadTexture(actContext,R.drawable.textgrid);
         textures[0]=textGridTex;
@@ -1028,7 +1032,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public void maximizeInfo()
     {
-        infoTarget=1.0f;
+        infoTarget=0.0f;
     }
 
     public void setClick(float x, float y)
@@ -1078,6 +1082,8 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 mContinueButton.setUp();
                 if(mode==1)return 1;
                 else if(mode==2)return 6;
+                else if(mode==9)return 9;
+                else if(mode==8)return 8;
             }
             mContinueButton.setUp();
         }
@@ -1097,6 +1103,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
                 mExtraButton.setUp();
                 if(mode==1)return 2;
                 else if(mode==3)return 7;
+                else if(mode==10)return 10;
             }
             mExtraButton.setUp();
         }
@@ -1105,7 +1112,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
     public int holdAndMove(float x,float y)
     {
-
+/*
         if (mSlidGrub && mRecSequence)
         {
             if(x>-0.3f && x<0.3f)
@@ -1130,7 +1137,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
 
         }
 
-
+*/
 
         return 0;
     }
@@ -1165,13 +1172,24 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     {
         if(isIdle)
         {
+            mContinueButton.hideShowChoose(8);
             putImage(mIdleBitmap, false);
+            mContButText.set("rec");
             mCDown=-1;
         }
+
     }
+
 
     public void hideShowNext(boolean show)
     {
+        Log.d("RECORDER","next"+show);
+        if(show)
+        {
+            mExtraButton.hideShowChoose(10);
+            mExtButText.set("next");
+        }
+
         mSliderInfo.hideShowNext(show);
     }
 
@@ -1224,6 +1242,11 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         new Timer().scheduleAtFixedRate(cdown, 0, 500);
     }
 
+    public void setLoadingImage()
+    {
+        putImage(mLoadingBitmap, false);
+    }
+
     public void setLed(boolean onin,boolean load)
     {
         if(mNetworkLed!=null) {
@@ -1253,6 +1276,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
     public void setRecSequence(boolean rec)
     {
         mRecSequence=rec;
+        //if(rec){setMode(MODE_RECA_);}
     }
 
     public void setMode(int mode)
@@ -1283,11 +1307,19 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
             mExtButText.set("no");
         }
         if(mode==MODE_REC){
-            mContinueButton.hideShowChoose(1);
+            mContinueButton.hideShowChoose(8);
             mExtraButton.hideShowChoose(0);
             //hideShowChooseButton(0,1);
             //hideShowChooseButton(1,0);
-            mContButText.set("");
+            mContButText.set("rec");
+
+        }
+        if(mode==MODE_RECA_){
+            mContinueButton.hideShowChoose(9);
+            mExtraButton.hideShowChoose(0);
+            //hideShowChooseButton(0,1);
+            //hideShowChooseButton(1,0);
+            mContButText.set("pause");
 
         }
         if(mode==MODE_IDLE)

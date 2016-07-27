@@ -639,6 +639,12 @@ class XQGLSurfaceView extends GLSurfaceView{
                     Log.d("ASCII","ACT5");
                     actContext.onTouchEvent(e);
                 }
+                else
+                {
+                    e.setAction(clickres);
+                    Log.d("ASCII","ACT"+clickres);
+                    actContext.onTouchEvent(e);
+                }
                 break;
         }
 

@@ -139,6 +139,7 @@ public class InitClass extends SubAct{
                             Log.d("ASCII", "toclear");
                             //mAscii.clear();
                             //mLoadingDialog.dismiss();
+                            mAscii.mGLView.mRenderer.setProgress(0f,1);
                             mAscii.putImage(BitmapFactory.decodeResource(mAscii.tAct.getResources(), R.drawable.logogsm));
                             //mAscii.pushLine("########################");
                             //mAscii.pushLine("#scienceFuture xquisite#");

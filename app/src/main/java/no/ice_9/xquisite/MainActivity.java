@@ -33,6 +33,8 @@ import java.util.TimerTask;
  */
 public class MainActivity extends Activity {
 
+
+
     //final String LogTag = getResources().getString(R.string.LogMain);
 
     //database
@@ -40,7 +42,7 @@ public class MainActivity extends Activity {
     private DBmanager mDBmanager;
 
 
-    Session mSession;
+    public Session mSession;
 
 
     //CURRENT ACTION
@@ -724,15 +726,34 @@ public class MainActivity extends Activity {
 
 class Session
 {
+    int totalProgressParts=16;
+    int currentProgressPart=0;
+
     StoryPart part[];
+
+    int storyId;
 
     public Session()
     {
 
+
+        storyId=-1;
+    }
+
+    public void setStoryId(int id)
+    {
+        storyId=id;
+        Log.d("SESSION","id:"+storyId);
+    }
+
+    public void iterate()
+    {
+        currentProgressPart++;
     }
 
     public void addPart(StoryPart prt)
     {
+
         if(part==null)
         {
             part=new StoryPart[1];
@@ -752,6 +773,9 @@ class Session
             }
         }
         part[part.length-1]=prt;
+
+
+        Log.d("SESSION","parts:"+part.length);
     }
 }
 

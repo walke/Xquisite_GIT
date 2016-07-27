@@ -343,6 +343,21 @@ public class ButtonTile {
                 //mMode = 3;
                 setTargetShape(-0.5f,0.0f,0,0);
                 break;
+            case 10:
+                Log.d("ASCII","hsh"+10);
+                //mMode = 3;
+                setTargetShape(0.5f,-0.85f,0,0);
+                break;
+            case 8:
+                Log.d("ASCII","hsh"+1);
+                //mMode = 1;
+                setTargetShape(0.0f,midOy,0,0);
+                break;
+            case 9:
+                Log.d("ASCII","hsh"+1);
+                //mMode = 1;
+                setTargetShape(0.0f,midOy,0,0);
+                break;
         }
 
     }

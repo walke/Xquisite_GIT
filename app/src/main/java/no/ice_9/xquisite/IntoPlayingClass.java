@@ -20,6 +20,8 @@ public class IntoPlayingClass extends PlayerClass{
         mParent=-2;
         mStoryParts=1;
 
+        mSession=session;
+
         init();
     }
 

@@ -72,6 +72,8 @@ public class RecorderBase extends SubAct{
     DBmanager mDBmanager;
     MainActivity tAct;
 
+    Session mSession;
+
     Camera mCamera;//Deprecated.. don't know yet what to do about it
     Preview mPreview;
     MediaRecorder mRecorder;
@@ -170,10 +172,10 @@ public class RecorderBase extends SubAct{
 
         int[] result=new int[4];
         result[0]=-1;
-        //Log.d("RECORDER","ACT"+act+"."+mTimeLimit);
+        Log.d("RECORDER","ACT"+act);
         switch(act)
         {
-            case 0:
+            case 9:
 
                 //PAUSE
                 if(isRecording)
@@ -187,18 +189,18 @@ public class RecorderBase extends SubAct{
                 else {mPauseRequest=true;}
                 break;
 
-            case 1:
+            case 10:
                 //NEXT PART
                 if(mCurrentSubPart>0)
                 {
-
+                    mAscii.mGLView.mRenderer.setLoadingImage();
                     mPauseRequest=false;
                     nextPart();
 
                 }
                 break;
 
-            case 2:
+            case 8:
                 if(mTimeLimit<=0)
                 {
                     if(isRecording){pauseRecording();}
@@ -209,6 +211,9 @@ public class RecorderBase extends SubAct{
                 if (!isRecording && mTimeLimit>0) {
                     Log.d("RECORDER","push_record");
                     mAscii.mGLView.mRenderer.countDown();
+
+                    mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_RECA_);
+
                     mPauseRequest=false;
                     mUserReady = true;
                     result[0] = -1;
@@ -300,7 +305,7 @@ public class RecorderBase extends SubAct{
 
                     if(mTime>2 && isRecording)
                     {
-                        mAscii.mGLView.mRenderer.setProgress((float) (mTimeElapsedPq+1) / (float) mQuestion[mCurrentPart].time,1);
+                        //mAscii.mGLView.mRenderer.setProgress((float) (mTimeElapsedPq+1) / (float) mQuestion[mCurrentPart].time,1);
                         mAscii.mGLView.mRenderer.setRecording(true);
                     }
                 }
@@ -320,13 +325,15 @@ public class RecorderBase extends SubAct{
         releaseCamera();
     }
 
-    public boolean init()
+    public boolean init(final Session session)
     {
         mWorking=true;
         mVideoPart = new StoryPart[NPARTS];
         mPartReady=new int[NPARTS];
 
         mTmpPart=new TmpPart();
+
+        mSession = session;
 
         Thread mTask = new Thread( new Runnable() {
             @Override
@@ -359,7 +366,17 @@ public class RecorderBase extends SubAct{
             public void run() {
                 while(mCurrentParent==-2);
                 //mServerReserved=mServer.reserveNdx(mCurrentParent);
-                mServerReserved=mDBmanager.reserveNdx(mCurrentParent);
+                if(mSession.storyId==-1)
+                {
+                    mServerReserved=mDBmanager.reserveNdx(mCurrentParent);
+                    mSession.setStoryId(mServerReserved);
+                }
+                else
+                {
+                    mServerReserved=mSession.storyId;
+                }
+
+
                 boolean done=false;
                 int allDone=0;
                 while(!done)
@@ -372,6 +389,10 @@ public class RecorderBase extends SubAct{
                             //mServer.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
                             Log.d("RECORDER","part to up"+mVideoPart[i]);
                             mDBmanager.uploadPart(mVideoPart[i], mCurrentPart, mServerReserved, mCurrentParent, mCurrentUser);
+                            mSession.addPart(mVideoPart[i]);
+                            mSession.iterate();
+                            mAscii.mGLView.mRenderer.setProgress((float)mSession.currentProgressPart/(float)mSession.totalProgressParts,1);
+                            //mAscii.mGLView.mRenderer.setProgress(0.5f,1);
                             mPartReady[i]=2;
                             Log.d("RECORDER to SERVER", "uploaded part " + i);
                         }
@@ -752,7 +773,8 @@ public class RecorderBase extends SubAct{
             mPauseRequest=false;
 
         }catch(Exception e){mPauseRequest=true;}
-        if(mCurrentSubPart>0)mAscii.mGLView.mRenderer.hideShowNext(true);
+        Log.d("RECORDER",":sprt:"+mCurrentSubPart);
+        if(mCurrentSubPart>0){mAscii.mGLView.mRenderer.hideShowNext(true);}
 
         mAscii.mGLView.mRenderer.setRecording(false);
         mAscii.mGLView.mRenderer.setIdleRec(true);
@@ -959,7 +981,7 @@ public class RecorderBase extends SubAct{
         }
 
 
-        mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+        //mAscii.mGLView.mRenderer.setProgress(0.0f,1);
         mAscii.mGLView.mRenderer.setRecording(false);
         mAscii.mGLView.mRenderer.setAudio(0);
 
@@ -1163,7 +1185,7 @@ public class RecorderBase extends SubAct{
 
         if (isRecording) {//<-MAYBE UNNECCESARY TODO: check that
 
-            mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+            //mAscii.mGLView.mRenderer.setProgress(0.0f,1);
             mAscii.mGLView.mRenderer.setRecording(false);
             mAscii.mGLView.mRenderer.setAudio(0);
             isRecording = false;
