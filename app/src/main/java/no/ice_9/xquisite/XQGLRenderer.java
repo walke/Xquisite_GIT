@@ -1332,7 +1332,7 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         }
         if(mode==MODE_PLAY)
         {
-            mContinueButton.hideShowChoose(1);
+            mContinueButton.hideShowChoose(5);
             mExtraButton.hideShowChoose(0);
             //hideShowChooseButton(0,1);
             //hideShowChooseButton(1,0);

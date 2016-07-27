@@ -150,6 +150,7 @@ public class MainActivity extends Activity {
                     break;
                 }
                 if(interSkip) {
+                    for(int i=0;i<7;i++)mSession.iterate();
                     mCurrentAction++;
                     interSkip=false;
                 }

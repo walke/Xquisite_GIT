@@ -40,7 +40,11 @@
      </string>
 
     <string name="MainMsg_SkipInterview">
-    If you are here for the first time, we would like you to answer few questions first, but you can skip it if you want!
+        We have a few questions for you. (Press skip to go directly to story game)
+    </string>
+
+    <string name="MainMsg_Tutorial">
+        When recording,try to keep your face in the frame. You can pause and continue recording.
     </string>
 
     <string name="MainBut_Ok">
@@ -130,7 +134,8 @@
     </string>
 
     <string name="Play_initMsg">
-    X = woman born 2045. She lives in the Arctic. Temperatures have risen. Almost 10billion humans on earth. Listen to the last part of X\’s story.
+    
+    2066. Temperatures are rising. World population nearly 10billion. X is 21 and lives in the Arctic. Listen to the last part of Xs story.
     </string>
 
     <string name="Play_playMsg">
