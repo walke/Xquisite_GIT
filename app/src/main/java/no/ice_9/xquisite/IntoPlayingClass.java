@@ -123,23 +123,25 @@ public class IntoPlayingClass extends PlayerClass{
                     if(mVideoView!=null && mTime>1)
                     {
                         int pos=mVideoView.getCurrentPosition();
-                        if(mVideoView.isPlaying())
-                        {
+                        try {
+                            if (mVideoView.isPlaying()) {
 
-                            int dur=mVideoView.getDuration();//TODO: ERR
-                            mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur,1);
-                        }
-                        else if(pos>0 && mParent==-2)
-                        {
-                            mError=true;
-                            tAct.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    tAct.glTouch(3);
-                                }
-                            });
+                                int dur = mVideoView.getDuration();//TODO: ERR
+                                mAscii.mGLView.mRenderer.setProgress((float) pos / (float) dur, 1);
+                            }
+                            else if(pos>0 && mParent==-2)
+                            {
+                                mError=true;
+                                tAct.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        tAct.glTouch(3);
+                                    }
+                                });
 
-                        }
+                            }
+                        }catch (IllegalStateException e){}
+
                     }
 
                 }

@@ -48,8 +48,8 @@ public class StoryRecClass extends RecorderBase {
         mQuestion[1]=new Question(tAct.getResources().getString(R.string.RecStory_Question2) ,60,PART_TYPE_VIDEO);//OLD 8
         mQuestion[2]=new Question(tAct.getResources().getString(R.string.RecStory_Question3) ,60,PART_TYPE_VIDEO);//OLD 8
 
-        mQuestion[3]=new Question(tAct.getResources().getString(R.string.RecInterview_Question1) ,60,PART_TYPE_TEXT);//OLD 8
-        mQuestion[4]=new Question(tAct.getResources().getString(R.string.RecInterview_Question2) ,60,PART_TYPE_TEXT);//OLD 8
+        mQuestion[3]=new Question(tAct.getResources().getString(R.string.RecInterview_Question1) ,60,PART_TYPE_TEXT_NAME);//OLD 8
+        mQuestion[4]=new Question(tAct.getResources().getString(R.string.RecInterview_Question2) ,60,PART_TYPE_TEXT_EMAIL);//OLD 8
         mQuestion[5]=new Question(tAct.getResources().getString(R.string.RecInterview_Question3) ,60,PART_TYPE_CHOOSE);//OLD 8
         mQuestion[6]=new Question(tAct.getResources().getString(R.string.RecInterview_Question4) ,60,PART_TYPE_CHOOSE);//OLD 8
 

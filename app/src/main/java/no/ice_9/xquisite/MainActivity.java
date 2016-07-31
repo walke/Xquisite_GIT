@@ -33,10 +33,6 @@ import java.util.TimerTask;
  */
 public class MainActivity extends Activity {
 
-
-
-    //final String LogTag = getResources().getString(R.string.LogMain);
-
     //database
     DeviceData mDeviceData;
     private DBmanager mDBmanager;
@@ -96,6 +92,7 @@ public class MainActivity extends Activity {
         mUserWait=false;
         interSkip=skip;
         interInit=false;
+
         glTouch(3);
 
     }
@@ -107,23 +104,22 @@ public class MainActivity extends Activity {
      */
     public void glTouch(int extra)
     {
+        Log.d("RECORDER","PREACT"+extra);
         boolean playIntro=false;
-        Log.d("ASCII","TOUCH"+extra);
-        //CreateNewStory();
+
+
         int[] result;
         int res=-1;
         if(mUserWait && !interInit && extra==3)
         {
-            //mCurrentAction=-2;
             DialogFragment dg= new InterviewSkip();
             dg.show(getFragmentManager(),"Skip Interview");
             interInit=true;
 
             return;
-            //while(mUserWait);
          }
         if(interInit && mCurrentAction!=-1){return;}
-        Log.d("GL","TOUCH CHECK");
+
         switch(mCurrentAction)
         {
             /** init class initializes the application
@@ -133,7 +129,7 @@ public class MainActivity extends Activity {
                 res=result[0];
                 if(result[0]!=-1){interInit=false;}
                 mAscii.mGLView.mRenderer.hideShowChooseButton(0,1);
-                //mAscii.mGLView.mRenderer.hideShowButton(1,true);
+
                 break;
             case 0:
                 result=currentSubActivity.action(extra);
@@ -145,16 +141,20 @@ public class MainActivity extends Activity {
                     playIntro=true;
                     fromIntro=true;
                     interInit=true;
-                    //mAscii.mGLView.mRenderer.hideShowButton(0,false);
+
                     mAscii.mGLView.mRenderer.hideShowChooseButton(1,0);
                     break;
                 }
                 if(interSkip) {
-                    for(int i=0;i<7;i++)mSession.iterate();
+                    for(int i=0;i<8;i++)mSession.iterate();
                     mCurrentAction++;
                     interSkip=false;
+
+
+                    mAscii.mGLView.mRenderer.setProgress((float)mSession.currentProgressPart/(float)mSession.totalProgressParts,1);
+
                 }
-                //if(res==1)mAscii.maximizeInfo();
+
                 break;
             /** prerecorder class (interview part) can be skipped
              * if not it asks user personal questions
@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
                 mParentParts=result[1];
                 mReservedStory=result[2];
                 mPartOffset=result[3];
-                //if (result==1){mCurrentAction++;}
+
                 break;
 
             /**player class plays last part of the last story
@@ -177,7 +177,6 @@ public class MainActivity extends Activity {
                 mParent=result[1];
                 mParentParts=result[2];
 
-                //mParent=result;
                 break;
 
             /** recorder class records continuance of the story
@@ -185,7 +184,7 @@ public class MainActivity extends Activity {
             case 3:
                 result=currentSubActivity.action(extra);
                 res=result[0];
-                //if (result==1){mCurrentAction++;}
+
                 break;
 
             /**finalize class thanks user for participating and by pressing the button sends him back to start
@@ -221,9 +220,6 @@ public class MainActivity extends Activity {
             mTimer.cancel();
             mTimer.purge();
 
-            //mTimerLoop=null;
-            //mTimer=null;
-
             currentSubActivity.destroy();
             currentSubActivity=null;
 
@@ -235,9 +231,8 @@ public class MainActivity extends Activity {
 
             mTimer=new Timer();
 
-            //mAscii.mGLView.onPause();
             mTimer.scheduleAtFixedRate(mTimerLoop, 0, 50);
-            //mAscii.mGLView.onResume();
+
 
 
         }
@@ -410,7 +405,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("MAIN", "created");
 
         //DATABASE
         mDeviceData=new DeviceData(this);
@@ -422,9 +416,6 @@ public class MainActivity extends Activity {
         mCurrentAction=0;
 
 
-
-
-
         //SERVER SYNC for later sync use
         mSync=false;
 
@@ -433,6 +424,7 @@ public class MainActivity extends Activity {
         mParentParts=-1;
         mReservedStory=-1;
         mPartOffset=-1;
+        //TODO: get rid of this
 
 
         //STATE of user interactions
@@ -446,7 +438,7 @@ public class MainActivity extends Activity {
 
 
 
-        Log.d("ASCII","main created");
+
 
 
         //force screen to be on while app is running unless power button is pressed
@@ -459,8 +451,6 @@ public class MainActivity extends Activity {
         LinearLayout ll=new LinearLayout(this);
         inputField=new EditText(this);
 
-        //inputField.clearFocus();
-        Log.d("MAIN","inpFlags:"+inputField.getInputType());
 
 
         inputField.addTextChangedListener(new TextWatcher() {
@@ -727,8 +717,34 @@ public class MainActivity extends Activity {
 
 class Session
 {
+    public final static int TL_PART_TYPE_INTERVIEW = 0;
+    public final static int TL_PART_TYPE_STORYPLAYER= 1;
+    public final static int TL_PART_TYPE_STORYRECORD = 2;
+    public final static int TL_PART_TYPE_USERDEFINE = 3;
+
+    public final static int SESSION_STATE_IDLE = 0;
+    public final static int SESSION_STATE_STARTED = 1;
+    public final static int SESSION_STATE_FINISHED = 2;
+
+    public int mSessionState=SESSION_STATE_IDLE;
+
     int totalProgressParts=16;
     int currentProgressPart=0;
+
+    class TimelinePart
+    {
+        int mType;
+        public TimelinePart(int type)
+        {
+            mType=type;
+        }
+    }
+    TimelinePart[] TLPart;
+
+    int mParent=-1;
+    int mParentParts=-1;
+
+    int mPartOffset=-1;
 
     StoryPart part[];
 
@@ -736,7 +752,11 @@ class Session
 
     public Session()
     {
-
+        TLPart=new TimelinePart[4];
+        TLPart[0]=new TimelinePart(TL_PART_TYPE_INTERVIEW);
+        TLPart[1]=new TimelinePart(TL_PART_TYPE_STORYPLAYER);
+        TLPart[2]=new TimelinePart(TL_PART_TYPE_STORYRECORD);
+        TLPart[3]=new TimelinePart(TL_PART_TYPE_USERDEFINE);
 
         storyId=-1;
     }

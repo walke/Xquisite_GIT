@@ -100,33 +100,33 @@
     </string>
 
     <string name="RecInterview_Question5">
-    Describe briefly your earliest memory.
+    What do you research? what interests you most in your field?
     </string>
 
     <string name="RecInterview_Question6">
-    Would your close friends call you an optimist or pessimist about the future?
+    What is your favorite science-fiction story?
     </string>
 
 
 
     <string name="RecInterview_Question7">
-    What is your favorite science fiction story?
+    Have you noticed any effects of climate change where you live or work?
     </string>
 
     <string name="RecInterview_Question8">
-    what\'s your best mistake?
+    Describe someone in your life whom you admire
     </string>
 
     <string name="RecInterview_Question9">
-    what\'s the most significant change you think will happen in the next 50 years?
+    Describe someone in your life who provokes or irritates you
     </string>
 
     <string name="RecInterview_Question10">
-    if you could time travel, what year would you go to?
+    Describe a memorable moment you spent with one of your grandparents.
     </string>
 
     <string name="RecInterview_Question11">
-    what did (or what do) you want to be when you grow up?
+    The year is 2066. Imagine X is your 21yr old granddaughter or great-granddaughter. Send her a message now.
     </string>
 
     <string name="RecInterview_EndMsg">
@@ -134,7 +134,7 @@
     </string>
 
     <string name="Play_initMsg">
-    
+
     2066. Temperatures are rising. World population nearly 10billion. X is 21 and lives in the Arctic. Listen to the last part of Xs story.
     </string>
 

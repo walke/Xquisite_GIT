@@ -49,6 +49,8 @@ public class PlayerClass extends SubAct{
     //Server_OLD mServer;
     DBmanager mDBmanager;
     int mTime=0;
+    boolean donemode=false;
+    boolean replay=false;
 
     Session mSession;
 
@@ -76,12 +78,15 @@ public class PlayerClass extends SubAct{
     {
         //mVideoView = new VideoView(tAct);
         //mFrame=new FrameLayout(tAct);
+        /*if(mVideoView!=null)
+        {
+            mVideoView.release();
+        }mVideoView=null;*/
 
 
 
 
-
-        mStartPart=mStoryParts-1;
+        mStartPart=mStoryParts-5;
 
         Log.d("PLAYER","parent:"+mParent);
         if(mParent==-2)
@@ -103,7 +108,7 @@ public class PlayerClass extends SubAct{
                     mParent=storyindx;
                     mStoryParts=storyParts;
                     Log.d("PLAYER","parent:"+mParent+","+mStoryParts);
-                    mStartPart=mStoryParts-1;
+                    mStartPart=mStoryParts-5;
                     if(mParent==0 || mParent==-1){mStartPart=0;}
 
 
@@ -112,7 +117,8 @@ public class PlayerClass extends SubAct{
 
             mTask.start();
         }
-        while(mStartPart<0){Log.d("PLAYER","wait"+mStartPart+" "+mStoryParts+" "+mParent);}
+        Log.d("PLAYER","waiting startpart");
+        while(mStartPart<0 && mParent!=-2){Log.d("PLAYER","wait"+mStartPart+" "+mStoryParts+" "+mParent);}
         Log.d("PLAYER","startpart:"+mStartPart);
 
         mError=false;
@@ -150,17 +156,19 @@ public class PlayerClass extends SubAct{
                 Log.d("PLAYER","RES SD"+result);
                 if(result)
                 {
-
-                    tAct.runOnUiThread(new Runnable() {
+                    Log.d("PLAYER", "prep");
+                    preparePlayer();
+                    /*tAct.runOnUiThread(new Runnable() {
                         public void run() {
 
                             Log.d("PLAYER", "got list");
-                            preparePlayer();
+
 
                             //playVideo();
 
                         }
-                    });
+                    });*/
+                    Log.d("PLAYER", "prep2");
                 }
                 else
                 {
@@ -284,7 +292,21 @@ public class PlayerClass extends SubAct{
         Log.d("PLAYER","actino"+act+" "+mError);
         int[] result=new int[5];
         result[0]=-1;
+        if(act==0)return result;
+        if(act==14)
+        {
+            replay=true;
+            mTime=-1;
 
+            init();
+            mError=false;
+            //mCurrentPart--;
+            while(mVideoView==null);
+            mTime=0;
+
+            //startVideo();
+            return result;
+        }
         if(mParent==-2)mError=true;
 
         if(mError)
@@ -294,10 +316,13 @@ public class PlayerClass extends SubAct{
             result[0]=finishVideo();
             result[1]=mParent;
             result[2]=mStoryParts;
+            Log.d("PLAYER","prog:"+mSession.currentProgressPart+", "+mSession.totalProgressParts);
             mSession.iterate();
+            Log.d("PLAYER","prog:"+mSession.currentProgressPart+", "+mSession.totalProgressParts);
             mAscii.mGLView.mRenderer.setProgress((float)mSession.currentProgressPart/(float)mSession.totalProgressParts,1);
             //return -1;
         }
+
         else if(mVideoReady)
         {
             //mAscii.minimizeInfo();
@@ -330,6 +355,9 @@ public class PlayerClass extends SubAct{
                 {
                     if(mTime==0)
                     {
+                        Log.d("PLAYER","time reset");
+                        donemode=false;
+                        mAscii.mGLView.mRenderer.progMark=true;
                         mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_PLAY);
 
                         //mAscii.clear();
@@ -358,7 +386,7 @@ public class PlayerClass extends SubAct{
 
 
 
-
+                        Log.d("PLAYER","time reset"+mVideoView);
 
 
 
@@ -370,6 +398,7 @@ public class PlayerClass extends SubAct{
                     {
                         if(mVideoView.isPlaying() )
                         {
+                            Log.d("PLAYER","playing");
                             mAscii.modLine("",0,0,false);
                             mAscii.modLine("",2,0,false);
                             mAscii.modLine("",3,0,false);
@@ -380,12 +409,21 @@ public class PlayerClass extends SubAct{
                     }
                     if(mVideoView!=null && mTime>1)
                     {
-                        int pos=mVideoView.getCurrentPosition();
-                        int dur=mVideoView.getDuration();
-                        if(mVideoView.isPlaying() )
-                        {
 
-                            mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur,1);
+                        try
+                        {
+                            if(mVideoView.isPlaying() )
+                            {
+                                int pos=mVideoView.getCurrentPosition();
+                                int dur=mVideoView.getDuration();
+                                //mAscii.mGLView.mRenderer.setProgress((float)pos/(float)dur,1);
+                            }
+                        }
+                        catch (IllegalStateException e) {}
+                        if(!donemode)
+                        {
+                            donemode=true;
+                            //mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_PLAY_DONE);
                         }
 
                     }
@@ -496,6 +534,7 @@ public class PlayerClass extends SubAct{
             String FilePath=tAct.getExternalFilesDir("").getPath();
             File mediaStorageDir = new File(FilePath, "");
             mVideoPart[0].populate("appintro.mp4","",mediaStorageDir.getPath()+File.separator+"appintro.mp4",StoryPart.PART_TYPE_VIDEO,"",0);
+            mCurrentPart=0;
         }
         else
         {
@@ -541,79 +580,89 @@ public class PlayerClass extends SubAct{
     }
 
     private void preparePlayer() {
-        Log.d("PLAYER", "URI" + mVideoUri);
-        //surfaceView=new Surface(mAscii.mGLView);//TODO: GET TEXTURE
+
+        Log.d("PLAYER", "got list");
+
+        Log.d("PLAYER", "URI" + mVideoUri+mVideoView);
 
 
-        mVideoView=MediaPlayer.create(tAct,mVideoUri);
-        if(mVideoView==null)
-        {
-            mAscii.pushLine("ERROR OCCURED WHILE LOADING VIDEO");
-            mAscii.pushLine("PUSH THE BUTTON RECORD NEW ONE");
-            mError=true;
-            return;
-        }
-        mVideoView.setSurface(new Surface(mAscii.mGLView.mRenderer.mSurface));
-        //surfaceView=new PlayView(tAct,mVideoView);
-        //mFrame.addView(surfaceView);
-        //mAscii.mGLView.onPause();
-        //tAct.setContentView(surfaceView);
 
-        //while(!surfaceView.ready){Log.d("PLAYER","WAITING");}
-        //tAct.setContentView(mAscii.mGLView);
-        //mAscii.mGLView.onResume();
+        tAct.runOnUiThread(new Runnable() {
+            public void run() {
+                Log.d("PLAYER", "UUI");
+                mVideoView=MediaPlayer.create(tAct,mVideoUri);
 
-        //mVideoView.setSurface(surfaceView.getHolder().getSurface());
-        //mVideoView.setVideoURI(mVideoUri);
-
-
-        /*mVideoView.setOnInfoListener(new MediaPlayer.OnInfoListener()
-        {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                Log.d("PLAYER","INFO");
-                return false;
-            }
-        });
-
-        mVideoView.setOnErrorListener(new MediaPlayer.OnErrorListener()
-        {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.d("PLAYER","ERROR");
-                return false;
-            }
-        });*/
-
-        mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-            public void onPrepared(MediaPlayer player) {
-                //mAscii.pushLine("ready");
-                Log.d("PLAYER", "PLAY");
-                //tAct.setContentView(mAscii.mGLView);
-                //mAscii.pushLine("123");
-                playVideo();
-            }
-        });
-
-        mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            public void onCompletion(MediaPlayer player) {
-                mAscii.mGLView.mRenderer.setProgress(0.0f,0);
-                if (mCurrentPart < 16) {
-
-                    mVideoReady = false;
-                    mCurrentPart++;
-                    Log.d("PLAYER", "PARTQ" + mVideoPart[mCurrentPart].getQuestion());
-                    playNext();
-                } else {
-                    //mVideoView.release();
-                    mError = true;
-                    //mAscii.pushLine("START RECORDING");
-                    //finishVideo();
+                if(mVideoView==null)
+                {
+                    mAscii.pushLine("ERROR OCCURED WHILE LOADING VIDEO");
+                    mAscii.pushLine("PUSH THE BUTTON RECORD NEW ONE");
+                    mError=true;
+                    return;
                 }
 
+                //surfaceView=new Surface(mAscii.mGLView);//TODO: GET TEXTURE
+
+                mVideoView.setSurface(new Surface(mAscii.mGLView.mRenderer.mSurface));
+
+
+                mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+                    public void onPrepared(MediaPlayer player) {
+                        //mAscii.pushLine("ready");
+                        Log.d("PLAYER", "PLAY");
+                        //tAct.setContentView(mAscii.mGLView);
+                        //mAscii.pushLine("123");
+                        mVideoReady=true;
+                        playVideo();
+                        if(replay){startVideo();}
+                    }
+                });
+
+                mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    public void onCompletion(MediaPlayer player) {
+                        //mAscii.mGLView.mRenderer.setProgress(0.0f,0);
+                        if (mCurrentPart < 16) {
+
+                            mVideoReady = false;
+                            mCurrentPart++;
+                            Log.d("PLAYER", "PARTQ" + mVideoPart[mCurrentPart].getQuestion());
+                            playNext();
+                        } else {
+                            //mVideoView.release();
+                            mError = true;
+                            //mAscii.pushLine("START RECORDING");
+                            //finishVideo();
+                        }
+                        mStartPart=-1;
+
+                        //mAscii.mGLView.mRenderer.mSurface.release();
+                        mVideoView.setDisplay(null);
+                        mVideoView.reset();
+                        //mVideoView.release();
+
+
+                        //mVideoView=null;
+
+                    }
+                });
+
+                //playVideo();
+
             }
         });
+
+
+        /*while(mVideoView==null)
+        {
+            //Log.d("PLAYER", "URI");
+        }*/
+
+        Log.d("PLAYER", "URI" +mVideoView);
+
+
+
+
+
     }
 
     private void startVideo()
@@ -622,7 +671,8 @@ public class PlayerClass extends SubAct{
         mPlayerMessage.setAlpha(0.0f);
         mPlayerMessage.setVisibility(View.GONE);
         mPlayButton.setAlpha(0.0f);*/
-
+        Log.d("PLAYER","starting");
+        while(!mVideoReady);
 
 
         mVideoView.start();
@@ -640,9 +690,9 @@ public class PlayerClass extends SubAct{
         for(int i=mStartPart;i<mStoryParts;i++)
         {
 
-            Log.d("PLAYER","part:"+i);
+            //Log.d("PLAYER","part:"+i);
             mVideoPart[i]=mDBmanager.loadPart(mParent,i);
-            Log.d("PLAYER","part:"+i+"->"+mVideoPart[i].getFilePath());
+            //Log.d("PLAYER","part:"+i+"->"+mVideoPart[i].getFilePath());
         }
     }
 
@@ -685,10 +735,10 @@ public class PlayerClass extends SubAct{
 
         //mAscii.pushLine("#########################");
         //mAscii.pushLine("PUSH BUTTON TO PLAY STORY");
-
+        Log.d("PLAYER","PLAYING IN");
         if(mCurrentPart>mStartPart || mParent==-2)
         {
-
+            Log.d("PLAYER","STARTING PART");
 
 
             //mAscii.clear();
@@ -703,6 +753,7 @@ public class PlayerClass extends SubAct{
 
         //mAscii.pushLine("loading another part..");
         //mAscii.pushLine("Close your eyes for a moment and think about what you just heard. What were the key elements? ");
+        Log.d("PLAYER","next");
         while(mVideoPart[mCurrentPart].isEmpty())
         {
             if(mCurrentPart>mStartPart){break;}
@@ -712,7 +763,7 @@ public class PlayerClass extends SubAct{
         if(mCurrentPart>mStartPart)
         //if(mVideoPart[mCurrentPart].isLast())
         {
-            mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_IDLE);
+            mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_PLAY_DONE);
             mAscii.modLine(tAct.getResources().getString(R.string.Play_endMsg),0,0,true);
             //mAscii.pushLine("");
             mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),2,0,false);
@@ -735,8 +786,8 @@ public class PlayerClass extends SubAct{
     {
         if(mVideoView!=null)
         {
-            mAscii.mGLView.mRenderer.setProgress(0.0f,1);
-            mAscii.mGLView.mRenderer.setProgress(0.0f,0);
+            //mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+            //mAscii.mGLView.mRenderer.setProgress(0.0f,0);
             mTime=-1;
             mVideoView.release();
             mVideoView=null;

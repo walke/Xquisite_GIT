@@ -598,7 +598,7 @@ class XQGLSurfaceView extends GLSurfaceView{
                 int action=mRenderer.holdAndMove(x,y);
                 if(action!=0)mMotionEngaged=true;
                 e.setAction(action);
-                actContext.onTouchEvent(e);
+                //actContext.onTouchEvent(e);
                 Log.d("ASCII", "ACT:"+action);
                 //if(mRenderer.holdAndMove(x,y)==2)
                 break;
@@ -607,45 +607,51 @@ class XQGLSurfaceView extends GLSurfaceView{
                 //actContext.onTouchEvent(e);
                 break;
             case MotionEvent.ACTION_UP:
-                if(mRenderer.releaseClick(x,y))
+                /*if(mRenderer.releaseClick(x,y))
                 {
                     mMotionEngaged=false;
                     e.setAction(0);
                     Log.d("ASCII","ACT0");
                     actContext.onTouchEvent(e);
-                }
+                }*/
                 int clickres=mRenderer.getClick(x,y);
+                Log.d("ASCII","GOT CLICK "+clickres);
                 if(clickres==1 && !mMotionEngaged)
                 {
                     e.setAction(3);
                     Log.d("ASCII","ACT3");
                     actContext.onTouchEvent(e);
+                    break;
                 }
                 if(clickres==7 && !mMotionEngaged)
                 {
                     e.setAction(7);
                     Log.d("ASCII","ACT7");
                     actContext.onTouchEvent(e);
+                    break;
                 }
                 if(clickres==6 && !mMotionEngaged)
                 {
                     e.setAction(6);
                     Log.d("ASCII","ACT6");
                     actContext.onTouchEvent(e);
+                    break;
                 }
                 else if(clickres==2)
                 {
                     e.setAction(5);
                     Log.d("ASCII","ACT5");
                     actContext.onTouchEvent(e);
+                    break;
                 }
                 else
                 {
                     e.setAction(clickres);
-                    Log.d("ASCII","ACT"+clickres);
+                    Log.d("ASCII","ACTD"+clickres);
                     actContext.onTouchEvent(e);
+                    break;
                 }
-                break;
+
         }
 
         mPreviousX = x;

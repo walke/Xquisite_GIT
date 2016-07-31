@@ -61,10 +61,11 @@ public class RecorderBase extends SubAct{
 
     public static final int PART_TIME_LIMIT = 180;
 
-    public static final int PART_TYPE_TEXT =  0;
-    public static final int PART_TYPE_CHOOSE= 1;
-    public static final int PART_TYPE_VIDEO = 2;
-
+    public static final int PART_TYPE_TEXT      =  0;
+    public static final int PART_TYPE_CHOOSE    = 1;
+    public static final int PART_TYPE_VIDEO     = 2;
+    public static final int PART_TYPE_TEXT_NAME =  3;
+    public static final int PART_TYPE_TEXT_EMAIL = 4;
     int NPARTS= 0;
 
     ASCIIscreen mAscii;
@@ -155,6 +156,7 @@ public class RecorderBase extends SubAct{
     TmpPart mTmpPart;
 
     boolean mUserReady;
+    boolean mPartInitReady=false;
 
     int mCurrentPart=0;
     int mCurrentSubPart=0;
@@ -173,6 +175,7 @@ public class RecorderBase extends SubAct{
         int[] result=new int[4];
         result[0]=-1;
         Log.d("RECORDER","ACT"+act);
+
         switch(act)
         {
             case 9:
@@ -191,6 +194,8 @@ public class RecorderBase extends SubAct{
 
             case 10:
                 //NEXT PART
+                if(!mPartInitReady)return result;
+                mPartInitReady=false;
                 if(mCurrentSubPart>0)
                 {
                     mAscii.mGLView.mRenderer.setLoadingImage();
@@ -232,7 +237,9 @@ public class RecorderBase extends SubAct{
                 break;
 
             case 4:
-                if(mQuestion[mCurrentPart].type==PART_TYPE_TEXT)
+                if(!mPartInitReady)return result;
+                mPartInitReady=false;
+                if(mQuestion[mCurrentPart].type==PART_TYPE_TEXT || mQuestion[mCurrentPart].type==PART_TYPE_TEXT_NAME || mQuestion[mCurrentPart].type==PART_TYPE_TEXT_EMAIL)
                 {
                     submitInput();
                     nextPart();
@@ -241,10 +248,14 @@ public class RecorderBase extends SubAct{
                 break;
 
             case 6:
+                if(!mPartInitReady)return result;
+                mPartInitReady=false;
                 choose="yes";
                 nextPart();
                 break;
             case 7:
+                if(!mPartInitReady)return result;
+                mPartInitReady=false;
                 choose="no";
                 nextPart();
                 break;
@@ -275,6 +286,7 @@ public class RecorderBase extends SubAct{
                 {
                     if(mTime==0)
                     {
+                        mAscii.mGLView.mRenderer.progMark=true;
                         mAscii.mGLView.mRenderer.setRecSequence(true);
                         //mAscii.clear();
 
@@ -475,7 +487,11 @@ public class RecorderBase extends SubAct{
         //INIT CAMERA AND ALL IT DEPENDS ON
         Log.d("RECORDER","partType:"+mQuestion[mCurrentPart].type);
         initCamera(1);
-        initPart();
+        if((mCurrentPart)<mQuestion.length)
+        {
+            initPart();
+            mTimeLeft = mQuestion[mCurrentPart].time;
+        }
 
 
 
@@ -796,23 +812,19 @@ public class RecorderBase extends SubAct{
         //imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, InputMethodManager.HIDE_NOT_ALWAYS);
         //imm.showSoftInput(tAct.inputField, InputMethodManager.SHOW_FORCED);
 
-        mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_REC);
+        //!!mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_REC);
         //tAct.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        Log.d("RECORDER","VIDEO INPUT");
-
-        imm.hideSoftInputFromWindow(tAct.inputField.getWindowToken(),0);
 
 
-        //imm.viewClicked(tAct.inputField);
-        tAct.inputField.clearFocus();
-        mAscii.mGLView.requestFocus();
+
         //_________________
 
         mAscii.mGLView.mRenderer.hideShowNext(false);
         Log.d("RECORDER","initpart");
         boolean result=true;
 
+        while(!mAscii.mReady);
         new Thread( new Runnable() {
             @Override
             public void run() {
@@ -822,9 +834,9 @@ public class RecorderBase extends SubAct{
                     public void run()
                     {
                         Log.d("RECORDER","asciiready"+mAscii.mReady);
-                        while(!mAscii.mReady);
-                        Log.d("ASCII","fr rec: qmod 3");
-                        mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1,true);
+
+                        Log.d("ASCII","fr rec: qmod 3 PART:"+mCurrentPart);
+                        if(mCurrentPart<mQuestion.length)mAscii.modLine("" + mQuestion[mCurrentPart].question, 0, -1,true);
                         Log.d("ASCII","fr rec: qmod 3 aftere");
                         //mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
                         //mAscii.modLine("" + mQuestion[mCurrentPart].question, 3, -1);
@@ -841,6 +853,15 @@ public class RecorderBase extends SubAct{
         //Log.d("RECORDER", "INIT PART"+mQuestion[mCurrentPart].type+" "+mCurrentPart);
         if (mQuestion[mCurrentPart].type == PART_TYPE_VIDEO)
         {
+            Log.d("RECORDER","INIT VIDEOPART");
+            imm.hideSoftInputFromWindow(tAct.inputField.getWindowToken(),0);
+
+
+            //imm.viewClicked(tAct.inputField);
+            tAct.inputField.clearFocus();
+            mAscii.mGLView.requestFocus();
+
+            mAscii.mGLView.mRenderer.setMode(mAscii.mGLView.mRenderer.MODE_REC);
             //initCamera(1);//for now camId = 1; asuming front facing camera.
             try{
 
@@ -892,9 +913,10 @@ public class RecorderBase extends SubAct{
 
 
         }
-        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT)
+        else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT || mQuestion[mCurrentPart].type == PART_TYPE_TEXT_NAME || mQuestion[mCurrentPart].type == PART_TYPE_TEXT_EMAIL)
         {
-            if(mCurrentPart==3)
+            Log.d("RECORDER","INIT TEXTPART");
+            if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT_NAME)
             {
                 tAct.inputField.setImeOptions(EditorInfo.IME_ACTION_NEXT);
                 tAct.inputField.setInputType(//tAct.inputField.getInputType() |
@@ -905,8 +927,9 @@ public class RecorderBase extends SubAct{
                         //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
                         InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
             }
-            else if(mCurrentPart==4)
+            else if(mQuestion[mCurrentPart].type == PART_TYPE_TEXT_EMAIL)
             {
+                Log.d("RECORDER","TEXTINPUT EMAIL");
                 tAct.inputField.setInputType(//tAct.inputField.getInputType() |
                         InputType.TYPE_CLASS_TEXT|
                         //InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS |
@@ -914,6 +937,7 @@ public class RecorderBase extends SubAct{
                         //EditorInfo.IME_ACTION_GO|
                         //~InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE |
                         InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+                tAct.inputField.requestFocus();
             }
 
             //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
@@ -950,8 +974,8 @@ public class RecorderBase extends SubAct{
         }
         else if(mQuestion[mCurrentPart].type == PART_TYPE_CHOOSE)
         {
-
-
+            Log.d("RECORDER","INIT CHOOSEPART");
+            imm.hideSoftInputFromWindow(tAct.inputField.getWindowToken(),0);
             //tAct.inputField.setInputType(EditorInfo.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS);
             if(mAscii.mGLView.mRenderer.mMode!=mAscii.mGLView.mRenderer.MODE_CHOS)
             {
@@ -966,16 +990,17 @@ public class RecorderBase extends SubAct{
 
             }
         }
-
+        mPartInitReady=true;
         return true;
     }
 
     private void nextPart()
     {
-
+        Log.d("RECORDER","iter1!!!"+mCurrentPart);
         mCurrentPart++;
         if((mCurrentPart)<mQuestion.length)
         {
+            Log.d("RECORDER","init part: "+mCurrentPart);
             initPart();
             mTimeLeft = mQuestion[mCurrentPart].time;
         }
@@ -989,6 +1014,7 @@ public class RecorderBase extends SubAct{
 
             if(mQuestion[mCurrentPart-1].type==PART_TYPE_VIDEO)
             {
+                Log.d("RECORDER","VIDEOPART");
                 //TODO: if one subPart copy it to VID folder
                 File f = getOutputMediaFile(MEDIA_TYPE_VIDEO);
 
@@ -1095,7 +1121,7 @@ public class RecorderBase extends SubAct{
                 Log.d("RECORDER", "quest:" + mVideoPart[mCurrentPart-1].getQuestion());
 
             }
-            else if(mQuestion[mCurrentPart-1].type==PART_TYPE_TEXT)
+            else if(mQuestion[mCurrentPart-1].type==PART_TYPE_TEXT || mQuestion[mCurrentPart-1].type==PART_TYPE_TEXT_NAME || mQuestion[mCurrentPart-1].type==PART_TYPE_TEXT_EMAIL)
             {
                 mVideoPart[mCurrentPart-1].populate("", mQuestion[mCurrentPart-1].question, "", StoryPart.PART_TYPE_TEXT, mAscii.mGLView.mRenderer.inputBox.getLine(0), 0);
                 tAct.inputField.setText("");
@@ -1131,6 +1157,7 @@ public class RecorderBase extends SubAct{
             //Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
             mPartReady[mCurrentPart-1] = 1;
             //Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
+            //Log.d("RECORDER","iter2!!!");
             //mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
 
             mCurrentSubPart = 0;
@@ -1152,6 +1179,7 @@ public class RecorderBase extends SubAct{
 
                     }
                 }).start();*/
+            Log.d("RECORDER","iter3!!!"+mCurrentPart);
             mCurrentPart++;
         }
         mAscii.modLine("",1 , -1,false);
@@ -1235,6 +1263,7 @@ public class RecorderBase extends SubAct{
                 Log.d("RECORDER", "CHECK" + mVideoPart[mCurrentPart] + "...CP:" + mCurrentPart);
                 mPartReady[mCurrentPart]=1;
                 Log.d("RECORDER", "CHECK" + mPartReady[mCurrentPart]);
+                Log.d("RECORDER","iter4!!!"+mCurrentPart);
                 mCurrentPart++;//TODO: MAYBE ADD RECORDER NOT READY
                 mTimeElapsedPq=0;
 
@@ -1254,6 +1283,7 @@ public class RecorderBase extends SubAct{
 
                     }
                 }).start();*/
+                Log.d("RECORDER","iter5!!!");
                 mCurrentPart++;
             }
             mAscii.modLine("",1 , -1,false);

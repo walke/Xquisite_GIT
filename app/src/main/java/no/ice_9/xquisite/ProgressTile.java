@@ -62,7 +62,7 @@ public class ProgressTile {
     public ProgressTile()
     {
         midx=-1.0f;
-        midy=-0.99f;
+        midy=0.575f;
         sizx=0.0f;
         sizy=0.01f;
 

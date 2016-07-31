@@ -9,23 +9,12 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * Created by human on 01.04.16.
- *
- * GL Object
- * currently there is only one button and now it is also a slider
- * used to navigate user to touch a curtain point on the screen and indicate recording status
- *
- * one plane 4 vertices
+ * Created by human on 31.07.16.
  */
-public class ButtonTile {
+public class MarkerTile {
 
-    public boolean isRecording=false;
-    private float recBlink=0.0f;
-    private boolean recBlinkUp=true;
 
-    private int mMode=0;
 
-    public  boolean isDown=false;
 
     public float midx;
     public float midy;
@@ -51,7 +40,7 @@ public class ButtonTile {
      * Shader here takes texture of the button and mixes it with dynamical color data
      */
     private final String vertexInfoTileShaderCode =
-                    "attribute vec2 TexCoordIn;" +
+            "attribute vec2 TexCoordIn;" +
                     "varying vec2 TexCoordOut;" +
                     "uniform mat4 uMVPMatrix;" +
                     "attribute vec4 vPosition;" +
@@ -70,8 +59,8 @@ public class ButtonTile {
                     "   vec4 col = texture2D(Texture, TexCoordOut);"+//
                     "   col.a=col.a;"+
                     "   col.r=vColor.g;"+
-                    "   col.b=vColor.b;"+
-                    "   col.g=vColor.b;"+
+                    "   col.b=vColor.g;"+
+                    "   col.g=vColor.g;"+
                     "   gl_FragColor =  col;" +
                     "}";
 
@@ -103,9 +92,9 @@ public class ButtonTile {
     private short drawOrder[] = { 0, 1, 2, 1, 2, 3 }; // order to draw vertices
 
     // Initial color of the button ?
-    float color[] = { 0.8f, 0.8f, 0.0f, 1.0f };
+    float color[] = { 0.8f, 0.4f, 0.0f, 1.0f };
 
-    public ButtonTile(float mx,float my, float sx, float sy, int texture)
+    public MarkerTile(float mx,float my, float sx, float sy, int texture)
     {
         midx=mx;
         midy=my;
@@ -187,44 +176,7 @@ public class ButtonTile {
             sizy+=(sizTy-sizy)/10.0f;
         }
 
-        if(isRecording)
-        {
 
-            if(recBlinkUp)
-            {
-                recBlink+=0.04f;
-                if(recBlink>=0.5f)
-                {
-                    recBlinkUp=false;
-                }
-            }
-            else
-            {
-                recBlink -= 0.04f;
-                if (recBlink <= 0.0f) {
-                    recBlinkUp = true;
-                }
-            }
-
-
-        }
-        else
-        {
-            if(recBlink>0.0)
-            recBlink-=0.02f;
-        }
-        if(recBlink>0.4)
-        {
-            color[0]=1.0f;
-            color[1]=1.0f;
-            color[2]=1.0f-recBlink/5;
-        }
-        else
-        {
-            color[0]=1.0f;
-            color[1]=1.0f-recBlink/5;
-            color[2]=0.0f;
-        }
         //color[0]= recBlink;
         //color[1]=1.0f-recBlink/5;
         //color[2]=1.0f-recBlink/5;
@@ -288,89 +240,7 @@ public class ButtonTile {
         GLES20.glDisableVertexAttribArray(mTextureHandle);
     }
 
-    /**
-     * sets button to pressed state
-     */
-    public void setDown()
-    {
-        isDown=true;
 
-        recBlink=1.0f;
-        color[1]= 1.0f;
-
-
-
-
-    }
-
-    /**
-     * sets button to idle state
-     */
-    public void setUp()
-    {
-        isDown=false;
-
-        color[1]= 0.8f;
-
-
-
-
-    }
-
-    public void hideShowChoose(int mode)
-    {
-        mMode=mode;
-        Log.d("ASCII","hsh"+mode);
-        switch(mMode)
-        {
-            case 0:
-                Log.d("ASCII","hsh"+0);
-                //mMode = 0;
-                setTargetShape(0.0f,-2.0f,0,0);
-                break;
-            case 1:
-                Log.d("ASCII","hsh"+1);
-                //mMode = 1;
-                setTargetShape(0.0f,midOy,0,0);
-                break;
-            case 2:
-                Log.d("ASCII","hsh"+2);
-                //mMode = 2;
-                setTargetShape(0.5f,0.0f,0,0);
-                break;
-            case 3:
-                Log.d("ASCII","hsh"+3);
-                //mMode = 3;
-                setTargetShape(-0.5f,0.0f,0,0);
-                break;
-            case 10:
-                Log.d("ASCII","hsh"+10);
-                //mMode = 3;
-                setTargetShape(0.5f,-0.85f,0,0);
-                break;
-            case 8:
-                Log.d("ASCII","hsh"+1);
-                //mMode = 1;
-                setTargetShape(0.0f,midOy,0,0);
-                break;
-            case 9:
-                Log.d("ASCII","hsh"+1);
-                //mMode = 1;
-                setTargetShape(0.0f,midOy,0,0);
-                break;
-            case 14:
-                Log.d("ASCII","hsh"+14);
-                //mMode = 1;
-                setTargetShape(0.0f,-0.85f,0,0);
-                break;
-            case 15:
-                Log.d("ASCII","hsh"+15);
-                //mMode = 1;
-                setTargetShape(0.5f,-0.85f,0,0);
-                break;
-        }
-
-    }
 
 
 
@@ -382,8 +252,5 @@ public class ButtonTile {
         //sizTy=h;
     }
 
-    public int getMode() {
 
-        return mMode;
-    }
 }
