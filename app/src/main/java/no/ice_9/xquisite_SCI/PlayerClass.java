@@ -451,7 +451,7 @@ public class PlayerClass extends SubAct{
             // Use the Builder class for convenient dialog construction
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("would you like to mark this story as last in its branch?")
-                    .setPositiveButton(getResources().getString(R.string.MainBut_Ok), new DialogInterface.OnClickListener() {
+                    .setPositiveButton("no", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
 
                         }

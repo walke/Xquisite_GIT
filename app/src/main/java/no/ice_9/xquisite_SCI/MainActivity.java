@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
                     break;
                 }
                 if(interSkip) {
-                    for(int i=0;i<8;i++)mSession.iterate();
+                    for(int i=0;i<7;i++)mSession.iterate();
                     mCurrentAction++;
                     interSkip=false;
 
@@ -729,7 +729,7 @@ class Session
     public int mSessionState=SESSION_STATE_IDLE;
 
     int totalProgressParts=16;
-    int currentProgressPart=0;
+    int currentProgressPart=1;
 
     class TimelinePart
     {

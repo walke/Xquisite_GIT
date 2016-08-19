@@ -40,7 +40,8 @@
      </string>
 
     <string name="MainMsg_SkipInterview">
-        We have a few questions for you. (Press skip to go directly to story game)
+        We have a few questions for you.\nKeep your face in the frame, and when you\'re ready, press record. You can pause and continue recording.
+        (Press skip to go directly to story game)
     </string>
 
     <string name="MainMsg_Tutorial">
@@ -100,7 +101,7 @@
     </string>
 
     <string name="RecInterview_Question5">
-    What do you research? what interests you most in your field?
+    What do you research? What interests you most in your field?
     </string>
 
     <string name="RecInterview_Question6">
@@ -110,7 +111,7 @@
 
 
     <string name="RecInterview_Question7">
-    Have you noticed any effects of climate change where you live or work?
+    Have you noticed any effects of climate change where you live or work? If so, please describe them.
     </string>
 
     <string name="RecInterview_Question8">
