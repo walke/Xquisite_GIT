@@ -5,7 +5,7 @@ android {
   buildToolsVersion '23.0.2'
 
   defaultConfig {
-    applicationId "no.ice_9.xquisite_ORI"
+    applicationId "no.ice_9.xquisite_POL_ENG"
     minSdkVersion 15
     targetSdkVersion 23
     versionCode 1

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">XQ</string>
+    <string name="app_name">XQ_ENG_POL</string>
 
     <string name="hello_world">scienceFuture \n xquisite</string>
     <string name="action_settings">Settings</string>
@@ -35,6 +35,10 @@
     Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min.
      </string>
 
+    <string name="InitMsg_welcome_NO">
+    Velkommen til Xquisite! Spørsmål dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.
+     </string>
+
     <string name="GlobMsg_continue">
     PRESS THE RED BUTTON TO CONTINUE!
      </string>
@@ -42,6 +46,10 @@
     <string name="MainMsg_SkipInterview">
         We have a few questions for you.\nKeep your face in the frame, and when you\'re ready, press record. You can pause and continue recording.
         (Press skip to go directly to story game)
+    </string>
+
+    <string name="MainMsg_LangSelect">
+        Select your language --- Velg ditt språk
     </string>
 
     <string name="MainMsg_Tutorial">
@@ -54,6 +62,14 @@
 
     <string name="MainBut_Skip">
     Skip
+    </string>
+
+    <string name="MainBut_eng">
+    ENGLISH
+    </string>
+
+    <string name="MainBut_nor">
+    NORSK
     </string>
 
     <string name="IntroMsg_line1">
@@ -156,7 +172,7 @@
     </string>
 
     <string name="RecStory_Question3">
-    You now have one more minute to add to your story, or summarise for the next player.
+    You can now send a message to X in the future.
     </string>
 
 

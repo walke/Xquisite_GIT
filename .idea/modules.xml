@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Xquisite_GIT.iml" filepath="$PROJECT_DIR$/Xquisite_GIT.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Xquisite_GIT2.iml" filepath="$PROJECT_DIR$/Xquisite_GIT2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Xquisite_GIT_POL_ENG.iml" filepath="$PROJECT_DIR$/Xquisite_GIT_POL_ENG.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
