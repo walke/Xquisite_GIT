@@ -130,7 +130,7 @@ public class Server_OLD {
         if(offline)
         {
             int id=mData.getEmptyTypeId(1);
-            mData.addStory(id,parent,0,0);
+            mData.addStory(id,parent,0);
             return id;
         }
         byte[] parentStr = new byte[4];
@@ -163,7 +163,7 @@ public class Server_OLD {
 
         if(offline)
         {
-            return mData.completeStory(ndx,1,0);
+            return mData.completeStory(ndx,1);
         }
 
         byte[] ndxStr = new byte[4];
@@ -190,7 +190,7 @@ public class Server_OLD {
         {
 
             DataBase.Block dndx=mData.getStoryNdx(ndx);
-            mData.addStoryPart(dndx,part,true,0);
+            mData.addStoryPart(dndx,part,true);
             return true;
         }
 

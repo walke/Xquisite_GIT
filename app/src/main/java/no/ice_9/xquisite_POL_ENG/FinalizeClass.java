@@ -57,9 +57,13 @@ public class FinalizeClass extends SubAct{
                 if(mAscii.mReady)
                 {
                     mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_FIN);
-                    mAscii.mGLView.mRenderer.setProgress(0.0f,1);
+                    mAscii.mGLView.mRenderer.setProgress(0.0f, 1);
                     mAscii.mGLView.mRenderer.setProgress(0.0f,0);
-                    mAscii.modLine(tAct.getResources().getString(R.string.Fin_Msg),0,0,true);
+                    if(tAct.userLanguage==0)
+                        mAscii.modLine(tAct.getResources().getString(R.string.Fin_Msg),0,0,true);
+                    else
+                        mAscii.modLine(tAct.getResources().getString(R.string.Fin_Msg_NO),0,0,true);
+
                 }
 
             }

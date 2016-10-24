@@ -73,7 +73,12 @@ public class InitClass extends SubAct{
     //@Override
     public InitClass(final MainActivity activity,ASCIIscreen ascii,DBmanager dBman,boolean fromintro, Session session)//,Data data)
     {
-        String ldMsg=activity.getResources().getString(R.string.LoadingMsg);
+        String ldMsg;
+        if(tAct.userLanguage==0)
+            ldMsg=activity.getResources().getString(R.string.LoadingMsg);
+        else
+            ldMsg=activity.getResources().getString(R.string.LoadingMsg_NO);
+
 
 
 
@@ -238,7 +243,10 @@ public class InitClass extends SubAct{
                         if(!mFromIntro) {
                             //mAscii.pushLine("Connection succesed");
                             //mAscii.pushLine("");
-                            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue), 2, 0, false);
+                            if(tAct.userLanguage==0)
+                                mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue), 2, 0, false);
+                            else
+                                mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue_NO), 2, 0, false);
                             //mAscii.pushLine("");
                         }
                         mInitDone=true;

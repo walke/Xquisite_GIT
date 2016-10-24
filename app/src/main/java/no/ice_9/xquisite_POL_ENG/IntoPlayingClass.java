@@ -48,7 +48,11 @@ public class IntoPlayingClass extends PlayerClass{
                         }
                         else
                         {
-                            mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line1), 0, 0,true);
+                            if(tAct.userLanguage==0)
+                                mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line1), 0, 0,true);
+                            else
+                                mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line1_NO), 0, 0,true);
+
                             mAscii.modLine("", 1, 0,false);
                         }
                         //mAscii.modLine();
@@ -75,26 +79,53 @@ public class IntoPlayingClass extends PlayerClass{
                             if(mVideoView.isPlaying() )
                             {
                                 if(mTime%20==0)Log.d("PLAYER","mtime"+(mTime/20)+","+mTime);
-                                if(mTime==80)
+                                if(tAct.userLanguage==0)
                                 {
-                                    mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line2),0,0,true);
+                                    if(mTime==80)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line2),0,0,true);
+                                    }
+                                    if(mTime==160)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line3),0,0,true);
+                                    }
+                                    if(mTime==320)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line4),0,0,true);
+                                    }
+                                    if(mTime==500)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line5),0,0,true);
+                                    }
+                                    if(mTime==900)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line6),0,0,true);
+                                    }
                                 }
-                                if(mTime==160)
+                                else
                                 {
-                                    mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line3),0,0,true);
+                                    if(mTime==80)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line2_NO),0,0,true);
+                                    }
+                                    if(mTime==160)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line3_NO),0,0,true);
+                                    }
+                                    if(mTime==320)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line4_NO),0,0,true);
+                                    }
+                                    if(mTime==500)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line5_NO),0,0,true);
+                                    }
+                                    if(mTime==900)
+                                    {
+                                        mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line6_NO),0,0,true);
+                                    }
                                 }
-                                if(mTime==320)
-                                {
-                                    mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line4),0,0,true);
-                                }
-                                if(mTime==500)
-                                {
-                                    mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line5),0,0,true);
-                                }
-                                if(mTime==900)
-                                {
-                                    mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line6),0,0,true);
-                                }
+
                                 /*if(mTime==1300)
                                 {
                                     mAscii.modLine(tAct.getResources().getString(R.string.IntroMsg_line7),0,0,true);

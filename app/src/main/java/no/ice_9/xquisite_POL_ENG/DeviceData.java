@@ -76,6 +76,9 @@ public class DeviceData {
     DataBase mDataBase;
     String videoDir;
 
+    int mDataLanguage;
+
+
 
     //DEVICE BLOCKS
     DataBase.Block mDeviceId;
@@ -89,14 +92,16 @@ public class DeviceData {
      */
     public DeviceData(Activity activity,int lang)
     {
-        if(lang==0)
+        mDataLanguage=lang;
+
+        if(mDataLanguage==0)
             videoDir=activity.getExternalFilesDir("VID").toString();
         else
             videoDir=activity.getExternalFilesDir("VID_NO").toString();
 
-        mDataBase=new DataBase(activity,lang);
+        mDataBase=new DataBase(activity,mDataLanguage);
        // mDataBase.clear();
-        mDataBase.load(lang);
+        mDataBase.load(mDataLanguage);
 
 
     }
@@ -121,7 +126,7 @@ public class DeviceData {
      * set device id (1 is set by default in case no sychronization occured yet)
      * @param id device id
      */
-    public void setDeviceId(int id, int lang)
+    public void setDeviceId(int id)
     {
         byte[] buffer=new byte[BLOCKSIZE_DEVICE];
 
@@ -132,20 +137,20 @@ public class DeviceData {
         XQUtils.Int2ByteArr(buffer,id,BLOCKOFFSET_DEVICE_id);
 
         mDataBase.addBlock(buffer);
-        mDataBase.save(lang);
+        mDataBase.save(mDataLanguage);
     }
 
     /**
      * as it sounds get current device id
      * @return device id
      */
-    public int getDeviceId(int lang)
+    public int getDeviceId()
     {
         int id;
         DataBase.Block[] tmp=mDataBase.getBlocksByBlockType(BLOCKTYPE_DEVICE);
         if(tmp==null || tmp.length==0)
         {
-            setDeviceId(1,lang);
+            setDeviceId(1);
             id= 1;
         }
         else
@@ -193,7 +198,7 @@ public class DeviceData {
      * @param parent parent story id
      * @param complete is complete story (TODO:in case story is added from the server)
      */
-    public void addStory(int id, int parent, int complete, int lang)
+    public void addStory(int id, int parent, int complete)
     {
         int time=Calendar.getInstance().getTime().hashCode();//hash for now
         byte[] buffer=new byte[BLOCKSIZE_STORY];
@@ -212,7 +217,7 @@ public class DeviceData {
         XQUtils.Int2ByteArr(buffer,time,BLOCKOFFSET_STORY_date_added);
 
         mDataBase.addBlock(buffer);
-        mDataBase.save(lang);
+        mDataBase.save(mDataLanguage);
     }
 
     /**
@@ -237,13 +242,13 @@ public class DeviceData {
      * @param part part data (filename and question)
      * @param up upload to server on creation TODO:?
      */
-    public void addStoryPart(DataBase.Block story,StoryPart part,boolean up,int lang)
+    public void addStoryPart(DataBase.Block story,StoryPart part,boolean up)
     {
         byte[] buffer=new byte[BLOCKSIZE_PART];
 
-        DataBase.Block questionBlock=addStringBlock(part.getQuestion(),lang);
-        DataBase.Block fnameBlock=addStringBlock(part.getFilePath(),lang);
-        DataBase.Block textBlock=addStringBlock(part.mText,lang);//TODO: NULL STRING
+        DataBase.Block questionBlock=addStringBlock(part.getQuestion());
+        DataBase.Block fnameBlock=addStringBlock(part.getFilePath());
+        DataBase.Block textBlock=addStringBlock(part.mText);//TODO: NULL STRING
 
         int emptyId=mDataBase.getEmptyId();
         int emptyPartId=getEmptyTypeId(BLOCKTYPE_STORY_PART);
@@ -290,7 +295,7 @@ public class DeviceData {
         //XQUtils.Int2ByteArr(lastInStory.mBuffer,thisBlock.mId,BLOCKOFFSET_PART_next_part);
         int curnoofstories=(int)XQUtils.ByteArr2Int(story.mBuffer,BLOCKOFFSET_STORY_parts);
         XQUtils.Int2ByteArr(story.mBuffer,curnoofstories+1,BLOCKOFFSET_STORY_parts);
-        mDataBase.save(lang);
+        mDataBase.save(mDataLanguage);
     }
 
     /**
@@ -298,7 +303,7 @@ public class DeviceData {
      * @param str string of certaion length
      * @return returns pointer to string block
      */
-    private DataBase.Block addStringBlock(String str,int lang)
+    private DataBase.Block addStringBlock(String str)
     {
         if(str==null)str="x";
         byte[] buffer=new byte[24+str.length()];
@@ -316,7 +321,7 @@ public class DeviceData {
         }
 
         DataBase.Block block=mDataBase.addBlock(buffer);
-        mDataBase.save(lang);
+        mDataBase.save(mDataLanguage);
 
         return block;
     }
@@ -327,13 +332,13 @@ public class DeviceData {
      * @param flag upload to server on completion TODO:?
      * @return returns block id
      */
-    public int completeStory(int id,int flag,int lang)
+    public int completeStory(int id,int flag)
     {
         DataBase.Block storyBlock=getStoryNdx(id);
 
         XQUtils.Int2ByteArr(storyBlock.mBuffer,flag,BLOCKOFFSET_STORY_complete);
 
-        mDataBase.save(lang);
+        mDataBase.save(mDataLanguage);
 
         return storyBlock.mId;
     }
@@ -415,7 +420,7 @@ public class DeviceData {
      * CONTROLLING FUNCTION, not necessary for app
      * @return string of all data read from data file
      */
-    public dataleaf getAllData(int lang)
+    public dataleaf getAllData()
     {
         dataleaf result=new dataleaf("DATA");
         /*result.dataleafs=new dataleaf[3];
@@ -430,7 +435,7 @@ public class DeviceData {
         String ret = "";
 
 
-        int size=mDataBase.getDataSize(lang);
+        int size=mDataBase.getDataSize(mDataLanguage);
         dataleaf datasize=new dataleaf("Size of data");
         datasize.dataleafs=new dataleaf[]{new dataleaf(""+size)};
         //ret+="\n datafile size:"+size+"\n";

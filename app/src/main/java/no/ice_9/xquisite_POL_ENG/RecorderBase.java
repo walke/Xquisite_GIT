@@ -1185,7 +1185,10 @@ public class RecorderBase extends SubAct{
             //mAscii.modLine("Thanks. Get ready to play Xquisite! The year is 2062. Our main character X is 17 years old",0,0);
             mAscii.modLine(mEndMessege,0,0,false);
             mAscii.modLine("",1,0,false);
-            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),2,0,false);
+            if(tAct.userLanguage==0)
+                mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),2,0,false);
+            else
+                mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue_NO),2,0,false);
         }
         mTimeLimit=PART_TIME_LIMIT;
     }

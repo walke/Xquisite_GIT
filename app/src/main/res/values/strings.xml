@@ -35,9 +35,7 @@
     Welcome to Xquisite! Questions appear here and you respond to the camera. This game takes under 10min.
      </string>
 
-    <string name="InitMsg_welcome_NO">
-    Velkommen til Xquisite! Spørsmål dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.
-     </string>
+
 
     <string name="GlobMsg_continue">
     PRESS THE RED BUTTON TO CONTINUE!
@@ -187,152 +185,152 @@
 
 
     <!--Nowegian:-->
-    <!--<string name="LoadingMsg">
+    <string name="LoadingMsg_NO">
     Laster…
     </string>
 
-    <string name="Button_intro">
+    <string name="Button_intro_NO">
     Intro
     </string>
 
-    <string name="Button_skip">
+    <string name="Button_skip_NO">
     Skip
     </string>
 
-    <string name="InitMsg_welcome">
+    <string name="InitMsg_welcome_NO">
     Velkommen til Xquisite! Spørsmål dukker opp her og du svarer til kameraet. Spillet tar under 10 minutter.
      </string>
 
-    <string name="GlobMsg_continue">
+    <string name="GlobMsg_continue_NO">
     Trykk på den røde knappen for å fortsette!
      </string>
 
-    <string name="MainMsg_SkipInterview">
+    <string name="MainMsg_SkipInterview_NO">
     Hvis du er her for første gang vil vi gjerne at du svarer på noen spørsmål først, men du må gjerne hoppe over dette hvis du ønsker.
     </string>
 
-    <string name="MainBut_Ok">
+    <string name="MainBut_Ok_NO">
     OK
     </string>
 
-    <string name="MainBut_Skip">
+    <string name="MainBut_Skip_NO">
     Hopp over
     </string>
 
-    <string name="IntroMsg_line1">
+    <string name="IntroMsg_line1_NO">
     Ice-9 inviterer deg til å skape livet til X
 
     </string>
 
-    <string name="IntroMsg_line2">
+    <string name="IntroMsg_line2_NO">
     Du vil høre en del av X sin historie
     </string>
 
-    <string name="IntroMsg_line3">
+    <string name="IntroMsg_line3_NO">
     Du finner på hva X gjør videre
     </string>
 
-    <string name="IntroMsg_line4">
+    <string name="IntroMsg_line4_NO">
     Din historie gis videre til den neste spilleren
     </string>
 
-    <string name="IntroMsg_line5">
+    <string name="IntroMsg_line5_NO">
     La dine egne opplevelser inspirere din scene fra X sitt liv.
     </string>
 
-    <string name="IntroMsg_line6">
+    <string name="IntroMsg_line6_NO">
     Dine ideer blir omarbeidet og kombinert med andre historier av barn og kunstnere
     </string>
 
-    <string name="IntroMsg_line7">
+    <string name="IntroMsg_line7_NO">
     Husk at Xquisite er et fiksjonsspill. Historiene som kommer fra deg, som en privatperson, er ikke en profesjonell uttalelse.
     </string>
 
-    <string name="RecInterview_Question1">
+    <string name="RecInterview_Question1_NO">
     Hva er ditt navn?
     </string>
 
-    <string name="RecInterview_Question2">
+    <string name="RecInterview_Question2_NO">
     Hva er din e-postadresse?
     </string>
 
-    <string name="RecInterview_Question3">
+    <string name="RecInterview_Question3_NO">
     Ønsker du å bli kreditert for ditt bidrag?
     </string>
 
-    <string name="RecInterview_Question4">
+    <string name="RecInterview_Question4_NO">
     Har du mulighet til å ha dialog med unge mennesker eller kunstnere, over nett eller direkte, på et senere tidspunkt?
     </string>
 
-    <string name="RecInterview_Question5">
+    <string name="RecInterview_Question5_NO">
     Beskriv kort ditt første minne
     </string>
 
-    <string name="RecInterview_Question6">
+    <string name="RecInterview_Question6_NO">
     Vil dine venner si at du er en optimist eller en pessimist når det gjelder framtiden?
     </string>
 
-    <string name="RecInterview_Question7">
+    <string name="RecInterview_Question7_NO">
     Hva er din favoritt science fiction-historie?
     </string>
 
 
 
-    <string name="RecInterview_Question8">
+    <string name="RecInterview_Question8_NO">
     Hva er din beste feiltakelse?
     </string>
 
-    <string name="RecInterview_Question9">
+    <string name="RecInterview_Question9_NO">
     Hva tror du er de mest betydelige endringene de neste 50 årene?
     </string>
 
-    <string name="RecInterview_Question10">
+    <string name="RecInterview_Question10_NO">
     Hvis du kunne reise i tid, hvilket år ville du dratt til?
     </string>
 
-    <string name="RecInterview_Question11">
+    <string name="RecInterview_Question11_NO">
     Da du var liten, hva ville du (eller vil du) bli når du ble voksen?
     </string>
 
-    <string name="RecInterview_EndMsg">
+    <string name="RecInterview_EndMsg_NO">
     Takk. Gjør deg klar til å spille Xquisite!
     </string>
 
-    <string name="Play_initMsg">
+    <string name="Play_initMsg_NO">
     X= en kvinne født i år 2045. Hun bor i Arktis. Temperaturene har steget. Nesten 10 milliarder menneser lever på jorden. Lytt til den siste delen av X sin historie
     </string>
 
-    <string name="Play_playMsg">
+    <string name="Play_playMsg_NO">
     Lytt..
     </string>
 
-    <string name="Play_endMsg">
+    <string name="Play_endMsg_NO">
     Lukk øynene et øyeblikk og tenk på hva du nettopp hørte.
     </string>
 
-    <string name="RecStory_Question1">
+    <string name="RecStory_Question1_NO">
     Hva er nøkkelordene til det du nettopp hørte?
     </string>
 
-    <string name="RecStory_Question2">
+    <string name="RecStory_Question2_NO">
     Tenk på hva X muligens gjør videre. Plasser deg i hennes ståsted og vær dramatisk
     </string>
 
-    <string name="RecStory_Question3">
+    <string name="RecStory_Question3_NO">
     Du har et minutt til å legge til noe til din historie eller oppsummere historien til neste spiller.
     </string>
 
 
-    <string name="RecStory_endMsg">
+    <string name="RecStory_endMsg_NO">
     PUSH BUTTON TO FINISH
     </string>
 
 
-    <string name="Fin_Msg">
+    <string name="Fin_Msg_NO">
     Tusen takk!
     </string>
 
-    -->
+
 
 
 

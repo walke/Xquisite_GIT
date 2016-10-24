@@ -66,7 +66,7 @@ public class PlayerClass extends SubAct{
 
 
 
-        mStartPart=mStoryParts-5;
+        mStartPart=mStoryParts-6;
 
         Log.d("PLAYER","parent:"+mParent);
         if(mParent==-2)
@@ -88,7 +88,7 @@ public class PlayerClass extends SubAct{
                     mParent=storyindx;
                     mStoryParts=storyParts;
                     Log.d("PLAYER","parent:"+mParent+","+mStoryParts);
-                    mStartPart=mStoryParts-5;
+                    mStartPart=mStoryParts-6;
                     if(mParent==0 || mParent==-1){mStartPart=0;}
 
 
@@ -354,7 +354,10 @@ public class PlayerClass extends SubAct{
                         else
                         {
                             //mAscii.modLine("", 4, 0,true);
-                            mAscii.modLine(tAct.getResources().getString(R.string.Play_initMsg), 0, 0,true);
+                            if(tAct.userLanguage==0)
+                                mAscii.modLine(tAct.getResources().getString(R.string.Play_initMsg), 0, 0,true);
+                            else
+                                mAscii.modLine(tAct.getResources().getString(R.string.Play_initMsg_NO), 0, 0,true);
                         }
                         //mAscii.modLine();
 
@@ -378,11 +381,15 @@ public class PlayerClass extends SubAct{
                     {
                         if(mVideoView.isPlaying() )
                         {
-                            Log.d("PLAYER","playing");
+                            Log.d("PLAYER", "playing");
                             mAscii.modLine("",0,0,false);
                             mAscii.modLine("",2,0,false);
                             mAscii.modLine("",3,0,false);
-                            mAscii.modLine(tAct.getResources().getString(R.string.Play_playMsg),1,0,true);
+                            if(tAct.userLanguage==0)
+                                mAscii.modLine(tAct.getResources().getString(R.string.Play_playMsg),1,0,true);
+                            else
+                                mAscii.modLine(tAct.getResources().getString(R.string.Play_playMsg_NO),1,0,true);
+
 
                             mTime++;
                         }
@@ -513,7 +520,13 @@ public class PlayerClass extends SubAct{
             Log.d("PLAYER", "loading intro file");
             String FilePath=tAct.getExternalFilesDir("").getPath();
             File mediaStorageDir = new File(FilePath, "");
-            mVideoPart[0].populate("appintro.mp4","",mediaStorageDir.getPath()+File.separator+"appintro.mp4",StoryPart.PART_TYPE_VIDEO,"",0);
+            if(tAct.userLanguage==0)
+                mVideoPart[0].populate("appintro.mp4","",mediaStorageDir.getPath()+File.separator+"appintro.mp4",StoryPart.PART_TYPE_VIDEO,"",0);
+            else
+            {
+                mVideoPart[0].populate("appintro_NO.mp4","",mediaStorageDir.getPath()+File.separator+"appintro_NO.mp4",StoryPart.PART_TYPE_VIDEO,"",0);
+
+            }
             mCurrentPart=0;
         }
         else
@@ -570,13 +583,12 @@ public class PlayerClass extends SubAct{
         tAct.runOnUiThread(new Runnable() {
             public void run() {
                 Log.d("PLAYER", "UUI");
-                mVideoView=MediaPlayer.create(tAct,mVideoUri);
+                mVideoView = MediaPlayer.create(tAct, mVideoUri);
 
-                if(mVideoView==null)
-                {
+                if (mVideoView == null) {
                     mAscii.pushLine("ERROR OCCURED WHILE LOADING VIDEO");
                     mAscii.pushLine("PUSH THE BUTTON RECORD NEW ONE");
-                    mError=true;
+                    mError = true;
                     return;
                 }
 
@@ -592,9 +604,11 @@ public class PlayerClass extends SubAct{
                         Log.d("PLAYER", "PLAY");
                         //tAct.setContentView(mAscii.mGLView);
                         //mAscii.pushLine("123");
-                        mVideoReady=true;
+                        mVideoReady = true;
                         playVideo();
-                        if(replay){startVideo();}
+                        if (replay) {
+                            startVideo();
+                        }
                     }
                 });
 
@@ -613,7 +627,7 @@ public class PlayerClass extends SubAct{
                             //mAscii.pushLine("START RECORDING");
                             //finishVideo();
                         }
-                        mStartPart=-1;
+                        mStartPart = -1;
 
                         //mAscii.mGLView.mRenderer.mSurface.release();
                         mVideoView.setDisplay(null);
@@ -715,7 +729,7 @@ public class PlayerClass extends SubAct{
 
         //mAscii.pushLine("#########################");
         //mAscii.pushLine("PUSH BUTTON TO PLAY STORY");
-        Log.d("PLAYER","PLAYING IN");
+        Log.d("PLAYER", "PLAYING IN");
         if(mCurrentPart>mStartPart || mParent==-2)
         {
             Log.d("PLAYER","STARTING PART");
@@ -744,9 +758,17 @@ public class PlayerClass extends SubAct{
         //if(mVideoPart[mCurrentPart].isLast())
         {
             mAscii.mGLView.mRenderer.setMode(XQGLRenderer.MODE_PLAY_DONE);
-            mAscii.modLine(tAct.getResources().getString(R.string.Play_endMsg),0,0,true);
-            //mAscii.pushLine("");
-            mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue),2,0,false);
+            if(tAct.userLanguage==0) {
+                mAscii.modLine(tAct.getResources().getString(R.string.Play_endMsg), 0, 0, true);
+
+                mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue), 2, 0, false);
+            }
+            else
+            {
+                mAscii.modLine(tAct.getResources().getString(R.string.Play_endMsg_NO), 0, 0, true);
+
+                mAscii.modLine(tAct.getResources().getString(R.string.GlobMsg_continue_NO), 2, 0, false);
+            }
             Log.d("PLAYER","LAST");
 
             mCurrentPart=16;

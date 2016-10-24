@@ -35,13 +35,13 @@ public class DBmanager {
         if(tAct.userLanguage==0)
         {
             id = mDevData.getEmptyTypeId(1);
-            mDevData.addStory(id, parent, 0, 0);
+            mDevData.addStory(id, parent, 0);
         }
 
         else
         {
             id = mDevData_NO.getEmptyTypeId(1);
-            mDevData_NO.addStory(id, parent, 0, 1);
+            mDevData_NO.addStory(id, parent, 0);
         }
 
 
@@ -53,12 +53,12 @@ public class DBmanager {
         if(tAct.userLanguage==0)
         {
             DataBase.Block dndx=mDevData.getStoryNdx(ndx);
-            mDevData.addStoryPart(dndx,part,true,0);
+            mDevData.addStoryPart(dndx,part,true);
         }
         else
         {
             DataBase.Block dndx=mDevData_NO.getStoryNdx(ndx);
-            mDevData_NO.addStoryPart(dndx,part,true,1);
+            mDevData_NO.addStoryPart(dndx,part,true);
         }
 
 
@@ -69,11 +69,11 @@ public class DBmanager {
     {
         if(tAct.userLanguage==0)
         {
-            return mDevData.completeStory(ndx,flag,0);
+            return mDevData.completeStory(ndx,flag);
         }
         else
         {
-            return mDevData_NO.completeStory(ndx,flag,1);
+            return mDevData_NO.completeStory(ndx,flag);
         }
 
 

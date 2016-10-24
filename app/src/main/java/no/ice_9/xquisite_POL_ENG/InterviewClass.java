@@ -35,7 +35,11 @@ public class InterviewClass extends RecorderBase {
 
 
         lastRecorder=false;
-        mEndMessege=tAct.getResources().getString(R.string.RecInterview_EndMsg);
+        if(tAct.userLanguage==0)
+            mEndMessege=tAct.getResources().getString(R.string.RecInterview_EndMsg);
+        else
+            mEndMessege=tAct.getResources().getString(R.string.RecInterview_EndMsg_NO);
+
 
         initQuestions();
         init(session);
@@ -55,13 +59,26 @@ public class InterviewClass extends RecorderBase {
         mQuestion=new Question[NPARTS];
 
 
-        mQuestion[0]=new Question(tAct.getResources().getString(R.string.RecInterview_Question5) ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[1]=new Question(tAct.getResources().getString(R.string.RecInterview_Question6) ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[2]=new Question(tAct.getResources().getString(R.string.RecInterview_Question7) ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[3]=new Question(tAct.getResources().getString(R.string.RecInterview_Question8) ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[4]=new Question(tAct.getResources().getString(R.string.RecInterview_Question9) ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[5]=new Question(tAct.getResources().getString(R.string.RecInterview_Question10) ,60,PART_TYPE_VIDEO);//OLD 8
-        mQuestion[6]=new Question(tAct.getResources().getString(R.string.RecInterview_Question11) ,60,PART_TYPE_VIDEO);//OLD 8
+        if(tAct.userLanguage==0)
+        {
+            mQuestion[0]=new Question(tAct.getResources().getString(R.string.RecInterview_Question5) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[1]=new Question(tAct.getResources().getString(R.string.RecInterview_Question6) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[2]=new Question(tAct.getResources().getString(R.string.RecInterview_Question7) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[3]=new Question(tAct.getResources().getString(R.string.RecInterview_Question8) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[4]=new Question(tAct.getResources().getString(R.string.RecInterview_Question9) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[5]=new Question(tAct.getResources().getString(R.string.RecInterview_Question10) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[6]=new Question(tAct.getResources().getString(R.string.RecInterview_Question11) ,60,PART_TYPE_VIDEO);//OLD 8
+        }
+        else
+        {
+            mQuestion[0]=new Question(tAct.getResources().getString(R.string.RecInterview_Question5_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[1]=new Question(tAct.getResources().getString(R.string.RecInterview_Question6_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[2]=new Question(tAct.getResources().getString(R.string.RecInterview_Question7_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[3]=new Question(tAct.getResources().getString(R.string.RecInterview_Question8_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[4]=new Question(tAct.getResources().getString(R.string.RecInterview_Question9_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[5]=new Question(tAct.getResources().getString(R.string.RecInterview_Question10_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+            mQuestion[6]=new Question(tAct.getResources().getString(R.string.RecInterview_Question11_NO) ,60,PART_TYPE_VIDEO);//OLD 8
+        }
 
         /*mQuestion[0]=new Question("What is your name?" ,5,PART_TYPE_TEXT);//OLD 8
         mQuestion[1]=new Question("What is your email? (spell if needed)",60,PART_TYPE_TEXT);//OLD 8

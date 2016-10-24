@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
                     break;
                 }
                 if(interSkip) {
-                    for(int i=0;i<7;i++)mSession.iterate();
+                    //for(int i=0;i<7;i++)mSession.iterate();
                     mCurrentAction++;
                     interSkip=false;
 
@@ -782,7 +782,7 @@ class Session
 
     public int mSessionState=SESSION_STATE_IDLE;
 
-    int totalProgressParts=16;
+    int totalProgressParts=7;
     int currentProgressPart=1;
 
     class TimelinePart
@@ -806,11 +806,11 @@ class Session
 
     public Session()
     {
-        TLPart=new TimelinePart[4];
-        TLPart[0]=new TimelinePart(TL_PART_TYPE_INTERVIEW);
-        TLPart[1]=new TimelinePart(TL_PART_TYPE_STORYPLAYER);
-        TLPart[2]=new TimelinePart(TL_PART_TYPE_STORYRECORD);
-        TLPart[3]=new TimelinePart(TL_PART_TYPE_USERDEFINE);
+        TLPart=new TimelinePart[3];
+        //TLPart[0]=new TimelinePart(TL_PART_TYPE_INTERVIEW);
+        TLPart[0]=new TimelinePart(TL_PART_TYPE_STORYPLAYER);
+        TLPart[1]=new TimelinePart(TL_PART_TYPE_STORYRECORD);
+        TLPart[2]=new TimelinePart(TL_PART_TYPE_USERDEFINE);
 
         storyId=-1;
     }

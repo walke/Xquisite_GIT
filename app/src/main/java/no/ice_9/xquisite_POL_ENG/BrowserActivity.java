@@ -74,9 +74,9 @@ public class BrowserActivity extends AppCompatActivity {
         mDataText+="DEVICE DATA:\n";
 
 
-        mDataText+=("device id: "+mData.getDeviceId(0)+"\n");
+        mDataText+=("device id: "+mData.getDeviceId()+"\n");
 
-        mainLeaf=mData.getAllData(0);
+        mainLeaf=mData.getAllData();
         mainLeaf.print(mDataList,this);
         //mDataText+=mData.getAllData();
 

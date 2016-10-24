@@ -43,14 +43,14 @@ public class XQGLRenderer implements GLSurfaceView.Renderer {
         public ProgressBar(Session session)
         {
             mProgressTile =     new ProgressTile();
-            mMarkerTiles =      new MarkerTile[4];
-            mMarkerTextTiles =  new TextBoxTile[4];
+            mMarkerTiles =      new MarkerTile[3];
+            mMarkerTextTiles =  new TextBoxTile[3];
 
 
             mMarkerTiles[0] = new MarkerTile(-0.93f,0.575f,0.1f,0.1f*mRatio,textures[3]);
-            mMarkerTiles[1] = new MarkerTile(0.0f,0.575f,0.1f,0.1f*mRatio,textures[3]);
-            mMarkerTiles[2] = new MarkerTile(0.5f,0.575f,0.1f,0.1f*mRatio,textures[3]);
-            mMarkerTiles[3] = new MarkerTile(0.93f,0.575f,0.1f,0.1f*mRatio,textures[3]);
+            mMarkerTiles[1] = new MarkerTile(0.1f,0.575f,0.1f,0.1f*mRatio,textures[3]);
+            //mMarkerTiles[2] = new MarkerTile(0.5f,0.575f,0.1f,0.1f*mRatio,textures[3]);
+            mMarkerTiles[2] = new MarkerTile(0.93f,0.575f,0.1f,0.1f*mRatio,textures[3]);
 
             for(int i=0;i<mMarkerTiles.length;i++)
             {
