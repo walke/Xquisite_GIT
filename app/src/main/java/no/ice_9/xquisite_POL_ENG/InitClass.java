@@ -74,10 +74,10 @@ public class InitClass extends SubAct{
     public InitClass(final MainActivity activity,ASCIIscreen ascii,DBmanager dBman,boolean fromintro, Session session)//,Data data)
     {
         String ldMsg;
-        if(tAct.userLanguage==0)
+        //if(tAct.userLanguage==0)
             ldMsg=activity.getResources().getString(R.string.LoadingMsg);
-        else
-            ldMsg=activity.getResources().getString(R.string.LoadingMsg_NO);
+        //else
+        //    ldMsg=activity.getResources().getString(R.string.LoadingMsg_NO);
 
 
 

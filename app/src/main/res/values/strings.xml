@@ -170,7 +170,7 @@
     </string>
 
     <string name="RecStory_Question3">
-    You can now send a message to X in the future.
+    Imagine X is your granddaughter. Record a message for X to be delivered in 2066.
     </string>
 
 
@@ -317,9 +317,8 @@
     </string>
 
     <string name="RecStory_Question3_NO">
-    Du har et minutt til å legge til noe til din historie eller oppsummere historien til neste spiller.
+    Se for deg at X er ditt barnebarn. Spill inn en beskjed til X som blir levert til henne i 2066
     </string>
-
 
     <string name="RecStory_endMsg_NO">
     PUSH BUTTON TO FINISH
